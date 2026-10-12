@@ -8,6 +8,9 @@ on:
         required: true
         type: boolean
         default: false
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
@@ -54,7 +57,7 @@ jobs:
           retention-days: 14
 
   release:
-    if: ${{ inputs.publish_release }}
+    if: ${{ github.event_name == 'push' || inputs.publish_release }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
