@@ -9,14 +9,14 @@ LOKRO OS uses official Arch repositories for the base system and the pinned GitH
 1. fetches and strictly validates `LOKRO_UPDATE_CHANNEL.json` over HTTPS;
 2. uses `checkupdates` from `pacman-contrib`, avoiding an unsupported partial upgrade;
 3. downloads official Arch updates into Pacman's cache;
-4. downloads a versioned LOKRO package archive only from this repository's GitHub Release and verifies its SHA-256 file;
+4. downloads a versioned LOKRO package archive only when the channel advertises a newer LOKRO version, only from this repository's GitHub Release, and verifies its SHA-256 file;
 5. never installs a package without a local administrator confirmation.
 
 An unreachable server, malformed JSON, missing release or checksum mismatch is recorded as status and leaves the installed system unchanged. Remote metadata cannot turn on unattended installation. Local administrators may change `/etc/lokro/update.conf`, but `install` mode is intentionally not the default.
 
 ## Applying updates
 
-The **LOKRO OS Updates** launcher uses Polkit and runs `/usr/bin/lokro-update apply`. Before Pacman changes the system, it records explicitly installed packages and archives `/etc`, `/boot` and Pacman's local database in `/var/lib/lokro-update/backups/`. If the backup fails or free space is below the configured threshold, installation is refused. Pacman always performs a complete `-Syu`; partial upgrades are not used.
+The **LOKRO OS Updates** launcher uses Polkit and runs `/usr/bin/lokro-update apply`. Before Pacman changes the system, it records explicitly installed packages and archives `/etc`, `/boot` and Pacman's local database in `/var/lib/lokro-update/backups/`. If the backup fails or free space is below the configured threshold, installation is refused. Pacman always performs a complete `-Syu`; partial upgrades are not used. The exact cached LOKRO release named by the validated channel is checksum-verified again immediately before extraction, and a failed local package installation is reported instead of being labelled successful.
 
 The backup is a recovery aid, not a transactional filesystem snapshot. User home directories are not modified or backed up by the updater. Users remain responsible for separate backups of personal files.
 

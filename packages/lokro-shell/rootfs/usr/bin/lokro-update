@@ -182,7 +182,16 @@ download_updates() {
     }
 
     [[ -s "${state_dir}/remote-assets" ]] || return 0
-    local release_api archive_name checksum_name release_json urls version_dir
+    local release_api archive_name checksum_name release_json urls version_dir remote_version local_version
+    if ! remote_version="$(python -c 'import json; print(json.load(open("'"${state_dir}/remote-channel.json"'"))["version"])' 2>/dev/null)" \
+        || ! local_version="$(python -c 'import json; print(json.load(open("'"$local_channel"'"))["version"])' 2>/dev/null)"; then
+        write_status invalid-manifest 'Update version metadata could not be read; no LOKRO package was downloaded.'
+        return 0
+    fi
+    if [[ "$(vercmp "$remote_version" "$local_version")" -le 0 ]]; then
+        log 'no newer LOKRO release; official package downloads remain cached'
+        return 0
+    fi
     mapfile -t release_fields < "${state_dir}/remote-assets"
     release_api="${release_fields[0]}"
     archive_name="${release_fields[1]}"
@@ -247,15 +256,35 @@ apply_updates() {
         write_status install-error 'Pacman reported an error. Package cache and backup were retained.'
         return 1
     fi
-    local archive package_dir
-    archive="$(find "$cache_dir" -mindepth 2 -maxdepth 2 -type f -name 'lokro-repo-*.tar.zst' -print | sort | tail -n 1)"
-    if [[ -n "$archive" ]]; then
+    local archive='' archive_name checksum_asset version_dir package_dir
+    if [[ -s "${state_dir}/remote-assets" ]]; then
+        mapfile -t release_fields < "${state_dir}/remote-assets"
+        archive_name="${release_fields[1]:-}"
+        checksum_asset="${release_fields[2]:-}"
+        if [[ -n "$archive_name" && -n "$checksum_asset" ]]; then
+            version_dir="${cache_dir}/$(basename "$archive_name" .tar.zst)"
+            archive="${version_dir}/${archive_name}"
+        fi
+    fi
+    if [[ -n "$archive" && -f "$archive" ]]; then
+        if [[ ! -f "${version_dir}/${checksum_asset}" ]] \
+            || ! (cd "$version_dir" && sha256sum --check --status "$checksum_asset"); then
+            rm -f "$archive"
+            write_status checksum-error 'The cached LOKRO package checksum failed; its package was deleted.'
+            return 1
+        fi
         package_dir="${archive%.tar.zst}/packages"
         rm -rf -- "$package_dir"
         install -d -m 0755 "$package_dir"
-        bsdtar -xf "$archive" -C "$package_dir"
-        mapfile -d '' -t packages < <(find "$package_dir" -maxdepth 1 -type f -name '*.pkg.tar.zst' -print0)
-        (( ${#packages[@]} == 0 )) || pacman -U --noconfirm --needed "${packages[@]}"
+        if ! bsdtar -xf "$archive" -C "$package_dir"; then
+            write_status install-error 'The LOKRO package archive could not be extracted. Official Arch updates remain installed.'
+            return 1
+        fi
+        mapfile -d '' -t packages < <(find "$package_dir" -maxdepth 1 -type f -name '*.pkg.tar.zst' -print0 | sort -z)
+        if (( ${#packages[@]} > 0 )) && ! pacman -U --noconfirm --needed "${packages[@]}"; then
+            write_status install-error 'A LOKRO package failed to install. Official Arch updates and the safety backup were retained.'
+            return 1
+        fi
     fi
     if [[ "$LOKRO_UPDATE_FLATPAK" == true ]] && command -v flatpak >/dev/null; then
         flatpak update --system --noninteractive || log 'Flatpak update failed; Pacman update remains valid'
