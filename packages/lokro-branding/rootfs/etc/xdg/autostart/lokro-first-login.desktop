@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Lokro OS session setup
+Exec=/usr/bin/lokro-first-login
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2
+NoDisplay=true

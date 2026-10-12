@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Install Lokro OS
+Name[de]=Lokro OS installieren
+Comment=Install Lokro OS to disk
+Comment[de]=Lokro OS auf einem Datenträger installieren
+Exec=pkexec calamares -d
+Icon=system-software-install
+Terminal=false
+Categories=System;

@@ -1,0 +1,6 @@
+[Unit]
+Description=Build the merged Lokro Hub service manifest
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/lokro-services-merge

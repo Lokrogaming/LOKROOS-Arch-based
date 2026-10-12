@@ -1,0 +1,2 @@
+# The online image intentionally carries no large application payload.
+# Calamares downloads the application bundle listed in packages-online.conf.

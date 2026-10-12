@@ -1,0 +1,11 @@
+[Unit]
+Description=Configure Flathub for Lokro OS
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flatpak remote-add --system --if-not-exists --from flathub /usr/share/lokro/flathub.flatpakrepo
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

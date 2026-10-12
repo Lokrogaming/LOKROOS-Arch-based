@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+*.iso binary
+*.pkg.tar.zst binary
+*.png binary
+*.jpg binary
+*.jpeg binary

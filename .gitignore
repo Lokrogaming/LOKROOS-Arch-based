@@ -1,0 +1,11 @@
+/build/
+/out/
+/work/
+/outputs/
+*.pkg.tar.zst
+*.iso
+*.iso.sha256
+*.log
+.DS_Store
+__pycache__/
+*.py[cod]

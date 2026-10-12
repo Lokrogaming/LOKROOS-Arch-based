@@ -1,0 +1,262 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.kirigami as Kirigami
+
+ApplicationWindow {
+    id: root
+    width: 1060
+    height: 700
+    minimumWidth: 860
+    minimumHeight: 580
+    visible: true
+    title: qsTr("Willkommen bei LOKRO OS")
+    color: "#070708"
+
+    property string networkState: qsTr("Internet wird geprüft …")
+    property string speedState: qsTr("Optionaler Kurztest noch nicht gestartet")
+    property double speedStarted: 0
+
+    function openAction(name) {
+        Qt.openUrlExternally("lokro-action:" + name)
+    }
+
+    function checkNetwork() {
+        networkState = qsTr("Internet wird geprüft …")
+        var request = new XMLHttpRequest()
+        request.onreadystatechange = function() {
+            if (request.readyState !== XMLHttpRequest.DONE)
+                return
+            networkState = request.status >= 200 && request.status < 400
+                ? qsTr("Online – Arch-Paketquellen sind erreichbar")
+                : qsTr("Offline – die große ISO installiert trotzdem vollständig")
+        }
+        request.open("HEAD", "https://archlinux.org/?lokro-check=" + Date.now())
+        request.send()
+    }
+
+    function runSpeedTest() {
+        speedState = qsTr("Kurzer Downloadtest läuft …")
+        speedStarted = Date.now()
+        var request = new XMLHttpRequest()
+        request.onreadystatechange = function() {
+            if (request.readyState !== XMLHttpRequest.DONE)
+                return
+            if (request.status < 200 || request.status >= 400 || !request.response) {
+                speedState = qsTr("Test nicht möglich – Installation bleibt nutzbar")
+                return
+            }
+            var seconds = Math.max(0.05, (Date.now() - speedStarted) / 1000)
+            var megabits = request.response.byteLength * 8 / 1000000
+            speedState = qsTr("Ungefähr %1 Mbit/s zum Arch-Spiegel").arg((megabits / seconds).toFixed(1))
+        }
+        request.open("GET", "https://geo.mirror.pkgbuild.com/core/os/x86_64/core.db?lokro-speed=" + Date.now())
+        request.responseType = "arraybuffer"
+        request.send()
+    }
+
+    Canvas {
+        anchors.fill: parent
+        opacity: 0.38
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.reset()
+            ctx.fillStyle = "#a1a1aa"
+            for (var y = 20; y < height; y += 34) {
+                for (var x = 20; x < width; x += 34) {
+                    var wave = 0.4 + 0.6 * Math.abs(Math.sin((x + y) * 0.012))
+                    ctx.globalAlpha = 0.08 + wave * 0.13
+                    ctx.beginPath()
+                    ctx.arc(x, y, 1.2 + wave, 0, Math.PI * 2)
+                    ctx.fill()
+                }
+            }
+        }
+        onWidthChanged: requestPaint()
+        onHeightChanged: requestPaint()
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#dd070708" }
+            GradientStop { position: 0.58; color: "#e80d0d10" }
+            GradientStop { position: 1.0; color: "#f5050506" }
+        }
+    }
+
+    ScrollView {
+        anchors.fill: parent
+        anchors.margins: Kirigami.Units.gridUnit * 2
+        contentWidth: availableWidth
+
+        ColumnLayout {
+            width: parent.width
+            spacing: Kirigami.Units.largeSpacing
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.largeSpacing
+
+                Rectangle {
+                    width: 62
+                    height: 62
+                    radius: 18
+                    color: "#f4f4f5"
+                    Text {
+                        anchors.centerIn: parent
+                        text: "L"
+                        color: "#09090b"
+                        font.pixelSize: 34
+                        font.bold: true
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    Label {
+                        text: qsTr("LOKRO OS")
+                        color: "#fafafa"
+                        font.pixelSize: 32
+                        font.bold: true
+                    }
+                    Label {
+                        text: qsTr("0.1.0 Alpha · Demo für Testgeräte")
+                        color: "#a1a1aa"
+                        font.pixelSize: 15
+                    }
+                }
+
+                Button {
+                    text: qsTr("Dunkel")
+                    onClicked: root.openAction("theme-dark")
+                }
+                Button {
+                    text: qsTr("Hell")
+                    onClicked: root.openAction("theme-light")
+                }
+                Button {
+                    text: qsTr("System installieren")
+                    highlighted: true
+                    onClicked: root.openAction("installer")
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: warningContent.implicitHeight + 28
+                radius: 14
+                color: "#18181b"
+                border.color: "#3f3f46"
+                ColumnLayout {
+                    id: warningContent
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("Diese Version ist eine nicht veröffentlichte Alpha. Sichere wichtige Daten, bevor du Partitionen änderst. Secure Boot und garantiertes Dual-Boot sind noch nicht freigegeben.")
+                        wrapMode: Text.WordWrap
+                        color: "#e4e4e7"
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("Schnellzugriff")
+                    color: "#a1a1aa"
+                }
+                Button { text: qsTr("Tastatur"); onClicked: root.openAction("input") }
+                Button { text: qsTr("Shortcuts"); onClicked: root.openAction("shortcuts") }
+                Button { text: qsTr("Energie"); onClicked: root.openAction("power") }
+            }
+
+            GridLayout {
+                Layout.fillWidth: true
+                columns: width > 900 ? 3 : 2
+                columnSpacing: Kirigami.Units.largeSpacing
+                rowSpacing: Kirigami.Units.largeSpacing
+
+                WelcomeCard {
+                    title: qsTr("Verbindung")
+                    iconName: "network-wireless"
+                    detail: root.networkState
+                    primaryText: qsTr("Erneut prüfen")
+                    secondaryText: qsTr("Kurztest")
+                    onPrimary: root.checkNetwork()
+                    onSecondary: root.runSpeedTest()
+                    footer: root.speedState
+                }
+                WelcomeCard {
+                    title: qsTr("Personalisieren")
+                    iconName: "preferences-desktop-theme"
+                    detail: qsTr("Dark/Light, Startmenü, Hintergrund, Panels und Widgets über Plasma anpassen.")
+                    primaryText: qsTr("Erscheinungsbild")
+                    secondaryText: qsTr("Widgets")
+                    onPrimary: root.openAction("appearance")
+                    onSecondary: root.openAction("widgets")
+                    footer: qsTr("LOKRO Dark ist der Standard")
+                }
+                WelcomeCard {
+                    title: qsTr("Benutzer")
+                    iconName: "user-identity"
+                    detail: qsTr("Der Installer erstellt den ersten Benutzer. Weitere lokale Benutzer lassen sich danach hier hinzufügen.")
+                    primaryText: qsTr("Benutzer verwalten")
+                    secondaryText: qsTr("Einstellungen")
+                    onPrimary: root.openAction("users")
+                    onSecondary: root.openAction("settings")
+                    footer: qsTr("Kein Online-Konto erforderlich")
+                }
+                WelcomeCard {
+                    title: qsTr("Geräte & Netzwerk")
+                    iconName: "preferences-system-bluetooth"
+                    detail: qsTr("WLAN, LAN, Bluetooth, Maus, Tastatur, Displays und Energie werden mit KDE-Systemmodulen verwaltet.")
+                    primaryText: qsTr("Netzwerk")
+                    secondaryText: qsTr("Bluetooth")
+                    onPrimary: root.openAction("network")
+                    onSecondary: root.openAction("bluetooth")
+                    footer: qsTr("Arch-Kernel, Firmware, NetworkManager und BlueZ")
+                }
+                WelcomeCard {
+                    title: qsTr("Apps")
+                    iconName: "plasmadiscover"
+                    detail: qsTr("Discover installiert Flatpaks. Das Basissystem bleibt ausschließlich unter Pacman-Verwaltung.")
+                    primaryText: qsTr("Discover öffnen")
+                    secondaryText: qsTr("Partitionen")
+                    onPrimary: root.openAction("discover")
+                    onSecondary: root.openAction("partitions")
+                    footer: qsTr("Flathub wird systemweit eingerichtet")
+                }
+                WelcomeCard {
+                    title: qsTr("Gaming")
+                    iconName: "applications-games"
+                    detail: qsTr("Das optionale Installationspaket enthält Steam, Prism Launcher, Java, GameMode, Gamescope und MangoHud.")
+                    primaryText: qsTr("Steam")
+                    secondaryText: qsTr("Minecraft")
+                    onPrimary: root.openAction("steam")
+                    onSecondary: root.openAction("minecraft")
+                    footer: qsTr("Spiele, Konten und Minecraft-Assets benötigen später Internet")
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("Der LOKRO Hub enthält bestätigte öffentliche Community-Links. Website, Login und API folgen erst nach Verifizierung.")
+                    color: "#71717a"
+                    wrapMode: Text.WordWrap
+                }
+                Button {
+                    text: qsTr("Schließen")
+                    onClicked: root.close()
+                }
+            }
+        }
+    }
+
+    Component.onCompleted: checkNetwork()
+}

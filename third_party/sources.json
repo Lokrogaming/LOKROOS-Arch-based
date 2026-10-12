@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {
+      "name": "Calamares",
+      "version": "3.3.14",
+      "source": "https://codeberg.org/Calamares/calamares/archive/v3.3.14.tar.gz",
+      "sha256": "06482a7c8d89b683c1f801f08b24c69e90aff75ee42ad58006854dcf66e736bd",
+      "usage": "built by vendor/calamares/PKGBUILD"
+    },
+    {
+      "name": "NVIDIA Open GPU Kernel Modules",
+      "source": "https://github.com/NVIDIA/open-gpu-kernel-modules",
+      "usage": "consumed only through signed Arch nvidia-open packages"
+    },
+    {
+      "name": "CachyOS Settings",
+      "source": "https://github.com/CachyOS/CachyOS-Settings",
+      "usage": "design reference only; no files or binary packages redistributed"
+    },
+    {
+      "name": "Steam",
+      "source": "https://archlinux.org/packages/multilib/x86_64/steam/",
+      "usage": "optional signed Arch Multilib package; proprietary Valve license retained"
+    },
+    {
+      "name": "Prism Launcher",
+      "source": "https://github.com/PrismLauncher/PrismLauncher",
+      "usage": "optional signed Arch package used as an open-source Minecraft launcher; Minecraft is not redistributed"
+    },
+    {
+      "name": "GameMode",
+      "source": "https://github.com/FeralInteractive/gamemode",
+      "usage": "optional signed Arch package"
+    },
+    {
+      "name": "Gamescope",
+      "source": "https://github.com/ValveSoftware/gamescope",
+      "usage": "optional signed Arch package"
+    },
+    {
+      "name": "MangoHud",
+      "source": "https://github.com/flightlessmango/MangoHud",
+      "usage": "optional signed Arch package"
+    },
+    {
+      "name": "Flathub repository descriptor",
+      "source": "https://dl.flathub.org/repo/flathub.flatpakrepo",
+      "sha256": "3371dd250e61d9e1633630073fefda153cd4426f72f4afa0c3373ae2e8fea03a",
+      "usage": "verified at ISO build time and embedded so the remote can be configured offline"
+    },
+    {
+      "name": "Ollama",
+      "source": "https://github.com/ollama/ollama",
+      "usage": "optional downloads pinned in packages/lokro-ai-setup/rootfs/usr/share/lokro-ai/releases.json"
+    }
+  ]
+}

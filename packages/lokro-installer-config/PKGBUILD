@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+pkgname=lokro-installer-config
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Calamares configuration and branding for Lokro OS'
+arch=('any')
+url='https://example.invalid/lokro-os'
+license=('GPL-3.0-or-later' 'CC-BY-SA-4.0')
+depends=('calamares-lokro' 'grub' 'efibootmgr' 'os-prober')
+source=()
+sha256sums=()
+
+package() {
+  cp -a "$srcdir/../rootfs/." "$pkgdir/"
+  chmod 0755 "$pkgdir/usr/lib/lokro/installer-cleanup"
+}

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Lokro AI Setup
+Name[de]=Lokro KI-Einrichtung
+Comment=Optionally install local AI tools
+Comment[de]=Lokale KI-Werkzeuge optional installieren
+Exec=/usr/bin/lokro-ai-setup-gui
+Icon=applications-science
+Terminal=false
+Categories=System;Development;

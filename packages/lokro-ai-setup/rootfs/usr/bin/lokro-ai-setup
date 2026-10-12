@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+manifest=/usr/share/lokro-ai/releases.json
+
+json_value() {
+    python3 - "$manifest" "$1" <<'PY'
+import json, sys
+value = json.load(open(sys.argv[1], encoding="utf-8"))
+for key in sys.argv[2].split('.'):
+    value = value[key]
+print(value)
+PY
+}
+
+need_root() {
+    (( EUID == 0 )) || { echo 'This operation requires root. Use sudo or the graphical launcher.' >&2; exit 1; }
+}
+
+hardware() {
+    local ram_kib disk_kib gpu
+    ram_kib="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
+    disk_kib="$(df -Pk /var | awk 'NR==2 {print $4}')"
+    gpu="$(lspci 2>/dev/null | grep -Ei 'VGA|3D controller' || true)"
+    printf 'RAM: %.1f GiB\nFree space in /var: %.1f GiB\nGPU:\n%s\n' \
+        "$(awk "BEGIN {print $ram_kib/1048576}")" "$(awk "BEGIN {print $disk_kib/1048576}")" "${gpu:-unknown}"
+    if (( ram_kib < 8 * 1024 * 1024 )); then
+        echo 'Warning: fewer than 8 GiB RAM; use only very small models.' >&2
+    fi
+    if (( disk_kib < 8 * 1024 * 1024 )); then
+        echo 'Warning: fewer than 8 GiB free; runtime or model downloads may fail.' >&2
+    fi
+}
+
+download_verified() {
+    local url="$1" checksum="$2" destination="$3"
+    curl --fail --location --proto '=https' --tlsv1.2 --output "$destination" "$url"
+    printf '%s  %s\n' "$checksum" "$destination" | sha256sum --check --status || {
+        rm -f "$destination"
+        echo "Checksum verification failed for $url" >&2
+        exit 1
+    }
+}
+
+install_ollama() {
+    need_root
+    local backend="${1:-auto}" version base_url base_sha rocm_url rocm_sha temp_dir prefix
+    version="$(json_value ollama.version)"
+    base_url="$(json_value ollama.base.url)"
+    base_sha="$(json_value ollama.base.sha256)"
+    rocm_url="$(json_value ollama.rocm.url)"
+    rocm_sha="$(json_value ollama.rocm.sha256)"
+    if [[ "$backend" == auto ]]; then
+        if lspci 2>/dev/null | grep -Eiq '(VGA|3D).*AMD|(VGA|3D).*ATI'; then backend=amd; else backend=default; fi
+    fi
+    [[ "$backend" == default || "$backend" == amd ]] || { echo 'backend must be auto, default or amd' >&2; exit 2; }
+
+    temp_dir="$(mktemp -d)"
+    trap 'rm -rf -- "$temp_dir"' EXIT
+    prefix="/opt/ollama/v${version}"
+    mkdir -p "$prefix"
+    download_verified "$base_url" "$base_sha" "$temp_dir/base.tar.zst"
+    tar --zstd -xf "$temp_dir/base.tar.zst" -C "$prefix"
+    if [[ "$backend" == amd ]]; then
+        download_verified "$rocm_url" "$rocm_sha" "$temp_dir/rocm.tar.zst"
+        tar --zstd -xf "$temp_dir/rocm.tar.zst" -C "$prefix"
+    fi
+
+    install -d -o ollama -g ollama /var/lib/ollama 2>/dev/null || true
+    if ! id ollama >/dev/null 2>&1; then
+        useradd --system --create-home --home-dir /var/lib/ollama --shell /usr/bin/nologin ollama
+    fi
+    for group in video render; do
+        getent group "$group" >/dev/null && usermod -aG "$group" ollama
+    done
+    install -d -o ollama -g ollama /var/lib/ollama
+    ln -sfn "$prefix/bin/ollama" /usr/local/bin/ollama
+    systemctl daemon-reload
+    systemctl enable --now ollama.service
+    echo "Ollama v${version} installed. No model was downloaded."
+}
+
+install_opencode() {
+    need_root
+    pacman -S --needed --noconfirm opencode
+    echo 'OpenCode installed from the signed Arch repository.'
+}
+
+status() {
+    hardware
+    if command -v ollama >/dev/null 2>&1; then ollama --version || true; else echo 'Ollama: not installed'; fi
+    if command -v opencode >/dev/null 2>&1; then opencode --version || true; else echo 'OpenCode: not installed'; fi
+    systemctl --no-pager --full status ollama.service 2>/dev/null || true
+}
+
+case "${1:-status}" in
+    hardware) hardware ;;
+    status) status ;;
+    install-ollama) install_ollama "${2:-auto}" ;;
+    install-opencode) install_opencode ;;
+    install-all) install_ollama "${2:-auto}"; install_opencode ;;
+    *) echo 'Usage: lokro-ai-setup {hardware|status|install-ollama [auto|default|amd]|install-opencode|install-all [auto|default|amd]}' >&2; exit 2 ;;
+esac

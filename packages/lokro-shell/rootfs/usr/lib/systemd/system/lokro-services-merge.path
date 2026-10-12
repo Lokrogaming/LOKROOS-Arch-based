@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch Lokro Hub service fragments
+
+[Path]
+PathChanged=/etc/lokro/services.d
+PathChanged=/usr/share/lokro/services.json
+Unit=lokro-services-merge.service
+
+[Install]
+WantedBy=multi-user.target

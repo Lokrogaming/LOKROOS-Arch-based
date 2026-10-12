@@ -1,0 +1,10 @@
+[General]
+ColorScheme=LokroDark
+Name=Lokro Dark
+
+[KDE]
+LookAndFeelPackage=org.lokro.dark
+widgetStyle=Breeze
+
+[Icons]
+Theme=breeze-dark

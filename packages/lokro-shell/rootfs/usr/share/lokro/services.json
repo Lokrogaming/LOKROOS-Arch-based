@@ -1,0 +1,22 @@
+{
+  "services": [
+    {
+      "id": "lokrogamer-twitch",
+      "name": "LOKRO Gamer on Twitch",
+      "url": "https://www.twitch.tv/lokrogamer",
+      "icon": "applications-multimedia"
+    },
+    {
+      "id": "lokrogaming-tiktok",
+      "name": "LOKRO Gaming on TikTok",
+      "url": "https://www.tiktok.com/@lokrogaming",
+      "icon": "applications-internet"
+    },
+    {
+      "id": "lokrogaming-discord",
+      "name": "LOKRO Gaming Discord",
+      "url": "https://dcs.lol/lokrogaming",
+      "icon": "network-server"
+    }
+  ]
+}

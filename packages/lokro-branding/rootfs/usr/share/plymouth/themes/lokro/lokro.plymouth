@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Lokro OS
+Description=Lokro OS dark boot theme
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/lokro
+ScriptFile=/usr/share/plymouth/themes/lokro/lokro.script

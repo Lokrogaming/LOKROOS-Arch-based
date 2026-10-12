@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+stamp="${XDG_CONFIG_HOME:-$HOME/.config}/lokro/welcome-v1"
+if [[ "${1:-}" == "--autostart" && -e "$stamp" ]]; then
+    exit 0
+fi
+
+mkdir -p "$(dirname "$stamp")"
+qml6 /usr/share/lokro/welcome/main.qml
+touch "$stamp"

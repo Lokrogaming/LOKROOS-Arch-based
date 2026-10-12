@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+pkgname=lokro-branding
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Lokro OS desktop, boot and session branding'
+arch=('any')
+url='https://example.invalid/lokro-os'
+license=('GPL-3.0-or-later' 'CC-BY-SA-4.0')
+depends=('breeze' 'plasma-workspace' 'plymouth')
+source=()
+sha256sums=()
+
+package() {
+  cp -a "$srcdir/../rootfs/." "$pkgdir/"
+  chmod 0755 "$pkgdir/usr/bin/lokro-first-login"
+}

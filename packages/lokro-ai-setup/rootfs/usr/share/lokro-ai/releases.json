@@ -1,0 +1,13 @@
+{
+  "ollama": {
+    "version": "0.34.0",
+    "base": {
+      "url": "https://github.com/ollama/ollama/releases/download/v0.34.0/ollama-linux-amd64.tar.zst",
+      "sha256": "cf95886728959aa09910bb34de5cca1cc5a8f68003b5597197d3f2c2d57c0804"
+    },
+    "rocm": {
+      "url": "https://github.com/ollama/ollama/releases/download/v0.34.0/ollama-linux-amd64-rocm.tar.zst",
+      "sha256": "9a2c577773a3dd357336414e67174906237ac3d443c7df391364eaff3f04cba7"
+    }
+  }
+}

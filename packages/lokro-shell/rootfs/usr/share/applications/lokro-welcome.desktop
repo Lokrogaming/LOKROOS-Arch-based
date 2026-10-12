@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome to LOKRO OS
+Name[de]=Willkommen bei LOKRO OS
+Comment=Open the demo guide and system shortcuts
+Comment[de]=Demo-Hinweise und Systemzugänge öffnen
+Exec=lokro-welcome
+Icon=start-here-kde
+Terminal=false
+Categories=System;Settings;

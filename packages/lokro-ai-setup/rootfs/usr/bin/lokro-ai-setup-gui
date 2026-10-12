@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+command -v kdialog >/dev/null 2>&1 || { echo 'kdialog is required for the graphical setup' >&2; exit 1; }
+
+info="$(lokro-ai-setup hardware 2>&1)"
+prompt="${info}"$'\n\nNothing is installed or downloaded until you choose an action.'
+choice="$(kdialog --title 'Lokro AI Setup' --menu "$prompt" \
+    ollama 'Install Ollama (automatic hardware choice)' \
+    amd 'Install Ollama with AMD ROCm support' \
+    opencode 'Install OpenCode from Arch' \
+    all 'Install Ollama and OpenCode' 2>/dev/null || true)"
+
+case "$choice" in
+    ollama) pkexec /usr/bin/lokro-ai-setup install-ollama auto ;;
+    amd) pkexec /usr/bin/lokro-ai-setup install-ollama amd ;;
+    opencode) pkexec /usr/bin/lokro-ai-setup install-opencode ;;
+    all) pkexec /usr/bin/lokro-ai-setup install-all auto ;;
+    *) exit 0 ;;
+esac
+kdialog --title 'Lokro AI Setup' --msgbox 'Setup completed. Models are not downloaded automatically. Use `ollama pull MODEL` when you are ready.'

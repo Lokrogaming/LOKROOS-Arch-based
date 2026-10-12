@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+import json
+import os
+import pathlib
+import tempfile
+
+BASE = pathlib.Path("/usr/share/lokro/services.json")
+FRAGMENTS = pathlib.Path("/etc/lokro/services.d")
+OUTPUT = pathlib.Path("/var/lib/lokro/services.json")
+
+
+def entries(document, source):
+    values = document if isinstance(document, list) else document.get("services")
+    if not isinstance(values, list):
+        raise ValueError(f"{source}: expected an array or a services array")
+    for value in values:
+        if not isinstance(value, dict) or any(not isinstance(value.get(k), str) for k in ("id", "name", "url", "icon")):
+            raise ValueError(f"{source}: service entries require string id, name, url and icon")
+        yield {k: value[k] for k in ("id", "name", "url", "icon")}
+
+
+def load(path):
+    with path.open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def main():
+    merged = {}
+    for service in entries(load(BASE), BASE):
+        merged[service["id"]] = service
+    if FRAGMENTS.is_dir():
+        for fragment in sorted(FRAGMENTS.glob("*.json")):
+            for service in entries(load(fragment), fragment):
+                merged[service["id"]] = service
+
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix="services.", suffix=".json", dir=OUTPUT.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump({"services": list(merged.values())}, handle, indent=2, ensure_ascii=False)
+            handle.write("\n")
+        os.chmod(temporary, 0o644)
+        os.replace(temporary, OUTPUT)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+if __name__ == "__main__":
+    main()

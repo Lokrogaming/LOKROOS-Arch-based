@@ -1,0 +1,81 @@
+name: Build alpha ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: Publish the verified artifacts as an alpha prerelease
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build packages and ISO in Arch Linux
+        run: |
+          docker run --rm --privileged \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            archlinux:base-devel \
+            bash -lc 'pacman -Syu --noconfirm --needed archiso git gnupg jq nodejs python-yaml qemu-desktop edk2-ovmf rsync shellcheck sudo qt6-declarative kirigami plasma-workspace && make validate packages && make validate && make iso-offline iso-online checksums && make smoke-bios smoke-uefi'
+      - name: Enforce ISO size limit
+        run: |
+          for iso in out/*.iso; do
+            size=$(stat -c %s "$iso")
+            test "$size" -le 4294967296
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lokro-os-0.1.0-alpha.1
+          path: |
+            out/*.iso
+            out/SHA256SUMS
+            out/package-manifest-*.txt
+            out/package-licenses-*.tsv
+            out/resolved-packages-*.txt
+            out/build-metadata.txt
+            out/build-*.log
+            out/THIRD_PARTY-NOTICES.md
+            out/KNOWN_LIMITATIONS.md
+            out/LICENSE-REFERENCES.md
+            out/AI-DISCLOSURE.md
+            out/SOURCE-PROVENANCE.json
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    if: ${{ inputs.publish_release }}
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: lokro-os-0.1.0-alpha.1
+          path: release
+      - name: Publish alpha prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(cat VERSION)"
+          tag="v${version}"
+          shopt -s nullglob
+          files=(release/*)
+          test "${#files[@]}" -gt 0
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "${files[@]}" --clobber
+          else
+            gh release create "$tag" "${files[@]}" \
+              --prerelease \
+              --title "LOKRO OS ${version}" \
+              --notes "Experimental x86_64 alpha for virtual machines and test hardware. The ISO is not a production or daily-driver release. Verify SHA256SUMS before writing it to USB."
+          fi

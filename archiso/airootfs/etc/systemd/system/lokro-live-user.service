@@ -1,0 +1,11 @@
+[Unit]
+Description=Create the Lokro OS live-session user
+Before=sddm.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/lokro-create-live-user
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

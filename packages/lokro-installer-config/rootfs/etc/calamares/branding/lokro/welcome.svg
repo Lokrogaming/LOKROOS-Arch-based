@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#27272a"/><stop offset="1" stop-color="#0d0c13"/></linearGradient></defs>
+  <rect width="800" height="500" rx="28" fill="url(#g)"/>
+  <g fill="#f4f4f5" transform="skewX(-18)"><rect x="155" y="80" width="14" height="330" rx="7"/><rect x="225" y="120" width="9" height="250" rx="4" opacity=".6"/></g>
+  <text x="340" y="235" fill="#f5f4fb" font-family="sans-serif" font-size="62" font-weight="700">Lokro OS</text>
+  <text x="344" y="285" fill="#bcb7d2" font-family="sans-serif" font-size="24">Fast. Dark. Yours.</text>
+</svg>

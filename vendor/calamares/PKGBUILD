@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+pkgname=calamares-lokro
+_pkgname=calamares
+pkgver=3.3.14
+pkgrel=1
+pkgdesc='Pinned Qt 6 Calamares installer for Lokro OS'
+arch=('x86_64')
+url='https://codeberg.org/Calamares/calamares'
+license=('BSD-2-Clause' 'CC0-1.0' 'GPL-3.0-or-later' 'LGPL-2.1-or-later')
+provides=('calamares')
+conflicts=('calamares')
+depends=(
+  'boost-libs' 'ckbcomp' 'cryptsetup' 'efibootmgr' 'gptfdisk' 'hwinfo' 'icu'
+  'kconfig' 'kcoreaddons' 'kcrash' 'ki18n' 'kparts' 'kpmcore' 'kservice'
+  'kwidgetsaddons' 'libpwquality' 'polkit-qt6' 'python' 'python-yaml' 'qt6-declarative'
+  'rsync' 'solid' 'squashfs-tools' 'yaml-cpp'
+)
+makedepends=('boost' 'cmake' 'extra-cmake-modules' 'ninja' 'python-jsonschema' 'python-pyaml' 'python-unidecode' 'qt6-tools')
+source=("${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('06482a7c8d89b683c1f801f08b24c69e90aff75ee42ad58006854dcf66e736bd')
+
+build() {
+  cmake -S "${srcdir}/${_pkgname}" -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DWITH_APPSTREAM=OFF \
+    -DWITH_PYBIND11=OFF \
+    -DWITH_QT6=ON \
+    -DSKIP_MODULES='dracut;dracutlukscfg;dummycpp;dummyprocess;dummypython;dummypythonqt;initramfs;initramfscfg;interactiveterminal;keyboardq;license;localeq;oemid;packagechooserq;partitionq;services-openrc;summaryq;tracking;usersq;welcomeq;zfs;zfshostid'
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

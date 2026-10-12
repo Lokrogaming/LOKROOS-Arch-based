@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=LOKRO OS Action Handler
+Exec=/usr/bin/lokro-action %u
+NoDisplay=true
+Terminal=false
+MimeType=x-scheme-handler/lokro-action;

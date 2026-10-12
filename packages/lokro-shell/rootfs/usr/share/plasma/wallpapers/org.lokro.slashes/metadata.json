@@ -1,0 +1,17 @@
+{
+  "KPackageStructure": "Plasma/Wallpaper",
+  "KPlugin": {
+    "Authors": [{"Name": "Lokro OS contributors"}],
+    "Category": "Wallpaper",
+    "Description": "A low-overhead interactive field of luminous slashes",
+    "Id": "org.lokro.slashes",
+    "License": "GPL-3.0-or-later",
+    "Name": "Lokro Slashes",
+    "Version": "0.1.0"
+  },
+  "X-KDE-PlasmaImageWallpaper-AccentColor": {
+    "Dark": "#f4f4f5",
+    "Light": "#71717a"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0"
+}

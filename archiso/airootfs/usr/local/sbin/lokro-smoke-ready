@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+# QEMU CI captures this marker. On real hardware without a serial port the
+# write simply fails and does not affect the Plasma session.
+if [[ -w /dev/ttyS0 ]]; then
+    printf '%s\n' 'LOKRO_PLASMA_READY' > /dev/ttyS0
+fi

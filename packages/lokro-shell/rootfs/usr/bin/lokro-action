@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+action="${1:-}"
+action="${action#lokro-action:}"
+action="${action%%\?*}"
+
+launch() {
+    "$@" >/dev/null 2>&1 &
+}
+
+case "$action" in
+    settings) launch systemsettings ;;
+    users) launch systemsettings kcm_users ;;
+    appearance) launch systemsettings kcm_lookandfeel ;;
+    network) launch systemsettings kcm_networkmanagement ;;
+    bluetooth) launch systemsettings kcm_bluetooth ;;
+    input) launch systemsettings kcm_keyboard ;;
+    shortcuts) launch systemsettings kcm_keys ;;
+    power) launch systemsettings kcm_powerdevilprofilesconfig ;;
+    widgets)
+        qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
+            'showWidgetExplorer()' >/dev/null 2>&1 || true
+        ;;
+    discover) launch plasma-discover ;;
+    partitions) launch partitionmanager ;;
+    installer) launch pkexec calamares -d ;;
+    steam)
+        if command -v steam >/dev/null 2>&1; then launch steam; else launch plasma-discover; fi
+        ;;
+    minecraft)
+        if command -v prismlauncher >/dev/null 2>&1; then launch prismlauncher; else launch plasma-discover; fi
+        ;;
+    theme-dark) plasma-apply-colorscheme LokroDark >/dev/null ;;
+    theme-light) plasma-apply-colorscheme BreezeLight >/dev/null ;;
+    *) exit 2 ;;
+esac

@@ -1,0 +1,36 @@
+# Architecture
+
+## Build flow
+
+1. `scripts/build-packages.sh` builds a checksum-pinned Calamares source release and the four Lokro packages with `makepkg`.
+2. `repo-add` creates an ephemeral local repository under `out/repo`.
+3. `scripts/prepare-profile.sh` builds either the `offline` or `online` profile from shared and variant-specific manifests.
+4. The offline profile stores zstd-compressed, signed NVIDIA packages under `/opt/lokro/repo`. The online profile resolves them from Arch mirrors only when selected.
+5. `mkarchiso` produces distinct hybrid BIOS/UEFI images. Calamares copies the SquashFS root, optionally installs the online application bundle, and removes live-only state before generating initramfs and GRUB configuration.
+
+The profile copy is deliberate: Archiso's boot files evolve with Arch. Lokro owns only its overlay and package list while inheriting the boot implementation matching the installed Archiso version.
+
+## Runtime components
+
+- `lokro-branding`: color scheme, static background, Plymouth theme, KDE defaults and one-time Plasma setup.
+- `lokro-shell`: interactive wallpaper, Lokro Hub widget, service-manifest merger and Flathub setup.
+- `lokro-installer-config`: Calamares flow, branding, optional LUKS1 encryption, ext4/GPT defaults and NVIDIA choice.
+- `lokro-ai-setup`: optional Ollama downloader with pinned checksums plus official-Arch OpenCode installation.
+
+System packages are updated only with Pacman. Discover is intended for Flatpaks. No AUR helper is part of the image.
+
+## Performance policy
+
+Lokro deliberately does not import the CachyOS kernel, repositories or Ananicy stack. Those are useful projects but would add another trust root and a larger maintenance surface. Lokro independently applies a small reviewed subset of ideas suitable for the stock Arch kernel: zram, high swappiness toward compressed RAM, page-cluster zero, systemd-oomd, periodic fstrim and power-profiles-daemon.
+
+## Lokro service manifest
+
+The base manifest is `/usr/share/lokro/services.json`. Administrators add sorted fragments at `/etc/lokro/services.d/*.json`. A fragment may contain either an array or `{ "services": [...] }`; later entries replace earlier entries with the same `id`. The merged, read-only result is `/var/lib/lokro/services.json`.
+
+Every service contains exactly these public fields:
+
+```json
+{"id":"status","name":"Status","url":"https://status.example.org","icon":"network-server"}
+```
+
+No authentication or SSO semantics are implied in v0.1.

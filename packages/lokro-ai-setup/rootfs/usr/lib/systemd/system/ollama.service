@@ -1,0 +1,21 @@
+[Unit]
+Description=Ollama local model server
+After=network-online.target
+
+[Service]
+Type=simple
+User=ollama
+Group=ollama
+Environment=HOME=/var/lib/ollama
+Environment=OLLAMA_HOST=127.0.0.1:11434
+ExecStart=/usr/local/bin/ollama serve
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/ollama
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,23 @@
+---
+componentName: lokro
+welcomeStyleCalamares: true
+strings:
+  productName: "Lokro OS"
+  shortProductName: "Lokro OS"
+  version: "0.1.0-alpha.1"
+  shortVersion: "0.1 Alpha"
+  versionedName: "Lokro OS 0.1 Alpha"
+  shortVersionedName: "Lokro OS 0.1"
+  bootloaderEntryName: "Lokro OS"
+  productUrl: "https://www.twitch.tv/lokrogamer"
+  supportUrl: "https://dcs.lol/lokrogaming"
+  knownIssuesUrl: "https://example.invalid/issues"
+  releaseNotesUrl: "https://example.invalid/releases/0.1.0-alpha.1"
+images:
+  productLogo: "logo.svg"
+  productIcon: "logo.svg"
+  productWelcome: "welcome.svg"
+style:
+  sidebarBackground: "#111019"
+  sidebarText: "#f5f4fb"
+  sidebarTextSelect: "#d4d4d8"

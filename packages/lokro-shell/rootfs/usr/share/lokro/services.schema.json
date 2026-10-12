@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:lokro:services:v1",
+  "title": "Lokro service manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["services"],
+  "properties": {
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "url", "icon"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+          "name": {"type": "string", "minLength": 1},
+          "url": {"type": "string", "format": "uri"},
+          "icon": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
