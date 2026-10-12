@@ -8,6 +8,7 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace
 const failures = [];
 const required = [
   "VERSION", "Makefile", "CONTRIBUTORS.md", "desktop/README.md", "server/README.md",
+  "LOKRO_UPDATE_CHANNEL.json", "schemas/update-channel.schema.json", "docs/UPDATES.md",
   "docs/RELEASE_STATUS.md", "archiso/packages/common.x86_64",
   "archiso/packages/offline.x86_64", "archiso/packages/online.x86_64",
   "packages/lokro-branding/PKGBUILD", "packages/lokro-shell/PKGBUILD",
@@ -20,6 +21,10 @@ const required = [
   "packages/lokro-shell/rootfs/usr/share/lokro/welcome/WelcomeCard.qml",
   "packages/lokro-shell/rootfs/usr/bin/lokro-welcome",
   "packages/lokro-shell/rootfs/usr/bin/lokro-action",
+  "packages/lokro-shell/rootfs/usr/bin/lokro-update",
+  "packages/lokro-shell/rootfs/usr/bin/lokro-update-gui",
+  "packages/lokro-shell/rootfs/usr/lib/systemd/system/lokro-update.timer",
+  "packages/lokro-shell/rootfs/usr/lib/lokro-update/keep-running-kernel",
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-gaming.conf",
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-apps-offline.conf",
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-apps-online.conf",
@@ -72,7 +77,7 @@ for (const requiredCommon of [
   "mesa", "vulkan-radeon", "vulkan-intel", "vulkan-nouveau",
   "lib32-mesa", "lib32-vulkan-radeon", "lib32-vulkan-intel", "lib32-vulkan-nouveau",
   "pipewire", "wireplumber", "grub", "efibootmgr", "cryptsetup", "sddm",
-  "partitionmanager", "flatpak", "discover", "systemsettings", "powerdevil"
+  "pacman-contrib", "partitionmanager", "flatpak", "discover", "systemsettings", "powerdevil"
 ]) {
   if (!packageSets["archiso/packages/common.x86_64"].includes(requiredCommon)) failures.push(`common ISO package list is missing ${requiredCommon}`);
 }
@@ -84,6 +89,15 @@ for (const gamingPackage of ["steam", "prismlauncher", "jre8-openjdk", "jre17-op
 
 const version = fs.readFileSync(path.join(root, "VERSION"), "utf8").trim();
 if (!/^\d+\.\d+\.\d+-alpha\.\d+$/.test(version)) failures.push(`VERSION is not an alpha SemVer: ${version}`);
+
+const rootUpdateChannelText = fs.readFileSync(path.join(root, "LOKRO_UPDATE_CHANNEL.json"), "utf8");
+const packagedUpdateChannelText = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/share/lokro/update-channel.json"), "utf8");
+if (rootUpdateChannelText !== packagedUpdateChannelText) failures.push("packaged update channel differs from root LOKRO_UPDATE_CHANNEL.json");
+const updateChannel = JSON.parse(rootUpdateChannelText);
+if (updateChannel.version !== version) failures.push("update channel version differs from VERSION");
+if (updateChannel.repository !== "jamjam1312/LOKROS-Arch-based") failures.push("update channel repository is not pinned");
+if (updateChannel.architecture !== "x86_64") failures.push("update channel architecture must be x86_64");
+if (updateChannel.automaticPolicy?.installWithoutLocalConfirmation !== false) failures.push("remote policy must not permit unattended installation");
 
 const services = JSON.parse(fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/share/lokro/services.json"), "utf8"));
 if (!Array.isArray(services.services)) failures.push("services.json must contain a services array");

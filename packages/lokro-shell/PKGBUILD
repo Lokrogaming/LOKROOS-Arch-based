@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 pkgname=lokro-shell
 pkgver=0.1.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Lokro OS Plasma wallpaper, Hub widget and service manifest support'
 arch=('any')
-url='https://example.invalid/lokro-os'
+url='https://github.com/jamjam1312/LOKROS-Arch-based'
 license=('GPL-3.0-or-later' 'CC-BY-SA-4.0')
-depends=('plasma-workspace' 'python' 'flatpak' 'qt6-declarative' 'kirigami' 'xdg-utils')
+depends=('plasma-workspace' 'python' 'flatpak' 'qt6-declarative' 'kirigami' 'xdg-utils'
+         'curl' 'pacman-contrib' 'rsync' 'libarchive' 'kdialog' 'konsole' 'polkit')
 source=()
 sha256sums=()
 
@@ -14,5 +15,8 @@ package() {
   cp -a "$srcdir/../rootfs/." "$pkgdir/"
   chmod 0755 "$pkgdir/usr/bin/lokro-services-merge" \
     "$pkgdir/usr/bin/lokro-welcome" \
-    "$pkgdir/usr/bin/lokro-action"
+    "$pkgdir/usr/bin/lokro-action" \
+    "$pkgdir/usr/bin/lokro-update" \
+    "$pkgdir/usr/bin/lokro-update-gui" \
+    "$pkgdir/usr/lib/lokro-update/keep-running-kernel"
 }

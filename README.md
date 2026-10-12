@@ -2,6 +2,8 @@
 
 Lokro OS is an experimental, Arch-based x86_64 desktop distribution built around KDE Plasma 6, Wayland, Pacman and Flatpak. Version `0.1.0-alpha.1` is intended for virtual machines and test hardware, not production systems.
 
+Official repository: [jamjam1312/LOKROS-Arch-based](https://github.com/jamjam1312/LOKROS-Arch-based). This is openly AI-assisted integration work for the LOKRO community, not a claim that upstream components were authored here.
+
 Lokro OS is **64-bit only**. It does not ship a 32-bit kernel or a 32-bit ISO. The enabled Arch `multilib` repository supplies selected 32-bit compatibility libraries required by Steam and older games on the 64-bit system.
 
 The repository contains two Archiso profiles, four Lokro packages, a pinned Calamares build recipe, a black-and-white Plasma theme, an animated dot-and-slash wallpaper, a first-run welcome center, the Lokro Hub widget, offline NVIDIA and gaming package paths, and an optional local-AI setup tool.
@@ -13,6 +15,7 @@ The `offline` image contains the application and German-language payload. The sm
 - [`desktop/`](desktop/) describes the desktop/private-computer edition. Its buildable source lives at the repository root so Archiso, package and CI paths remain conventional.
 - [`server/`](server/) is a reserved, documentation-only placeholder. No server image is implemented or advertised yet.
 - GitHub Releases holds generated ISOs and checksums. Large ISO binaries are deliberately not committed to Git.
+- [`LOKRO_UPDATE_CHANNEL.json`](LOKRO_UPDATE_CHANNEL.json) is the machine-readable, pinned x86_64 update-channel document used by installed systems.
 
 ## Downloads
 
@@ -49,11 +52,11 @@ Artifacts are written to `out/`. Package builds use official Arch repositories p
 - `make smoke-bios` / `make smoke-uefi` — wait for a readiness marker emitted by the live Plasma session.
 - `make checksums` — create SHA-256 sums and a package manifest.
 
-See [Release status](docs/RELEASE_STATUS.md), [Architecture](docs/ARCHITECTURE.md), [Gaming](docs/GAMING.md), [Hardware](docs/HARDWARE.md), [Dual boot](docs/DUAL_BOOT.md), [Testing](docs/TESTING.md), and [Known limitations](docs/KNOWN_LIMITATIONS.md).
+See [Release status](docs/RELEASE_STATUS.md), [Update design](docs/UPDATES.md), [Architecture](docs/ARCHITECTURE.md), [Gaming](docs/GAMING.md), [Hardware](docs/HARDWARE.md), [Dual boot](docs/DUAL_BOOT.md), [Testing](docs/TESTING.md), and [Known limitations](docs/KNOWN_LIMITATIONS.md).
 
 ## License
 
-Original code and configuration are GPL-3.0-or-later. Original artwork is CC-BY-SA-4.0. Upstream components keep their own licenses; see [third-party notices](docs/THIRD_PARTY.md).
+The repository owner selected CC0 for the top-level repository contribution. Files carrying an explicit SPDX identifier keep that stated license (original code and configuration currently use GPL-3.0-or-later; original artwork uses CC-BY-SA-4.0). Upstream components keep their own licenses; see [third-party notices](docs/THIRD_PARTY.md). This explicit scope avoids accidentally relicensing third-party work.
 
 The project is openly AI-assisted; generated and reviewed areas are documented in [AI disclosure](docs/AI_DISCLOSURE.md). No release is represented as hand-written-only work.
 

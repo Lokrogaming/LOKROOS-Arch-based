@@ -1,0 +1,12 @@
+[Unit]
+Description=Periodic LOKRO OS update check
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5h
+RandomizedDelaySec=15min
+Persistent=true
+Unit=lokro-update-check.service
+
+[Install]
+WantedBy=timers.target

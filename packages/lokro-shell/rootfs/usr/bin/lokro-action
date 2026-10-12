@@ -24,6 +24,7 @@ case "$action" in
             'showWidgetExplorer()' >/dev/null 2>&1 || true
         ;;
     discover) launch plasma-discover ;;
+    updates) launch lokro-update-gui ;;
     partitions) launch partitionmanager ;;
     installer) launch pkexec calamares -d ;;
     steam)

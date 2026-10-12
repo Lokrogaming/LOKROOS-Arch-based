@@ -11,8 +11,8 @@ strings:
   bootloaderEntryName: "Lokro OS"
   productUrl: "https://www.twitch.tv/lokrogamer"
   supportUrl: "https://dcs.lol/lokrogaming"
-  knownIssuesUrl: "https://example.invalid/issues"
-  releaseNotesUrl: "https://example.invalid/releases/0.1.0-alpha.1"
+  knownIssuesUrl: "https://github.com/jamjam1312/LOKROS-Arch-based/issues"
+  releaseNotesUrl: "https://github.com/jamjam1312/LOKROS-Arch-based/releases/tag/v0.1.0-alpha.1"
 images:
   productLogo: "logo.svg"
   productIcon: "logo.svg"

@@ -4,10 +4,17 @@ set -euo pipefail
 source "$(dirname "$0")/common.sh"
 need sha256sum
 need pacman
+need bsdtar
 mkdir -p "$OUT_DIR"
+repo_archive="$OUT_DIR/lokro-repo-${VERSION}.tar.zst"
+[[ -d "$LOCAL_REPO_DIR" ]] || die 'local package repository is missing; run make packages first'
+rm -f "$repo_archive" "${repo_archive}.sha256"
+bsdtar -C "$LOCAL_REPO_DIR" -caf "$repo_archive" .
+(cd "$OUT_DIR" && sha256sum "$(basename "$repo_archive")" > "$(basename "$repo_archive").sha256")
+cp "${PROJECT_ROOT}/LOKRO_UPDATE_CHANNEL.json" "$OUT_DIR/LOKRO_UPDATE_CHANNEL.json"
 mapfile -d '' -t iso_files < <(find "$OUT_DIR" -maxdepth 1 -type f -name '*.iso' -print0 | sort -z)
 (( ${#iso_files[@]} > 0 )) || die 'no ISO found in out/'
-sha256sum "${iso_files[@]}" > "$OUT_DIR/SHA256SUMS"
+sha256sum "${iso_files[@]}" "$repo_archive" > "$OUT_DIR/SHA256SUMS"
 for variant in offline online; do
     installed_root="${BUILD_DIR}/archiso-work-${variant}/x86_64/airootfs"
     manifest="$OUT_DIR/package-manifest-${variant}.txt"

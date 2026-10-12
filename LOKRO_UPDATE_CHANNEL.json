@@ -1,0 +1,25 @@
+{
+  "$schema": "schemas/update-channel.schema.json",
+  "schemaVersion": 1,
+  "product": "LOKRO OS Desktop",
+  "repository": "jamjam1312/LOKROS-Arch-based",
+  "channel": "alpha",
+  "architecture": "x86_64",
+  "version": "0.1.0-alpha.1",
+  "releaseTag": "v0.1.0-alpha.1",
+  "releaseApi": "https://api.github.com/repos/jamjam1312/LOKROS-Arch-based/releases/tags/v0.1.0-alpha.1",
+  "manifestUrl": "https://raw.githubusercontent.com/jamjam1312/LOKROS-Arch-based/main/LOKRO_UPDATE_CHANNEL.json",
+  "repositoryArchiveAsset": "lokro-repo-0.1.0-alpha.1.tar.zst",
+  "repositoryArchiveChecksumAsset": "lokro-repo-0.1.0-alpha.1.tar.zst.sha256",
+  "automaticPolicy": {
+    "checkOnBoot": true,
+    "interval": "5h",
+    "downloadOfficialPackages": true,
+    "installWithoutLocalConfirmation": false
+  },
+  "rebootRecommendedFor": [
+    "kernel",
+    "systemd",
+    "graphics-driver"
+  ]
+}

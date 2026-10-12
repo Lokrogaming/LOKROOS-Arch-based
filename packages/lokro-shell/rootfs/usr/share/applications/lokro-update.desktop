@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=LOKRO OS Updates
+Comment=Check and safely install system updates
+Exec=/usr/bin/lokro-update-gui
+Icon=system-software-update
+Terminal=false
+Categories=System;Settings;

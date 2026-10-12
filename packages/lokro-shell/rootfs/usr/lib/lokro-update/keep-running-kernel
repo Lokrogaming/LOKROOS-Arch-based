@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+readonly running_release="$(uname -r)"
+readonly modules_root=/usr/lib/modules
+readonly backup_root=/var/lib/lokro-update/running-kernel
+readonly source_dir="${modules_root}/${running_release}"
+readonly backup_dir="${backup_root}/${running_release}"
+
+case "${1:-}" in
+    pre)
+        [[ -d "$source_dir" ]] || exit 0
+        install -d -m 0755 "$backup_dir"
+        rsync -a --delete "$source_dir/" "$backup_dir/"
+        ;;
+    post)
+        if [[ ! -d "$source_dir" && -d "$backup_dir" ]]; then
+            install -d -m 0755 "$source_dir"
+            rsync -a "$backup_dir/" "$source_dir/"
+            depmod -a "$running_release"
+        fi
+        ;;
+    cleanup)
+        [[ -d "$backup_root" ]] || exit 0
+        find "$backup_root" -mindepth 1 -maxdepth 1 -type d ! -name "$running_release" \
+            -exec rm -rf -- {} +
+        ;;
+    *) printf 'Usage: %s {pre|post|cleanup}\n' "$0" >&2; exit 2 ;;
+esac

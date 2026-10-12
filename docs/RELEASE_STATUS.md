@@ -15,6 +15,7 @@ This file separates implemented source from tested release claims. An item being
 - Firefox, LibreOffice, Dolphin, Kate, Konsole, Okular, Ark, Gwenview, Spectacle, Haruna, KDE Connect and Flatseal in the offline payload.
 - Optional Steam, Prism Launcher, Java 8/17/21, GameMode, Gamescope and MangoHud installation from the offline media.
 - Separate offline and smaller online profiles, release checksums, manifests, provenance and license reports.
+- Boot-time and five-hour update checks with low resource priority, safe pre-download, local confirmation, recovery metadata backups and running-kernel module retention.
 
 ## Static checks completed on the Windows development workspace
 
@@ -41,5 +42,6 @@ QML linting and PKGBUILD parsing are enforced in the Arch build workflow, where 
 - A server edition (the `server/` directory is only a placeholder).
 - Secure Boot, guaranteed dual boot, guaranteed support for every peripheral, or automatic proprietary legacy NVIDIA drivers.
 - A custom package server, custom desktop environment, LibreOffice fork or bundled AI model.
+- General-purpose live kernel replacement. The running kernel remains active until reboot; only its matching modules are retained safely.
 
 Until the required build and boot jobs pass, publish source archives only and do not label a locally absent ISO as downloadable.

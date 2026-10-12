@@ -7,7 +7,8 @@
 - Plasma is Wayland-only. X11 applications run through XWayland, but there is no Plasma X11 login session.
 - The LOKRO Hub contains only the Twitch-confirmed public Twitch, TikTok and Discord destinations. It has no SSO, account integration, private API or verified standalone website yet.
 - Ollama support is an optional large download. AMD ROCm compatibility depends on the exact GPU; CPU fallback is always available but can be slow.
-- Lokro packages are baked into the alpha ISO and do not yet have an online update repository. Arch packages continue to update from official mirrors.
+- LOKRO packages are delivered as checksummed GitHub Release archives. They do not yet have a dedicated offline signing key, so unattended LOKRO package installation stays disabled by default. Arch packages continue to use signed official mirrors.
+- Kernel packages can be installed while the old kernel runs and its modules are retained, but the new kernel still requires a reboot to become active.
 - The repository contains build and VM smoke infrastructure, but real AMD/NVIDIA and multi-monitor results must be recorded by a human before publishing an image.
 - The online image installs a minimal Plasma/Firefox system without internet, but selected office or gaming downloads are skipped; the offline image is the complete recovery-safe variant.
 - Steam and Minecraft are proprietary. The optional bundle prepares drivers and launchers, but game assets, accounts and online authentication are never embedded in the ISO.

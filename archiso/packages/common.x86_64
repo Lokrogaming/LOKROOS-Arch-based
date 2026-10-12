@@ -48,6 +48,7 @@ networkmanager
 networkmanager-openvpn
 noto-fonts
 noto-fonts-emoji
+pacman-contrib
 pipewire
 pipewire-alsa
 pipewire-pulse

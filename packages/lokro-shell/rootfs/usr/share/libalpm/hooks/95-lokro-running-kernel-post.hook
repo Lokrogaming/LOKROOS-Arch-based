@@ -1,0 +1,12 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = linux
+Target = linux-lts
+Target = linux-zen
+Target = linux-hardened
+
+[Action]
+Description = Restoring modules needed by the currently running kernel...
+When = PostTransaction
+Exec = /usr/lib/lokro-update/keep-running-kernel post

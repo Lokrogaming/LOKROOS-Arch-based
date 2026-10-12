@@ -37,6 +37,9 @@ jobs:
           path: |
             out/*.iso
             out/SHA256SUMS
+            out/LOKRO_UPDATE_CHANNEL.json
+            out/lokro-repo-*.tar.zst
+            out/lokro-repo-*.tar.zst.sha256
             out/package-manifest-*.txt
             out/package-licenses-*.tsv
             out/resolved-packages-*.txt

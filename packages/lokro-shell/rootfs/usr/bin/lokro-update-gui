@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+status="$(lokro-update status 2>/dev/null || true)"
+message="$(python -c 'import json,sys; print(json.load(sys.stdin).get("message", "Update status unavailable."))' <<< "$status" 2>/dev/null || printf 'Update status unavailable.')"
+
+if kdialog --title 'LOKRO OS Updates' --warningyesno \
+    "$message
+
+Jetzt vollständig prüfen und installieren? Vorher wird eine Sicherung von Systemkonfiguration, Bootdateien und Pacman-Datenbank erstellt. Bei Kernel-Updates wird ein Neustart empfohlen." \
+    --yes-label 'Prüfen und installieren' --no-label 'Später'; then
+    konsole --hold -e pkexec /usr/bin/lokro-update apply &
+fi

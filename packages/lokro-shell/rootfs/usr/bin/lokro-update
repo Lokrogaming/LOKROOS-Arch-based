@@ -1,0 +1,307 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -uo pipefail
+
+readonly config_file=/etc/lokro/update.conf
+readonly state_dir=/var/lib/lokro-update
+readonly cache_dir=/var/cache/lokro-update
+readonly status_file="${state_dir}/status.json"
+readonly local_channel=/usr/share/lokro/update-channel.json
+readonly expected_repository=jamjam1312/LOKROS-Arch-based
+
+LOKRO_UPDATE_MODE=download
+LOKRO_UPDATE_CHANNEL_URL=https://raw.githubusercontent.com/jamjam1312/LOKROS-Arch-based/main/LOKRO_UPDATE_CHANNEL.json
+LOKRO_UPDATE_BACKUPS=3
+LOKRO_UPDATE_MIN_FREE_MIB=3072
+LOKRO_UPDATE_FLATPAK=false
+if [[ -r "$config_file" ]]; then
+    # shellcheck source=/dev/null
+    source "$config_file"
+fi
+
+log() { printf '[lokro-update] %s\n' "$*" >&2; }
+
+require_root() {
+    (( EUID == 0 )) || { log 'this operation requires root privileges'; return 1; }
+}
+
+ensure_directories() {
+    install -d -m 0755 "$state_dir" "$cache_dir"
+}
+
+write_status() {
+    local state="$1" message="$2" official_count="${3:-0}" remote_version="${4:-}"
+    ensure_directories
+    python - "$status_file" "$state" "$message" "$official_count" "$remote_version" <<'PY'
+import json, os, sys, tempfile
+from datetime import datetime, timezone
+
+path, state, message, official_count, remote_version = sys.argv[1:]
+payload = {
+    "checkedAt": datetime.now(timezone.utc).isoformat(),
+    "state": state,
+    "message": message,
+    "officialUpdateCount": int(official_count),
+    "remoteLokroVersion": remote_version or None,
+}
+fd, temporary = tempfile.mkstemp(prefix=".status-", dir=os.path.dirname(path), text=True)
+try:
+    with os.fdopen(fd, "w", encoding="utf-8") as handle:
+        json.dump(payload, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.chmod(temporary, 0o644)
+    os.replace(temporary, path)
+finally:
+    if os.path.exists(temporary):
+        os.unlink(temporary)
+PY
+}
+
+validate_channel() {
+    python - "$1" "$expected_repository" <<'PY'
+import json, re, sys
+path, expected_repository = sys.argv[1:]
+with open(path, encoding="utf-8") as handle:
+    data = json.load(handle)
+required = {
+    "schemaVersion", "product", "repository", "channel", "architecture",
+    "version", "releaseTag", "releaseApi", "manifestUrl",
+    "repositoryArchiveAsset", "repositoryArchiveChecksumAsset", "automaticPolicy"
+}
+if not required.issubset(data):
+    raise SystemExit("missing update-channel fields")
+if data["schemaVersion"] != 1 or data["repository"] != expected_repository:
+    raise SystemExit("unexpected update source")
+if data["architecture"] != "x86_64":
+    raise SystemExit("unexpected architecture")
+if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-(?:alpha|beta)\.[0-9]+)?", data["version"]):
+    raise SystemExit("invalid remote version")
+prefix = "https://api.github.com/repos/" + expected_repository + "/releases/tags/v"
+if not data["releaseApi"].startswith(prefix):
+    raise SystemExit("release API is outside the pinned repository")
+if data["automaticPolicy"].get("installWithoutLocalConfirmation") is not False:
+    raise SystemExit("remote manifest attempted to enable unattended installation")
+for name in (data["repositoryArchiveAsset"], data["repositoryArchiveChecksumAsset"]):
+    if "/" in name or "\\" in name or name.startswith("."):
+        raise SystemExit("unsafe release asset name")
+print(data["version"])
+print(data["releaseApi"])
+print(data["repositoryArchiveAsset"])
+print(data["repositoryArchiveChecksumAsset"])
+PY
+}
+
+fetch_channel() {
+    local destination="$1"
+    curl --fail --silent --show-error --location \
+        --proto '=https' --tlsv1.2 --connect-timeout 8 --max-time 25 \
+        --output "$destination" "$LOKRO_UPDATE_CHANNEL_URL"
+}
+
+official_updates() {
+    local output rc
+    output="$(checkupdates 2>/dev/null)"
+    rc=$?
+    if (( rc == 0 )); then
+        printf '%s\n' "$output"
+    elif (( rc == 2 )); then
+        return 0
+    else
+        return "$rc"
+    fi
+}
+
+check_for_updates() {
+    require_root || return 1
+    ensure_directories
+    local temporary metadata remote_version release_api archive checksum_asset updates count local_version
+    temporary="$(mktemp "${state_dir}/channel.XXXXXX")" || return 1
+    if ! fetch_channel "$temporary"; then
+        rm -f "$temporary"
+        write_status offline 'Update server is unreachable; the installed system was not changed.'
+        log 'update server is unreachable; leaving the system unchanged'
+        return 0
+    fi
+    if ! metadata="$(validate_channel "$temporary" 2>&1)"; then
+        rm -f "$temporary"
+        write_status invalid-manifest 'Remote update metadata failed validation; nothing was changed.'
+        log "remote manifest rejected: $metadata"
+        return 0
+    fi
+    mapfile -t fields <<< "$metadata"
+    remote_version="${fields[0]}"
+    release_api="${fields[1]}"
+    archive="${fields[2]}"
+    checksum_asset="${fields[3]}"
+    install -m 0644 "$temporary" "${state_dir}/remote-channel.json"
+    rm -f "$temporary"
+    printf '%s\n%s\n%s\n' "$release_api" "$archive" "$checksum_asset" > "${state_dir}/remote-assets"
+
+    updates="$(official_updates)" || {
+        write_status check-error 'Official Arch update check failed; nothing was changed.' 0 "$remote_version"
+        return 0
+    }
+    count=0
+    [[ -n "$updates" ]] && count="$(printf '%s\n' "$updates" | grep -c .)"
+    printf '%s\n' "$updates" > "${state_dir}/official-updates.txt"
+    local_version="$(python -c 'import json; print(json.load(open("'"$local_channel"'"))["version"])')"
+    if (( count > 0 )) || [[ "$(vercmp "$remote_version" "$local_version")" -gt 0 ]]; then
+        write_status updates-available 'Updates are available and can be downloaded safely.' "$count" "$remote_version"
+    else
+        write_status current 'LOKRO OS and official packages are current.' 0 "$remote_version"
+    fi
+}
+
+release_asset_urls() {
+    python - "$1" "$2" "$3" <<'PY'
+import json, sys
+path, archive_name, checksum_name = sys.argv[1:]
+with open(path, encoding="utf-8") as handle:
+    release = json.load(handle)
+if release.get("draft"):
+    raise SystemExit("draft releases cannot be used")
+assets = {item.get("name"): item.get("browser_download_url") for item in release.get("assets", [])}
+for name in (archive_name, checksum_name):
+    url = assets.get(name)
+    expected = "https://github.com/jamjam1312/LOKROS-Arch-based/releases/download/"
+    if not isinstance(url, str) or not url.startswith(expected):
+        raise SystemExit("required release asset is missing or outside the pinned repository")
+    print(url)
+PY
+}
+
+download_updates() {
+    require_root || return 1
+    check_for_updates || return 1
+    log 'downloading official Arch updates into the Pacman cache'
+    checkupdates -d >/dev/null 2>&1 || [[ $? -eq 2 ]] || {
+        write_status download-error 'An official package download failed; no package was installed.'
+        return 0
+    }
+
+    [[ -s "${state_dir}/remote-assets" ]] || return 0
+    local release_api archive_name checksum_name release_json urls version_dir
+    mapfile -t release_fields < "${state_dir}/remote-assets"
+    release_api="${release_fields[0]}"
+    archive_name="${release_fields[1]}"
+    checksum_name="${release_fields[2]}"
+    version_dir="${cache_dir}/$(basename "$archive_name" .tar.zst)"
+    install -d -m 0755 "$version_dir"
+    release_json="${version_dir}/release.json"
+    if ! curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+        --connect-timeout 8 --max-time 30 --output "$release_json" "$release_api"; then
+        log 'LOKRO release is not published yet; official package downloads remain cached'
+        return 0
+    fi
+    if ! urls="$(release_asset_urls "$release_json" "$archive_name" "$checksum_name" 2>&1)"; then
+        log "LOKRO release assets rejected: $urls"
+        return 0
+    fi
+    mapfile -t asset_urls <<< "$urls"
+    curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+        --connect-timeout 8 --max-time 600 --output "${version_dir}/${archive_name}.part" "${asset_urls[0]}" || return 0
+    curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+        --connect-timeout 8 --max-time 30 --output "${version_dir}/${checksum_name}" "${asset_urls[1]}" || return 0
+    mv -f "${version_dir}/${archive_name}.part" "${version_dir}/${archive_name}"
+    (cd "$version_dir" && sha256sum --check --status "$checksum_name") || {
+        rm -f "${version_dir}/${archive_name}"
+        write_status checksum-error 'A LOKRO release checksum failed; the package was deleted.'
+        return 0
+    }
+    write_status downloaded 'Updates were downloaded. Local confirmation is required to install them.'
+}
+
+create_backup() {
+    local available timestamp destination
+    available="$(df -Pm /var | awk 'NR == 2 {print $4}')"
+    if [[ ! "$available" =~ ^[0-9]+$ ]] || (( available < LOKRO_UPDATE_MIN_FREE_MIB )); then
+        log "not enough free space for a safety backup (${available:-unknown} MiB available)"
+        return 1
+    fi
+    timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
+    destination="${state_dir}/backups/${timestamp}"
+    install -d -m 0700 "$destination"
+    pacman -Qqe > "${destination}/explicit-packages.txt"
+    cp -a /var/log/pacman.log "${destination}/pacman.log" 2>/dev/null || true
+    bsdtar --acls --xattrs -caf "${destination}/system-metadata.tar.zst" \
+        /etc /boot /var/lib/pacman/local 2>/dev/null || {
+        log 'safety backup failed; refusing to install updates'
+        return 1
+    }
+    find "${state_dir}/backups" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' \
+        | sort -rn | tail -n "+$((LOKRO_UPDATE_BACKUPS + 1))" | cut -d' ' -f2- \
+        | while IFS= read -r old; do [[ -n "$old" ]] && rm -rf -- "$old"; done
+}
+
+apply_updates() {
+    require_root || return 1
+    ensure_directories
+    create_backup || {
+        write_status backup-error 'No update was installed because the safety backup failed.'
+        return 1
+    }
+    log 'installing a complete official Arch upgrade'
+    if ! pacman -Syu --noconfirm; then
+        write_status install-error 'Pacman reported an error. Package cache and backup were retained.'
+        return 1
+    fi
+    local archive package_dir
+    archive="$(find "$cache_dir" -mindepth 2 -maxdepth 2 -type f -name 'lokro-repo-*.tar.zst' -print | sort | tail -n 1)"
+    if [[ -n "$archive" ]]; then
+        package_dir="${archive%.tar.zst}/packages"
+        rm -rf -- "$package_dir"
+        install -d -m 0755 "$package_dir"
+        bsdtar -xf "$archive" -C "$package_dir"
+        mapfile -d '' -t packages < <(find "$package_dir" -maxdepth 1 -type f -name '*.pkg.tar.zst' -print0)
+        (( ${#packages[@]} == 0 )) || pacman -U --noconfirm --needed "${packages[@]}"
+    fi
+    if [[ "$LOKRO_UPDATE_FLATPAK" == true ]] && command -v flatpak >/dev/null; then
+        flatpak update --system --noninteractive || log 'Flatpak update failed; Pacman update remains valid'
+    fi
+    if [[ ! -d "/usr/lib/modules/$(uname -r)" ]]; then
+        log 'running-kernel modules were retained by the LOKRO Pacman hook; reboot is recommended'
+    fi
+    write_status installed 'Updates were installed. Reboot when a kernel or graphics driver changed.'
+}
+
+show_status() {
+    if [[ -r "$status_file" ]]; then
+        cat "$status_file"
+    else
+        printf '%s\n' '{"state":"never-checked","message":"No update check has completed yet."}'
+    fi
+}
+
+auto_run() {
+    case "$LOKRO_UPDATE_MODE" in
+        check) check_for_updates ;;
+        download) download_updates ;;
+        install)
+            log 'unattended installation is locally enabled; this is not the default policy'
+            download_updates && apply_updates
+            ;;
+        *) log "invalid LOKRO_UPDATE_MODE: $LOKRO_UPDATE_MODE"; return 1 ;;
+    esac
+}
+
+main() {
+    local command="${1:-status}"
+    if [[ "$command" != status ]]; then
+        require_root || return 1
+        install -d -m 0755 /run/lock
+        exec 9>/run/lock/lokro-update.lock
+        flock -n 9 || { log 'another update task is active'; return 0; }
+    fi
+    case "$command" in
+        check) check_for_updates ;;
+        download) download_updates ;;
+        apply) download_updates && apply_updates ;;
+        auto) auto_run ;;
+        status) show_status ;;
+        *) printf 'Usage: %s {check|download|apply|auto|status}\n' "$0" >&2; return 2 ;;
+    esac
+}
+
+main "$@"

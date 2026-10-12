@@ -1,0 +1,15 @@
+[Unit]
+Description=Check and cache LOKRO OS updates
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/lokro-update auto
+Nice=19
+IOSchedulingClass=idle
+CPUWeight=10
+IOWeight=10
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full

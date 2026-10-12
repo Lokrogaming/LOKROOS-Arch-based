@@ -172,6 +172,7 @@ ApplicationWindow {
                 Button { text: qsTr("Tastatur"); onClicked: root.openAction("input") }
                 Button { text: qsTr("Shortcuts"); onClicked: root.openAction("shortcuts") }
                 Button { text: qsTr("Energie"); onClicked: root.openAction("power") }
+                Button { text: qsTr("Updates"); onClicked: root.openAction("updates") }
             }
 
             GridLayout {
