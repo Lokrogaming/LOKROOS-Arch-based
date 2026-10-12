@@ -2,6 +2,14 @@
   "schemaVersion": 1,
   "components": [
     {
+      "name": "ckbcomp (console-setup source)",
+      "version": "1.249",
+      "source": "https://deb.debian.org/debian/pool/main/c/console-setup/console-setup_1.249.tar.xz",
+      "sha256": "2042e268b085ad900f2f9863715d67fadb95b8994554f10d407fc14f224b73ae",
+      "license": "GPL-2.0-or-later",
+      "usage": "minimal runtime dependency for Calamares, built by vendor/ckbcomp/PKGBUILD"
+    },
+    {
       "name": "Calamares",
       "version": "3.3.14",
       "source": "https://codeberg.org/Calamares/calamares/archive/v3.3.14.tar.gz",

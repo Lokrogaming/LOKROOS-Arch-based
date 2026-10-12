@@ -3,6 +3,7 @@
 set -euo pipefail
 
 recipes=(
+    vendor/ckbcomp
     vendor/calamares
     packages/lokro-branding
     packages/lokro-shell

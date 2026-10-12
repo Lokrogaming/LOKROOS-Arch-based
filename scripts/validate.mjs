@@ -11,6 +11,7 @@ const required = [
   "LOKRO_UPDATE_CHANNEL.json", "schemas/update-channel.schema.json", "docs/UPDATES.md",
   "docs/RELEASE_STATUS.md", "archiso/packages/common.x86_64",
   "archiso/packages/offline.x86_64", "archiso/packages/online.x86_64",
+  "vendor/ckbcomp/PKGBUILD",
   "packages/lokro-branding/PKGBUILD", "packages/lokro-shell/PKGBUILD",
   "packages/lokro-installer-config/PKGBUILD", "packages/lokro-ai-setup/PKGBUILD",
   "packages/lokro-shell/rootfs/usr/share/plasma/wallpapers/org.lokro.slashes/metadata.json",
@@ -66,7 +67,7 @@ for (const [file, packages] of Object.entries(packageSets)) {
   const dupes = packages.filter((x, i) => packages.indexOf(x) !== i);
   if (dupes.length) failures.push(`${file}: duplicate package names: ${[...new Set(dupes)].join(", ")}`);
 }
-for (const localPackage of ["calamares-lokro", "lokro-branding", "lokro-shell", "lokro-installer-config", "lokro-ai-setup"]) {
+for (const localPackage of ["ckbcomp", "calamares-lokro", "lokro-branding", "lokro-shell", "lokro-installer-config", "lokro-ai-setup"]) {
   if (!packageSets["archiso/packages/common.x86_64"].includes(localPackage)) failures.push(`common ISO package list is missing ${localPackage}`);
 }
 for (const requiredOffline of ["libreoffice-fresh", "libreoffice-fresh-de"]) {

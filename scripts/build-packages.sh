@@ -33,6 +33,26 @@ build_one() {
     find "$work_dir" -maxdepth 1 -type f -name '*.pkg.tar.zst' -exec cp -f {} "${LOCAL_REPO_DIR}/" \;
 }
 
+install_local_build_dependency() {
+    local package_glob="$1"
+    local packages=()
+    mapfile -t packages < <(find "${LOCAL_REPO_DIR}" -maxdepth 1 -type f -name "$package_glob" -print)
+    if (( ${#packages[@]} != 1 )); then
+        printf 'Expected exactly one local package matching %s, found %s\n' "$package_glob" "${#packages[@]}" >&2
+        return 1
+    fi
+    if (( EUID == 0 )); then
+        pacman -U --needed --noconfirm "${packages[0]}"
+    else
+        need sudo
+        sudo pacman -U --needed --noconfirm "${packages[0]}"
+    fi
+}
+
+log 'building pinned ckbcomp dependency'
+build_one "${PROJECT_ROOT}/vendor/ckbcomp"
+install_local_build_dependency 'ckbcomp-*.pkg.tar.zst'
+
 log 'building pinned Calamares package'
 build_one "${PROJECT_ROOT}/vendor/calamares"
 
