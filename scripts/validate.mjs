@@ -11,6 +11,7 @@ const required = [
   "LOKRO_UPDATE_CHANNEL.json", "schemas/update-channel.schema.json", "docs/UPDATES.md",
   "docs/RELEASE_STATUS.md", "archiso/packages/common.x86_64",
   "archiso/packages/offline.x86_64", "archiso/packages/online.x86_64",
+  "archiso/airootfs/etc/plymouth/plymouthd.conf",
   "vendor/ckbcomp/PKGBUILD",
   "packages/lokro-branding/PKGBUILD", "packages/lokro-shell/PKGBUILD",
   "packages/lokro-installer-config/PKGBUILD", "packages/lokro-ai-setup/PKGBUILD",
