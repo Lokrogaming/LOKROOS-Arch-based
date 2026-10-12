@@ -55,6 +55,7 @@ install_local_build_dependency 'ckbcomp-*.pkg.tar.zst'
 
 log 'building pinned Calamares package'
 build_one "${PROJECT_ROOT}/vendor/calamares"
+install_local_build_dependency 'calamares-lokro-[0-9]*-x86_64.pkg.tar.zst'
 
 for package in lokro-branding lokro-shell lokro-installer-config lokro-ai-setup; do
     log "building ${package}"
