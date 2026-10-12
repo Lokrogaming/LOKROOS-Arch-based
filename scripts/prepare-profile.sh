@@ -112,7 +112,7 @@ fi
 
 mkdir -p "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants" \
          "$PROFILE_DIR/airootfs/etc/systemd/system/graphical.target.wants"
-ln -sfn /usr/lib/systemd/system/lokro-live-user.service \
+ln -sfn /etc/systemd/system/lokro-live-user.service \
     "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/lokro-live-user.service"
 ln -sfn /usr/lib/systemd/system/NetworkManager.service \
     "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service"

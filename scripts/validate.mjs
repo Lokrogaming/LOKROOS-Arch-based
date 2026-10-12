@@ -92,6 +92,15 @@ for (const gamingPackage of ["steam", "prismlauncher", "jre8-openjdk", "jre17-op
 const version = fs.readFileSync(path.join(root, "VERSION"), "utf8").trim();
 if (!/^\d+\.\d+\.\d+-alpha\.\d+$/.test(version)) failures.push(`VERSION is not an alpha SemVer: ${version}`);
 
+const prepareProfile = fs.readFileSync(path.join(root, "scripts/prepare-profile.sh"), "utf8");
+if (!prepareProfile.includes("ln -sfn /etc/systemd/system/lokro-live-user.service")) {
+  failures.push("live-user enablement must point to the unit stored under /etc/systemd/system");
+}
+const mergeService = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/lib/systemd/system/lokro-services-merge.service"), "utf8");
+if (!/\[Install\][\s\S]*WantedBy=multi-user\.target/.test(mergeService)) {
+  failures.push("lokro-services-merge.service must be enableable by Calamares");
+}
+
 const rootUpdateChannelText = fs.readFileSync(path.join(root, "LOKRO_UPDATE_CHANNEL.json"), "utf8");
 const packagedUpdateChannelText = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/share/lokro/update-channel.json"), "utf8");
 if (rootUpdateChannelText !== packagedUpdateChannelText) failures.push("packaged update channel differs from root LOKRO_UPDATE_CHANNEL.json");

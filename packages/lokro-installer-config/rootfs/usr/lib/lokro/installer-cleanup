@@ -4,6 +4,7 @@ set -euo pipefail
 
 systemctl disable lokro-live-user.service 2>/dev/null || true
 rm -f /etc/systemd/system/multi-user.target.wants/lokro-live-user.service
+rm -f /etc/systemd/system/lokro-live-user.service
 rm -f /etc/sddm.conf.d/10-lokro-live.conf /etc/sudoers.d/10-liveuser
 rm -f /usr/local/sbin/lokro-create-live-user
 rm -f /usr/local/sbin/lokro-smoke-ready
