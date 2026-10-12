@@ -10,9 +10,9 @@ help:
 validate:
 	@node scripts/validate.mjs
 	@if command -v python3 >/dev/null 2>&1; then python3 scripts/validate_yaml.py; else echo 'python3 not installed; YAML validation skipped'; fi
-	@if command -v makepkg >/dev/null 2>&1; then for recipe in vendor/calamares packages/lokro-branding packages/lokro-shell packages/lokro-installer-config packages/lokro-ai-setup; do (cd "$$recipe" && makepkg --printsrcinfo >/dev/null); done; else echo 'makepkg not installed; PKGBUILD parse checks skipped'; fi
+	@if command -v makepkg >/dev/null 2>&1; then bash scripts/validate-pkgbuilds.sh; else echo 'makepkg not installed; PKGBUILD parse checks skipped'; fi
 	@if command -v qmllint >/dev/null 2>&1; then find packages -type f -name '*.qml' -print0 | xargs -0 -r qmllint; else echo 'qmllint not installed; QML validation skipped'; fi
-	@if command -v shellcheck >/dev/null 2>&1; then files="$$(grep -Ilr -E '^#!(/usr/bin/env (ba)?sh|/bin/(ba)?sh)' scripts packages archiso || true)"; if [[ -n "$$files" ]]; then shellcheck $$files; fi; else echo 'shellcheck not installed; skipped'; fi
+	@if command -v shellcheck >/dev/null 2>&1; then files="$$(grep -Ilr -E '^#!(/usr/bin/env (ba)?sh|/bin/(ba)?sh)' scripts packages archiso || true)"; if [[ -n "$$files" ]]; then shellcheck -x -e SC1091 $$files; fi; else echo 'shellcheck not installed; skipped'; fi
 
 check-repos:
 	@bash scripts/check-repository-packages.sh

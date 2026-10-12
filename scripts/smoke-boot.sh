@@ -16,7 +16,7 @@ iso="$(find "$OUT_DIR" -maxdepth 1 -type f -name "lokro-os-${variant}-*.iso" -pr
 tmp_dir="$(mktemp -d "${BUILD_DIR}/smoke-${firmware}-XXXXXX")"
 serial_log="$tmp_dir/serial.log"
 qemu_args=(
-    -machine q35,accel=tcg
+    -machine "q35,accel=tcg"
     -m 4096
     -smp 2
     -device virtio-vga

@@ -28,7 +28,7 @@ done
 mapfile -t official < <(printf '%s\n' "${official[@]}" | sort -u)
 mkdir -p "${BUILD_DIR}/repo-check-db/sync"
 cp /etc/pacman.conf "${BUILD_DIR}/pacman-check.conf"
-sed -i '/^#\[multilib\]/,/^#Include/ s/^#//' "${BUILD_DIR}/pacman-check.conf"
+enable_multilib "${BUILD_DIR}/pacman-check.conf"
 pacman --config "${BUILD_DIR}/pacman-check.conf" \
     --dbpath "${BUILD_DIR}/repo-check-db" --logfile /dev/null -Sy --noconfirm
 pacman --config "${BUILD_DIR}/pacman-check.conf" \

@@ -62,7 +62,7 @@ cat "${PROJECT_ROOT}/archiso/packages/common.x86_64" \
 sort -u -o "$PROFILE_DIR/packages.x86_64" "$PROFILE_DIR/packages.x86_64"
 
 cp /etc/pacman.conf "$PROFILE_DIR/pacman.conf"
-sed -i '/^#\[multilib\]/,/^#Include/ s/^#//' "$PROFILE_DIR/pacman.conf"
+enable_multilib "$PROFILE_DIR/pacman.conf"
 cat >> "$PROFILE_DIR/pacman.conf" <<EOF
 
 [lokro]
@@ -83,7 +83,7 @@ pacman --config "$PROFILE_DIR/pacman.conf" --dbpath "$PACKAGE_DB_DIR" \
 
 mkdir -p "$PROFILE_DIR/airootfs/etc/pacman.d"
 cp /etc/pacman.conf "$PROFILE_DIR/airootfs/etc/pacman.conf"
-sed -i '/^#\[multilib\]/,/^#Include/ s/^#//' "$PROFILE_DIR/airootfs/etc/pacman.conf"
+enable_multilib "$PROFILE_DIR/airootfs/etc/pacman.conf"
 if [[ "$variant" == offline ]]; then
     mkdir -p "$PROFILE_DIR/airootfs/opt/lokro/repo"
     cat >> "$PROFILE_DIR/airootfs/etc/pacman.conf" <<'EOF'

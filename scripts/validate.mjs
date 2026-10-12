@@ -30,6 +30,7 @@ const required = [
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-apps-online.conf",
   "archiso/airootfs/usr/local/sbin/lokro-smoke-ready",
   "scripts/smoke-boot.sh",
+  "scripts/validate-pkgbuilds.sh",
   "third_party/sources.json", "docs/AI_DISCLOSURE.md"
 ];
 for (const rel of required) if (!fs.existsSync(path.join(root, rel))) failures.push(`missing: ${rel}`);

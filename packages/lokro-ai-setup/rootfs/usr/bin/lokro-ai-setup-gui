@@ -18,4 +18,4 @@ case "$choice" in
     all) pkexec /usr/bin/lokro-ai-setup install-all auto ;;
     *) exit 0 ;;
 esac
-kdialog --title 'Lokro AI Setup' --msgbox 'Setup completed. Models are not downloaded automatically. Use `ollama pull MODEL` when you are ready.'
+kdialog --title 'Lokro AI Setup' --msgbox 'Setup completed. Models are not downloaded automatically. Run ollama pull MODEL when you are ready.'

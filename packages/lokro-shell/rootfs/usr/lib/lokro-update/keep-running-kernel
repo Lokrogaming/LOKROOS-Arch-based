@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -euo pipefail
 
-readonly running_release="$(uname -r)"
+running_release="$(uname -r)"
+readonly running_release
 readonly modules_root=/usr/lib/modules
 readonly backup_root=/var/lib/lokro-update/running-kernel
 readonly source_dir="${modules_root}/${running_release}"

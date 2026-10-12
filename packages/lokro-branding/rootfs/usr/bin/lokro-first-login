@@ -5,8 +5,12 @@ stamp="${XDG_CONFIG_HOME:-$HOME/.config}/lokro/first-login-v1"
 [[ -e "$stamp" ]] && exit 0
 mkdir -p "$(dirname "$stamp")"
 
-command -v plasma-apply-colorscheme >/dev/null 2>&1 && plasma-apply-colorscheme LokroDark >/dev/null 2>&1 || true
-command -v xdg-mime >/dev/null 2>&1 && xdg-mime default lokro-action-handler.desktop x-scheme-handler/lokro-action >/dev/null 2>&1 || true
+if command -v plasma-apply-colorscheme >/dev/null 2>&1; then
+    plasma-apply-colorscheme LokroDark >/dev/null 2>&1 || true
+fi
+if command -v xdg-mime >/dev/null 2>&1; then
+    xdg-mime default lokro-action-handler.desktop x-scheme-handler/lokro-action >/dev/null 2>&1 || true
+fi
 
 script='var ds = desktops(); for (var i = 0; i < ds.length; i++) { ds[i].wallpaperPlugin = "org.lokro.slashes"; ds[i].currentConfigGroup = ["Wallpaper", "org.lokro.slashes", "General"]; ds[i].writeConfig("accentColor", "#f4f4f5"); if (i === 0) { var w = ds[i].addWidget("org.lokro.hub"); w.geometry = "40,40,360,320"; var m = ds[i].addWidget("org.kde.plasma.systemmonitor.memory"); m.geometry = "420,40,300,180"; } }'
 if command -v qdbus6 >/dev/null 2>&1; then

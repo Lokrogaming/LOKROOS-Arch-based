@@ -10,7 +10,8 @@ mkdir -p "${BUILD_DIR}/pkg" "${LOCAL_REPO_DIR}"
 
 build_one() {
     local source_dir="$1"
-    local work_dir="${BUILD_DIR}/pkg/$(basename "$source_dir")"
+    local work_dir
+    work_dir="${BUILD_DIR}/pkg/$(basename "$source_dir")"
     rm -rf "$work_dir"
     cp -a "$source_dir" "$work_dir"
     if (( EUID == 0 )); then
