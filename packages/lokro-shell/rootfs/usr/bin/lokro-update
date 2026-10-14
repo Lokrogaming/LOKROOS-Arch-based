@@ -7,10 +7,10 @@ readonly state_dir=/var/lib/lokro-update
 readonly cache_dir=/var/cache/lokro-update
 readonly status_file="${state_dir}/status.json"
 readonly local_channel=/usr/share/lokro/update-channel.json
-readonly expected_repository=jamjam1312/LOKROS-Arch-based
+readonly expected_repository=jamjam1312/LOKROOS-Arch-based
 
 LOKRO_UPDATE_MODE=download
-LOKRO_UPDATE_CHANNEL_URL=https://raw.githubusercontent.com/jamjam1312/LOKROS-Arch-based/main/LOKRO_UPDATE_CHANNEL.json
+LOKRO_UPDATE_CHANNEL_URL=https://raw.githubusercontent.com/jamjam1312/LOKROOS-Arch-based/main/LOKRO_UPDATE_CHANNEL.json
 LOKRO_UPDATE_BACKUPS=3
 LOKRO_UPDATE_MIN_FREE_MIB=3072
 LOKRO_UPDATE_FLATPAK=false
@@ -165,7 +165,7 @@ if release.get("draft"):
 assets = {item.get("name"): item.get("browser_download_url") for item in release.get("assets", [])}
 for name in (archive_name, checksum_name):
     url = assets.get(name)
-    expected = "https://github.com/jamjam1312/LOKROS-Arch-based/releases/download/"
+    expected = "https://github.com/jamjam1312/LOKROOS-Arch-based/releases/download/"
     if not isinstance(url, str) or not url.startswith(expected):
         raise SystemExit("required release asset is missing or outside the pinned repository")
     print(url)

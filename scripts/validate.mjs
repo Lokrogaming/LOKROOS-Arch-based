@@ -135,6 +135,9 @@ if (!prepareProfile.includes("ln -sfn /etc/systemd/system/lokro-live-user.servic
   failures.push("live-user enablement must point to the unit stored under /etc/systemd/system");
 }
 if (!prepareProfile.includes('cp -L /etc/pacman.d/mirrorlist')) failures.push("embedded Arch root does not receive a pacman mirrorlist");
+if (/airootfs\/etc\/calamares\/modules\/welcome\.conf/.test(prepareProfile)) {
+  failures.push("profile preparation must not overlay package-owned Calamares welcome.conf before pacstrap");
+}
 for (const offlineExtra of ["hyprland", "hyprlock", "waybar", "wofi", "xdg-desktop-portal-hyprland"]) {
   if (!prepareProfile.includes(offlineExtra)) failures.push(`offline repository preparation is missing ${offlineExtra}`);
 }
@@ -148,7 +151,7 @@ const packagedUpdateChannelText = fs.readFileSync(path.join(root, "packages/lokr
 if (rootUpdateChannelText !== packagedUpdateChannelText) failures.push("packaged update channel differs from root LOKRO_UPDATE_CHANNEL.json");
 const updateChannel = JSON.parse(rootUpdateChannelText);
 if (updateChannel.version !== version) failures.push("update channel version differs from VERSION");
-if (updateChannel.repository !== "jamjam1312/LOKROS-Arch-based") failures.push("update channel repository is not pinned");
+if (updateChannel.repository !== "jamjam1312/LOKROOS-Arch-based") failures.push("update channel repository is not pinned");
 if (updateChannel.architecture !== "x86_64") failures.push("update channel architecture must be x86_64");
 if (updateChannel.automaticPolicy?.installWithoutLocalConfirmation !== false) failures.push("remote policy must not permit unattended installation");
 

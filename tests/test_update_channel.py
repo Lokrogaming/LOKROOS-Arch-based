@@ -20,10 +20,10 @@ class UpdateChannelTests(unittest.TestCase):
         self.assertEqual(self.root_text, self.packaged_text)
 
     def test_update_source_is_pinned(self):
-        self.assertEqual("jamjam1312/LOKROS-Arch-based", self.channel["repository"])
+        self.assertEqual("jamjam1312/LOKROOS-Arch-based", self.channel["repository"])
         self.assertEqual("x86_64", self.channel["architecture"])
         self.assertTrue(self.channel["releaseApi"].startswith(
-            "https://api.github.com/repos/jamjam1312/LOKROS-Arch-based/releases/tags/v"
+            "https://api.github.com/repos/jamjam1312/LOKROOS-Arch-based/releases/tags/v"
         ))
 
     def test_remote_cannot_enable_unattended_install(self):
