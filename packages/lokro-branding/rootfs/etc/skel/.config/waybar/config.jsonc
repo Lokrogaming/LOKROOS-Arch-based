@@ -1,0 +1,41 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 34,
+  "spacing": 6,
+  "modules-left": ["hyprland/workspaces", "custom/search", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["pulseaudio", "network", "memory", "cpu", "tray", "custom/power"],
+  "custom/search": {
+    "format": "  Search",
+    "tooltip": "Apps, files and commands",
+    "on-click": "lokro-search"
+  },
+  "custom/power": {
+    "format": " Power ",
+    "tooltip": "LOKRO power settings",
+    "on-click": "systemsettings kcm_powerdevilprofilesconfig"
+  },
+  "clock": {
+    "format": "{:%H:%M}",
+    "format-alt": "{:%A, %d. %B %Y}"
+  },
+  "memory": {
+    "format": "RAM {percentage}%",
+    "on-click": "plasma-systemmonitor"
+  },
+  "cpu": {
+    "format": "CPU {usage}%",
+    "on-click": "plasma-systemmonitor"
+  },
+  "network": {
+    "format-wifi": "{essid} {signalStrength}%",
+    "format-ethernet": "LAN",
+    "format-disconnected": "Offline",
+    "on-click": "systemsettings kcm_networkmanagement"
+  },
+  "pulseaudio": {
+    "format": "VOL {volume}%",
+    "format-muted": "Muted"
+  }
+}

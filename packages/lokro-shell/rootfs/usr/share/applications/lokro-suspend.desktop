@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Sleep
+Name[de]=Energiesparmodus
+Comment=Suspend this computer
+Comment[de]=Diesen Computer in den Energiesparmodus versetzen
+Exec=lokro-action suspend
+Icon=system-suspend
+Terminal=false
+Categories=System;
+Keywords=suspend;sleep;
+Keywords[de]=Energiesparmodus;Ruhezustand;Schlafen;

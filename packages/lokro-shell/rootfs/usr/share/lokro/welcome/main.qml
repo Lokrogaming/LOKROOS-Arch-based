@@ -170,6 +170,7 @@ ApplicationWindow {
                     color: "#a1a1aa"
                 }
                 Button { text: qsTr("Tastatur"); onClicked: root.openAction("input") }
+                Button { text: qsTr("Zeigergröße"); onClicked: root.openAction("cursor") }
                 Button { text: qsTr("Shortcuts"); onClicked: root.openAction("shortcuts") }
                 Button { text: qsTr("Energie"); onClicked: root.openAction("power") }
                 Button { text: qsTr("Updates"); onClicked: root.openAction("updates") }
@@ -230,6 +231,26 @@ ApplicationWindow {
                     onPrimary: root.openAction("discover")
                     onSecondary: root.openAction("partitions")
                     footer: qsTr("Flathub wird systemweit eingerichtet")
+                }
+                WelcomeCard {
+                    title: qsTr("Taskmanager & Suche")
+                    iconName: "utilities-system-monitor"
+                    detail: qsTr("Prozesse, CPU, RAM, Speicher und Netzwerk überwachen. Die globale Suche findet Apps, indizierte Dateien, Einstellungen und Systemaktionen.")
+                    primaryText: qsTr("Taskmanager")
+                    secondaryText: qsTr("Alles durchsuchen")
+                    onPrimary: root.openAction("taskmanager")
+                    onSecondary: root.openAction("search")
+                    footer: qsTr("Ctrl+Esc für Prozesse · Alt+Leertaste für KRunner")
+                }
+                WelcomeCard {
+                    title: qsTr("Fensteraufteilung")
+                    iconName: "view-split-left-right"
+                    detail: qsTr("Plasma besitzt einen eingebauten Kachel-Editor. Optional kann zusätzlich die tastaturorientierte Hyprland-Sitzung installiert werden.")
+                    primaryText: qsTr("Tiling-Hilfe")
+                    secondaryText: qsTr("Shortcuts")
+                    onPrimary: root.openAction("tiling")
+                    onSecondary: root.openAction("shortcuts")
+                    footer: qsTr("Plasma: Meta+T · Hyprland: Meta+Pfeiltasten")
                 }
                 WelcomeCard {
                     title: qsTr("Gaming")

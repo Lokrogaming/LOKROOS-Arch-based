@@ -13,6 +13,7 @@ validate:
 	@if command -v makepkg >/dev/null 2>&1; then bash scripts/validate-pkgbuilds.sh; else echo 'makepkg not installed; PKGBUILD parse checks skipped'; fi
 	@qml_linter="$$(command -v qmllint || command -v qmllint6 || true)"; if [[ -z "$$qml_linter" && -x /usr/lib/qt6/bin/qmllint ]]; then qml_linter=/usr/lib/qt6/bin/qmllint; fi; if [[ -n "$$qml_linter" ]]; then find packages -type f -name '*.qml' -print0 | xargs -0 -r "$$qml_linter"; else echo 'qmllint not installed; QML validation skipped'; fi
 	@if command -v shellcheck >/dev/null 2>&1; then files="$$(grep -Ilr -E '^#!(/usr/bin/env (ba)?sh|/bin/(ba)?sh)' scripts packages archiso || true)"; if [[ -n "$$files" ]]; then shellcheck -x -e SC1091 $$files; fi; else echo 'shellcheck not installed; skipped'; fi
+	@if command -v desktop-file-validate >/dev/null 2>&1; then find packages -type f -name '*.desktop' -print0 | xargs -0 -r -n1 desktop-file-validate; else echo 'desktop-file-validate not installed; skipped'; fi
 
 check-repos:
 	@bash scripts/check-repository-packages.sh

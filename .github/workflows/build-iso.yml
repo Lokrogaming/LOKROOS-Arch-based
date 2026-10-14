@@ -24,23 +24,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build packages and ISO in Arch Linux
         run: |
           docker run --rm --privileged \
             -v "$PWD:/workspace" \
             -w /workspace \
             archlinux:base-devel \
-            bash -lc 'pacman -Syu --noconfirm --needed archiso git gnupg jq nodejs python-yaml qemu-desktop edk2-ovmf rsync shellcheck sudo qt6-declarative kirigami plasma-workspace && make validate packages && make validate && make iso-offline iso-online checksums && make smoke-bios smoke-uefi'
+            bash -lc 'pacman -Syu --noconfirm --needed archiso desktop-file-utils git gnupg jq nodejs python-yaml qemu-desktop edk2-ovmf rsync shellcheck sudo qt6-declarative kirigami plasma-workspace && make validate packages && make validate && make iso-offline iso-online checksums && make smoke-bios smoke-uefi'
       - name: Enforce ISO size limit
         run: |
           for iso in out/*.iso; do
             size=$(stat -c %s "$iso")
             test "$size" -le 4294967296
           done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: lokro-os-0.1.0-alpha.1
+          name: lokro-os-alpha-build
           path: |
             out/*.iso
             out/SHA256SUMS
@@ -67,10 +67,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
-          name: lokro-os-0.1.0-alpha.1
+          name: lokro-os-alpha-build
           path: release
       - name: Publish alpha prerelease
         env:

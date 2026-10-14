@@ -6,16 +6,37 @@ systemctl disable lokro-live-user.service 2>/dev/null || true
 rm -f /etc/systemd/system/multi-user.target.wants/lokro-live-user.service
 rm -f /etc/systemd/system/lokro-live-user.service
 rm -f /etc/sddm.conf.d/10-lokro-live.conf /etc/sudoers.d/10-liveuser
+rm -f /etc/systemd/system/getty@tty1.service.d/autologin.conf
+rm -f /etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf
 rm -f /usr/local/sbin/lokro-create-live-user
 rm -f /usr/local/sbin/lokro-smoke-ready
 rm -f /etc/xdg/autostart/lokro-smoke-ready.desktop
+rm -f /root/customize_airootfs.sh /root/.automated_script.sh
+rm -f /usr/local/bin/Installation_guide /etc/motd
+rm -f /etc/pacman.d/hooks/uncomment-mirrors.hook
+rm -f /etc/pacman.d/hooks/uncomment_mirrors.hook
+rm -f /etc/mkinitcpio.conf.d/archiso.conf
 userdel --remove liveuser 2>/dev/null || true
+
+# The live image must keep Archiso's generic hooks. Only the installed target
+# receives a normal disk-root initramfs configuration.
+install -d -m 0755 /etc/mkinitcpio.conf.d
+printf '%s\n' \
+    'HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)' \
+    'COMPRESSION="zstd"' \
+    > /etc/mkinitcpio.conf.d/lokro.conf
+chmod 0644 /etc/mkinitcpio.conf.d/lokro.conf
 
 if grep -q '^\[lokro-media\]' /etc/pacman.conf; then
     sed -i '/^# Removed from the installed target by Calamares\.$/,$d' /etc/pacman.conf
 fi
 rm -rf /opt/lokro/repo
 rm -f /var/lib/pacman/sync/lokro-media.db
+
+install -d -m 0755 /etc/lokro
+printf '%s\n' 'LOKRO OS was installed from its embedded Arch root filesystem.' \
+    > /etc/lokro/standalone-installed
+chmod 0644 /etc/lokro/standalone-installed
 
 pacman -Rns --noconfirm calamares-lokro lokro-installer-config 2>/dev/null || true
 systemctl set-default graphical.target

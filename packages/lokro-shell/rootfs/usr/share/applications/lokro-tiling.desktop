@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Window Tiling
+Name[de]=Fensteraufteilung
+Comment=Open help for Plasma and Hyprland tiling
+Comment[de]=Hilfe zur Fensteraufteilung mit Plasma und Hyprland öffnen
+Exec=lokro-action tiling
+Icon=view-split-left-right
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=tiling;windows;split;layout;hyprland;
+Keywords[de]=Kacheln;Fenster;Teilen;Layout;Hyprland;

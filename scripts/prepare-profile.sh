@@ -15,6 +15,7 @@ variant="${1:-offline}"
 
 [[ -d /usr/share/archiso/configs/releng ]] || die 'archiso releng profile is missing'
 [[ -f "${LOCAL_REPO_DIR}/lokro.db.tar.zst" ]] || die 'run make packages first'
+[[ -f /etc/pacman.d/mirrorlist ]] || die 'Arch mirrorlist is missing'
 
 PROFILE_DIR="${BUILD_DIR}/profile-${variant}"
 rm -rf "$PROFILE_DIR"
@@ -83,6 +84,7 @@ pacman --config "$PROFILE_DIR/pacman.conf" --dbpath "$PACKAGE_DB_DIR" \
 
 mkdir -p "$PROFILE_DIR/airootfs/etc/pacman.d"
 cp /etc/pacman.conf "$PROFILE_DIR/airootfs/etc/pacman.conf"
+cp -L /etc/pacman.d/mirrorlist "$PROFILE_DIR/airootfs/etc/pacman.d/mirrorlist"
 enable_multilib "$PROFILE_DIR/airootfs/etc/pacman.conf"
 if [[ "$variant" == offline ]]; then
     mkdir -p "$PROFILE_DIR/airootfs/opt/lokro/repo"
@@ -94,13 +96,15 @@ SigLevel = Optional TrustAll
 Server = file:///opt/lokro/repo
 EOF
 
-    log 'downloading offline NVIDIA and optional gaming packages with dependencies'
+    log 'downloading offline NVIDIA, gaming and optional tiling-session packages with dependencies'
     pacman --config "$PROFILE_DIR/pacman.conf" --dbpath "$PACKAGE_DB_DIR" \
         --logfile /dev/null -Syw --noconfirm \
         --cachedir "$PROFILE_DIR/airootfs/opt/lokro/repo" \
         nvidia-open nvidia-utils lib32-nvidia-utils \
         steam prismlauncher jre8-openjdk jre17-openjdk jre21-openjdk \
         gamemode lib32-gamemode gamescope mangohud lib32-mangohud \
+        hyprland hyprlock waybar wofi kitty wl-clipboard grim slurp \
+        xdg-desktop-portal-hyprland xdg-desktop-portal-gtk \
         vulkan-radeon lib32-vulkan-radeon vulkan-intel lib32-vulkan-intel \
         vulkan-nouveau lib32-vulkan-nouveau
     repo-add "$PROFILE_DIR/airootfs/opt/lokro/repo/lokro-media.db.tar.zst" \

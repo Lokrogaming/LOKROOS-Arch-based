@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Cursor Size
+Name[de]=Zeigergröße
+Comment=Change cursor theme and size
+Comment[de]=Design und Größe des Mauszeigers ändern
+Exec=lokro-action cursor
+Icon=preferences-desktop-cursors
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=cursor;pointer;mouse;size;accessibility;
+Keywords[de]=Cursor;Mauszeiger;Maus;Größe;Barrierefreiheit;

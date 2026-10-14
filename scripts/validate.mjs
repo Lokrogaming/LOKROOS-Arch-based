@@ -9,7 +9,7 @@ const failures = [];
 const required = [
   "VERSION", "Makefile", "CONTRIBUTORS.md", "desktop/README.md", "server/README.md",
   "LOKRO_UPDATE_CHANNEL.json", "schemas/update-channel.schema.json", "docs/UPDATES.md",
-  "docs/RELEASE_STATUS.md", "archiso/packages/common.x86_64",
+  "docs/RELEASE_STATUS.md", "docs/STANDALONE_INSTALL.md", "archiso/packages/common.x86_64",
   "archiso/packages/offline.x86_64", "archiso/packages/online.x86_64",
   "archiso/airootfs/etc/plymouth/plymouthd.conf",
   "vendor/ckbcomp/PKGBUILD",
@@ -17,17 +17,22 @@ const required = [
   "packages/lokro-installer-config/PKGBUILD", "packages/lokro-ai-setup/PKGBUILD",
   "packages/lokro-shell/rootfs/usr/share/plasma/wallpapers/org.lokro.slashes/metadata.json",
   "packages/lokro-shell/rootfs/usr/share/plasma/plasmoids/org.lokro.hub/metadata.json",
+  "packages/lokro-shell/rootfs/usr/share/plasma/plasmoids/org.lokro.search/metadata.json",
   "packages/lokro-shell/rootfs/usr/share/lokro/services.json",
   "packages/lokro-shell/rootfs/usr/share/lokro/services.schema.json",
   "packages/lokro-shell/rootfs/usr/share/lokro/welcome/main.qml",
   "packages/lokro-shell/rootfs/usr/share/lokro/welcome/WelcomeCard.qml",
   "packages/lokro-shell/rootfs/usr/bin/lokro-welcome",
   "packages/lokro-shell/rootfs/usr/bin/lokro-action",
+  "packages/lokro-shell/rootfs/usr/bin/lokro-search",
   "packages/lokro-shell/rootfs/usr/bin/lokro-update",
   "packages/lokro-shell/rootfs/usr/bin/lokro-update-gui",
   "packages/lokro-shell/rootfs/usr/lib/systemd/system/lokro-update.timer",
   "packages/lokro-shell/rootfs/usr/lib/lokro-update/keep-running-kernel",
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-gaming.conf",
+  "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-desktop.conf",
+  "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-browser.conf",
+  "packages/lokro-installer-config/rootfs/etc/calamares/modules/contextualprocess-browser.conf",
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-apps-offline.conf",
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-apps-online.conf",
   "archiso/airootfs/usr/local/sbin/lokro-smoke-ready",
@@ -75,12 +80,13 @@ for (const requiredOffline of ["libreoffice-fresh", "libreoffice-fresh-de"]) {
   if (!packageSets["archiso/packages/offline.x86_64"].includes(requiredOffline)) failures.push(`offline ISO package list is missing ${requiredOffline}`);
 }
 for (const requiredCommon of [
-  "firefox", "firefox-i18n-de", "networkmanager", "iwd", "wireless-regdb",
+  "base", "linux", "firefox", "firefox-i18n-de", "networkmanager", "iwd", "wireless-regdb",
   "bluez", "bluez-utils", "usbutils", "linux-firmware", "sof-firmware",
   "mesa", "vulkan-radeon", "vulkan-intel", "vulkan-nouveau",
   "lib32-mesa", "lib32-vulkan-radeon", "lib32-vulkan-intel", "lib32-vulkan-nouveau",
   "pipewire", "wireplumber", "grub", "efibootmgr", "cryptsetup", "sddm",
-  "pacman-contrib", "partitionmanager", "flatpak", "discover", "systemsettings", "powerdevil"
+  "pacman-contrib", "partitionmanager", "flatpak", "discover", "systemsettings", "powerdevil",
+  "plasma-systemmonitor", "kinfocenter", "os-prober"
 ]) {
   if (!packageSets["archiso/packages/common.x86_64"].includes(requiredCommon)) failures.push(`common ISO package list is missing ${requiredCommon}`);
 }
@@ -90,12 +96,47 @@ for (const gamingPackage of ["steam", "prismlauncher", "jre8-openjdk", "jre17-op
   if (!new RegExp(`(^|\\s)-?\\s*${gamingPackage.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}($|\\s)`, "m").test(gamingChooser)) failures.push(`gaming chooser is missing ${gamingPackage}`);
 }
 
+const desktopChooser = fs.readFileSync(path.join(root, "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-desktop.conf"), "utf8");
+for (const desktopPackage of ["hyprland", "hyprlock", "waybar", "wofi", "xdg-desktop-portal-hyprland"]) {
+  if (!desktopChooser.includes(`- ${desktopPackage}`)) failures.push(`desktop chooser is missing ${desktopPackage}`);
+}
+
+const calamaresSettings = fs.readFileSync(path.join(root, "packages/lokro-installer-config/rootfs/etc/calamares/settings.conf"), "utf8");
+for (const installerStep of ["packagechooser@desktop", "packagechooser@browser", "contextualprocess@browserCleanup"]) {
+  if (!calamaresSettings.includes(installerStep)) failures.push(`Calamares flow is missing ${installerStep}`);
+}
+
+const browserProcess = fs.readFileSync(path.join(root, "packages/lokro-installer-config/rootfs/etc/calamares/modules/contextualprocess-browser.conf"), "utf8");
+if (!browserProcess.includes("pacman -R --noconfirm firefox firefox-i18n-de")) failures.push("browser chooser cannot remove Firefox from the target");
+
+const unpackfs = fs.readFileSync(path.join(root, "packages/lokro-installer-config/rootfs/etc/calamares/modules/unpackfs.conf"), "utf8");
+if (!unpackfs.includes("/run/archiso/bootmnt/arch/x86_64/airootfs.sfs")) failures.push("installer does not unpack the embedded x86_64 Arch root");
+
+const usersConfig = fs.readFileSync(path.join(root, "packages/lokro-installer-config/rootfs/etc/calamares/modules/users.conf"), "utf8");
+for (const adminInvariant of ["sudoersGroup: wheel", "sudoersConfigureWithGroup: true", "setRootPassword: false", "location: EtcFile"]) {
+  if (!usersConfig.includes(adminInvariant)) failures.push(`users config is missing administrator invariant: ${adminInvariant}`);
+}
+
+const grubConfig = fs.readFileSync(path.join(root, "packages/lokro-installer-config/rootfs/etc/calamares/modules/grubcfg.conf"), "utf8");
+if (!grubConfig.includes("GRUB_DISABLE_OS_PROBER: false")) failures.push("GRUB is not configured to discover other operating systems");
+
+const installerCleanup = fs.readFileSync(path.join(root, "packages/lokro-installer-config/rootfs/usr/lib/lokro/installer-cleanup"), "utf8");
+for (const liveArtifact of ["lokro-live-user.service", "10-lokro-live.conf", "getty@tty1.service.d/autologin.conf", "userdel --remove liveuser", "/opt/lokro/repo", "mkinitcpio.conf.d/archiso.conf"]) {
+  if (!installerCleanup.includes(liveArtifact)) failures.push(`installer cleanup does not remove live artifact: ${liveArtifact}`);
+}
+if (!installerCleanup.includes("HOOKS=(base systemd plymouth autodetect")) failures.push("installed target does not receive a disk-root initramfs configuration");
+if (fs.existsSync(path.join(root, "packages/lokro-branding/rootfs/etc/mkinitcpio.conf.d/lokro.conf"))) failures.push("disk-root initramfs config must not be present while building the live Archiso root");
+
 const version = fs.readFileSync(path.join(root, "VERSION"), "utf8").trim();
 if (!/^\d+\.\d+\.\d+-alpha\.\d+$/.test(version)) failures.push(`VERSION is not an alpha SemVer: ${version}`);
 
 const prepareProfile = fs.readFileSync(path.join(root, "scripts/prepare-profile.sh"), "utf8");
 if (!prepareProfile.includes("ln -sfn /etc/systemd/system/lokro-live-user.service")) {
   failures.push("live-user enablement must point to the unit stored under /etc/systemd/system");
+}
+if (!prepareProfile.includes('cp -L /etc/pacman.d/mirrorlist')) failures.push("embedded Arch root does not receive a pacman mirrorlist");
+for (const offlineExtra of ["hyprland", "hyprlock", "waybar", "wofi", "xdg-desktop-portal-hyprland"]) {
+  if (!prepareProfile.includes(offlineExtra)) failures.push(`offline repository preparation is missing ${offlineExtra}`);
 }
 const mergeService = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/lib/systemd/system/lokro-services-merge.service"), "utf8");
 if (!/\[Install\][\s\S]*WantedBy=multi-user\.target/.test(mergeService)) {

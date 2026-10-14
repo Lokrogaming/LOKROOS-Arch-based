@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -euo pipefail
-stamp="${XDG_CONFIG_HOME:-$HOME/.config}/lokro/first-login-v1"
+stamp="${XDG_CONFIG_HOME:-$HOME/.config}/lokro/first-login-v2"
 [[ -e "$stamp" ]] && exit 0
 mkdir -p "$(dirname "$stamp")"
 
@@ -12,7 +12,7 @@ if command -v xdg-mime >/dev/null 2>&1; then
     xdg-mime default lokro-action-handler.desktop x-scheme-handler/lokro-action >/dev/null 2>&1 || true
 fi
 
-script='var ds = desktops(); for (var i = 0; i < ds.length; i++) { ds[i].wallpaperPlugin = "org.lokro.slashes"; ds[i].currentConfigGroup = ["Wallpaper", "org.lokro.slashes", "General"]; ds[i].writeConfig("accentColor", "#f4f4f5"); if (i === 0) { var w = ds[i].addWidget("org.lokro.hub"); w.geometry = "40,40,360,320"; var m = ds[i].addWidget("org.kde.plasma.systemmonitor.memory"); m.geometry = "420,40,300,180"; } }'
+script='var ds = desktops(); for (var i = 0; i < ds.length; i++) { ds[i].wallpaperPlugin = "org.lokro.slashes"; ds[i].currentConfigGroup = ["Wallpaper", "org.lokro.slashes", "General"]; ds[i].writeConfig("accentColor", "#f4f4f5"); if (i === 0) { var w = ds[i].addWidget("org.lokro.hub"); w.geometry = "40,40,360,320"; var m = ds[i].addWidget("org.kde.plasma.systemmonitor.memory"); m.geometry = "420,40,300,180"; } } var ps = panels(); if (ps.length > 0) { ps[0].addWidget("org.lokro.search"); }'
 if command -v qdbus6 >/dev/null 2>&1; then
     qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$script" >/dev/null 2>&1 || true
 fi
