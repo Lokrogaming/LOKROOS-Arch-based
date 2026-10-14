@@ -38,11 +38,6 @@ cp "${PROJECT_ROOT}/packages/lokro-installer-config/rootfs/etc/calamares/modules
     "$PROFILE_DIR/airootfs/etc/calamares/modules/packages.conf"
 cp "${PROJECT_ROOT}/packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-apps-${variant}.conf" \
     "$PROFILE_DIR/airootfs/etc/calamares/modules/packagechooser-apps.conf"
-if [[ "$variant" == online ]]; then
-    cp "${PROJECT_ROOT}/packages/lokro-installer-config/rootfs/etc/calamares/modules/welcome-online.conf" \
-        "$PROFILE_DIR/airootfs/etc/calamares/modules/welcome.conf"
-fi
-
 sed -i \
     -e "s/^iso_name=.*/iso_name=\"lokro-os-${variant}\"/" \
     -e "s/^iso_version=.*/iso_version=\"${VERSION}\"/" \

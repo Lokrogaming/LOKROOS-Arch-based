@@ -1,6 +1,6 @@
 # Update design
 
-LOKRO OS uses official Arch repositories for the base system and the pinned GitHub repository `jamjam1312/LOKROS-Arch-based` for LOKRO-specific release metadata and package archives.
+LOKRO OS uses official Arch repositories for the base system and the pinned GitHub repository `jamjam1312/LOKROOS-Arch-based` for LOKRO-specific release metadata and package archives.
 
 ## Safe default
 

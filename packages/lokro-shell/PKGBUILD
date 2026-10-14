@@ -4,7 +4,7 @@ pkgver=0.1.0
 pkgrel=4
 pkgdesc='Lokro OS Plasma wallpaper, Hub widget and service manifest support'
 arch=('any')
-url='https://github.com/jamjam1312/LOKROS-Arch-based'
+url='https://github.com/jamjam1312/LOKROOS-Arch-based'
 license=('GPL-3.0-or-later' 'CC-BY-SA-4.0')
 depends=('plasma-workspace' 'python' 'flatpak' 'qt6-declarative' 'kirigami' 'xdg-utils'
          'curl' 'pacman-contrib' 'rsync' 'libarchive' 'kdialog' 'konsole' 'polkit')
