@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+if [[ "${XDG_CURRENT_DESKTOP:-}" == *Hyprland* ]] && command -v wofi >/dev/null 2>&1; then
+    exec wofi --show drun --allow-images
+fi
+exec krunner

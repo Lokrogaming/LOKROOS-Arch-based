@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Shut Down
+Name[de]=Herunterfahren
+Comment=Power off this computer
+Comment[de]=Diesen Computer ausschalten
+Exec=lokro-action shutdown
+Icon=system-shutdown
+Terminal=false
+Categories=System;
+Keywords=shutdown;poweroff;turn off;
+Keywords[de]=Herunterfahren;Ausschalten;Shutdown;

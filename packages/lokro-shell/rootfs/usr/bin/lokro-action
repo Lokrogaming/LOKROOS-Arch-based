@@ -11,12 +11,23 @@ launch() {
 }
 
 case "$action" in
+    search)
+        if [[ "${XDG_CURRENT_DESKTOP:-}" == *Hyprland* ]] && command -v wofi >/dev/null 2>&1; then
+            launch wofi --show drun --allow-images
+        else
+            launch krunner
+        fi
+        ;;
+    taskmanager) launch plasma-systemmonitor ;;
+    files) launch dolphin ;;
+    terminal) launch konsole ;;
     settings) launch systemsettings ;;
     users) launch systemsettings kcm_users ;;
     appearance) launch systemsettings kcm_lookandfeel ;;
     network) launch systemsettings kcm_networkmanagement ;;
     bluetooth) launch systemsettings kcm_bluetooth ;;
     input) launch systemsettings kcm_keyboard ;;
+    cursor) launch systemsettings kcm_cursortheme ;;
     shortcuts) launch systemsettings kcm_keys ;;
     power) launch systemsettings kcm_powerdevilprofilesconfig ;;
     widgets)
@@ -26,6 +37,10 @@ case "$action" in
     discover) launch plasma-discover ;;
     updates) launch lokro-update-gui ;;
     partitions) launch partitionmanager ;;
+    tiling)
+        launch kdialog --title "LOKRO Fensteraufteilung" --msgbox \
+            "Plasma: Drücke Meta+T, um den KWin-Kachel-Editor zu öffnen. Ziehe danach ein Fenster mit gedrückter Umschalttaste in eine Zone. Die optionale Hyprland-Sitzung kann beim Anmelden ausgewählt werden."
+        ;;
     installer) launch pkexec calamares -d ;;
     steam)
         if command -v steam >/dev/null 2>&1; then launch steam; else launch plasma-discover; fi
@@ -35,5 +50,15 @@ case "$action" in
         ;;
     theme-dark) plasma-apply-colorscheme LokroDark >/dev/null ;;
     theme-light) plasma-apply-colorscheme BreezeLight >/dev/null ;;
+    lock)
+        if [[ "${XDG_CURRENT_DESKTOP:-}" == *Hyprland* ]] && command -v hyprlock >/dev/null 2>&1; then
+            launch hyprlock
+        else
+            loginctl lock-session
+        fi
+        ;;
+    suspend) systemctl suspend ;;
+    reboot) systemctl reboot ;;
+    shutdown) systemctl poweroff ;;
     *) exit 2 ;;
 esac

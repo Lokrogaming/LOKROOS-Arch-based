@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=LOKRO Task Manager
+Name[de]=LOKRO-Taskmanager
+Comment=Inspect and control processes, CPU, memory, storage and network usage
+Comment[de]=Prozesse, CPU, RAM, Speicher- und Netzwerkauslastung anzeigen und steuern
+Exec=plasma-systemmonitor
+Icon=utilities-system-monitor
+Terminal=false
+Categories=System;Monitor;
+Keywords=task;manager;process;cpu;ram;memory;gpu;network;performance;
+Keywords[de]=Taskmanager;Prozess;CPU;RAM;Arbeitsspeicher;GPU;Netzwerk;Leistung;

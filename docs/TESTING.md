@@ -17,7 +17,9 @@ make smoke-uefi
 
 The smoke targets run QEMU without a visible display and succeed only when a Plasma autostart helper writes `LOKRO_PLASMA_READY` to the emulated serial port. The GitHub ISO workflow executes both BIOS and UEFI smoke boots after building the images.
 
-For each mode and image variant, verify the live session reaches Plasma, the welcome center opens, networking works, `lokro-services-merge` produces valid JSON, Dolphin finds a newly-created file after Baloo indexing, and Calamares installs to an empty 32 GiB virtual disk. Test minimal/complete and gaming selections, both an unencrypted installation and the optional encrypted layout. Remove the ISO and boot the installed disk to confirm GRUB, SDDM, NetworkManager, PipeWire, Bluetooth and Flatpak initialization.
+For each mode and image variant, verify the live session reaches Plasma, the welcome center opens, networking works, `lokro-services-merge` produces valid JSON, Dolphin finds a newly-created file after Baloo indexing, and Calamares installs to an empty 32 GiB virtual disk. Test Plasma and optional Hyprland, Firefox and no-browser, minimal/complete and gaming selections, both an unencrypted installation and the optional encrypted layout. Remove the ISO and boot the installed disk to confirm GRUB, SDDM, NetworkManager, PipeWire, Bluetooth and Flatpak initialization.
+
+In Plasma, verify that the panel search button opens KRunner, localized shutdown/restart/update launchers appear as search results, `Ctrl+Esc` and the LOKRO Task Manager show processes and resource sensors, cursor size changes persist, and `Meta+T` opens KWin's tiling editor. For Hyprland, select the session in SDDM and verify Waybar, Wofi, `Meta+Arrow`, `Meta+L`, portals and screenshots.
 
 ## Hardware matrix before an alpha release
 

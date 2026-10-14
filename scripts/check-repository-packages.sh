@@ -12,7 +12,9 @@ mapfile -t candidates < <(
     printf '%s\n' \
         nvidia-open nvidia-utils lib32-nvidia-utils opencode \
         steam prismlauncher jre8-openjdk jre17-openjdk jre21-openjdk \
-        gamemode lib32-gamemode gamescope mangohud lib32-mangohud
+        gamemode lib32-gamemode gamescope mangohud lib32-mangohud \
+        hyprland hyprlock waybar wofi kitty wl-clipboard grim slurp \
+        xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
 )
 
 official=()

@@ -1,4 +1,5 @@
 # Lokro OS desktop and installer additions to the official releng profile.
+base
 baloo
 bluedevil
 bluez
@@ -8,6 +9,7 @@ alsa-utils
 alsa-firmware
 bolt
 breeze
+breeze-cursors
 breeze-gtk
 calamares-lokro
 ckbcomp
@@ -28,6 +30,7 @@ iwd
 kate
 kde-gtk-config
 kde-cli-tools
+kinfocenter
 konsole
 kscreen
 lib32-mesa
@@ -35,8 +38,9 @@ lib32-vulkan-intel
 lib32-vulkan-nouveau
 lib32-vulkan-radeon
 libva-mesa-driver
-linux-firmware
 libinput
+linux
+linux-firmware
 lokro-ai-setup
 lokro-branding
 lokro-installer-config
@@ -57,6 +61,7 @@ pciutils
 plasma-desktop
 plasma-nm
 plasma-pa
+plasma-systemmonitor
 plymouth
 polkit-kde-agent
 power-profiles-daemon
@@ -80,3 +85,4 @@ xorg-xwayland
 xdg-desktop-portal-kde
 zram-generator
 ntfs-3g
+os-prober

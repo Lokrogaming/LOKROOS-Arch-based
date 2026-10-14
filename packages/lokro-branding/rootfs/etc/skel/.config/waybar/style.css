@@ -1,0 +1,40 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "Noto Sans";
+  font-size: 12px;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(7, 7, 8, 0.94);
+  color: #f4f4f5;
+  border-bottom: 1px solid #323238;
+}
+
+#workspaces button,
+#custom-search,
+#window,
+#clock,
+#pulseaudio,
+#network,
+#memory,
+#cpu,
+#tray,
+#custom-power {
+  margin: 4px 2px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: #151518;
+}
+
+#workspaces button.active,
+#custom-search:hover,
+#custom-power:hover {
+  background: #f4f4f5;
+  color: #09090b;
+}
+
+#network.disconnected {
+  color: #fca5a5;
+}

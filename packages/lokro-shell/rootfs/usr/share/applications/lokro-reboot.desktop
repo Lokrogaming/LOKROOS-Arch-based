@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Restart
+Name[de]=Neustarten
+Comment=Restart this computer
+Comment[de]=Diesen Computer neu starten
+Exec=lokro-action reboot
+Icon=system-reboot
+Terminal=false
+Categories=System;
+Keywords=reboot;restart;
+Keywords[de]=Neustart;Neustarten;Reboot;

@@ -52,6 +52,18 @@
       "usage": "optional signed Arch package"
     },
     {
+      "name": "Hyprland",
+      "source": "https://archlinux.org/packages/extra/x86_64/hyprland/",
+      "license": "BSD-3-Clause",
+      "usage": "optional signed Arch package providing a secondary dynamic-tiling Wayland session"
+    },
+    {
+      "name": "Waybar",
+      "source": "https://archlinux.org/packages/extra/x86_64/waybar/",
+      "license": "MIT",
+      "usage": "optional signed Arch package used by the Hyprland session"
+    },
+    {
       "name": "Flathub repository descriptor",
       "source": "https://dl.flathub.org/repo/flathub.flatpakrepo",
       "sha256": "3371dd250e61d9e1633630073fefda153cd4426f72f4afa0c3373ae2e8fea03a",

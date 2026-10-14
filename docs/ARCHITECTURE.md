@@ -5,16 +5,17 @@
 1. `scripts/build-packages.sh` builds a checksum-pinned Calamares source release and the four Lokro packages with `makepkg`.
 2. `repo-add` creates an ephemeral local repository under `out/repo`.
 3. `scripts/prepare-profile.sh` builds either the `offline` or `online` profile from shared and variant-specific manifests.
-4. The offline profile stores zstd-compressed, signed NVIDIA packages under `/opt/lokro/repo`. The online profile resolves them from Arch mirrors only when selected.
-5. `mkarchiso` produces distinct hybrid BIOS/UEFI images. Calamares copies the SquashFS root, optionally installs the online application bundle, and removes live-only state before generating initramfs and GRUB configuration.
+4. The offline profile stores zstd-compressed, signed NVIDIA, gaming and optional Hyprland-session packages under `/opt/lokro/repo`. The online profile resolves them from Arch mirrors only when selected.
+5. `mkarchiso` constructs a complete custom Arch root containing `base`, the Arch kernel, firmware and Plasma, then produces distinct hybrid BIOS/UEFI images.
+6. Calamares copies that custom SquashFS root, optionally installs selected packages, creates the local administrator, and removes live-only state before generating initramfs and GRUB configuration.
 
 The profile copy is deliberate: Archiso's boot files evolve with Arch. Lokro owns only its overlay and package list while inheriting the boot implementation matching the installed Archiso version.
 
 ## Runtime components
 
 - `lokro-branding`: color scheme, static background, Plymouth theme, KDE defaults and one-time Plasma setup.
-- `lokro-shell`: interactive wallpaper, Lokro Hub widget, service-manifest merger and Flathub setup.
-- `lokro-installer-config`: Calamares flow, branding, optional LUKS1 encryption, ext4/GPT defaults and NVIDIA choice.
+- `lokro-shell`: interactive wallpaper, Lokro Hub and search widgets, system-action launchers, update client, service-manifest merger and Flathub setup.
+- `lokro-installer-config`: Calamares flow, branding, administrator and hostname setup, optional LUKS1 encryption, ext4/GPT defaults, desktop-session and NVIDIA choices.
 - `lokro-ai-setup`: optional Ollama downloader with pinned checksums plus official-Arch OpenCode installation.
 
 System packages are updated only with Pacman. Discover is intended for Flatpaks. No AUR helper is part of the image.

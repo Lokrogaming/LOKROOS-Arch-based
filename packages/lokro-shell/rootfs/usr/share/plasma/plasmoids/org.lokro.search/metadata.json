@@ -1,0 +1,15 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Authors": [{"Name": "Lokro OS contributors"}],
+    "Category": "Application Launchers",
+    "Description": "Open KRunner to search apps, files, settings and commands",
+    "EnabledByDefault": true,
+    "Icon": "system-search",
+    "Id": "org.lokro.search",
+    "License": "GPL-3.0-or-later",
+    "Name": "LOKRO Search",
+    "Version": "0.1.0"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0"
+}

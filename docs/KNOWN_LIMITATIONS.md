@@ -1,10 +1,13 @@
-# Known limitations — 0.1.0-alpha.1
+# Known limitations — 0.1.0-alpha.2
 
 - This is an alpha for test machines. Secure Boot and guaranteed dual-boot are not supported.
 - LUKS1 encryption is available but remains experimental until BIOS and UEFI installs have completed the full reboot test. LUKS2/Argon2 is intentionally deferred because stock GRUB compatibility needs more integration work.
 - The automatic Calamares layout erases the selected disk. The default partition choice is intentionally empty so the user must choose explicitly.
 - NVIDIA's packaged open kernel module supports Turing / GTX 16 / RTX 20 and newer. Older NVIDIA hardware stays on Nouveau; no legacy AUR driver is installed.
 - Plasma is Wayland-only. X11 applications run through XWayland, but there is no Plasma X11 login session.
+- Hyprland is an optional secondary Wayland session, not a second full LOKRO desktop. Plasma remains the supported default and some KDE settings only affect Plasma.
+- KRunner and Baloo approximate Everything-style search, but Linux permission boundaries still apply and filename results become complete only after initial indexing.
+- GRUB runs `os-prober` for discoverable systems, but encrypted Windows volumes, BitLocker, Fast Startup and mismatched BIOS/UEFI modes can prevent detection. Dual boot remains an alpha feature.
 - The LOKRO Hub contains only the Twitch-confirmed public Twitch, TikTok and Discord destinations. It has no SSO, account integration, private API or verified standalone website yet.
 - Ollama support is an optional large download. AMD ROCm compatibility depends on the exact GPU; CPU fallback is always available but can be slow.
 - LOKRO packages are delivered as checksummed GitHub Release archives. They do not yet have a dedicated offline signing key, so unattended LOKRO package installation stays disabled by default. Arch packages continue to use signed official mirrors.
