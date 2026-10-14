@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build packages and ISO in Arch Linux
         run: |
           docker run --rm --privileged \
@@ -38,7 +38,7 @@ jobs:
             size=$(stat -c %s "$iso")
             test "$size" -le 4294967296
           done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: lokro-os-alpha-build
           path: |
@@ -67,8 +67,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: lokro-os-alpha-build
           path: release
