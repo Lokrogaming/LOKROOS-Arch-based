@@ -1,4 +1,4 @@
-# LOKRO OS 0.1.0-alpha.3 release status
+# LOKRO OS 0.1.0-alpha.4 release status
 
 This file separates implemented source from tested release claims. An item being configured does not prove that it works on every physical computer.
 
