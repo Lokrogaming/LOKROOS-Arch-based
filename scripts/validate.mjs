@@ -141,6 +141,10 @@ if (/airootfs\/etc\/calamares\/modules\/welcome\.conf/.test(prepareProfile)) {
 for (const offlineExtra of ["hyprland", "hyprlock", "waybar", "wofi", "xdg-desktop-portal-hyprland"]) {
   if (!prepareProfile.includes(offlineExtra)) failures.push(`offline repository preparation is missing ${offlineExtra}`);
 }
+const liveUserScript = fs.readFileSync(path.join(root, "archiso/airootfs/usr/local/sbin/lokro-create-live-user"), "utf8");
+if (!/--groups\s+[^\n]*\buucp\b/.test(liveUserScript)) {
+  failures.push("live user must be allowed to emit the QEMU readiness marker through Arch serial devices");
+}
 const mergeService = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/lib/systemd/system/lokro-services-merge.service"), "utf8");
 if (!/\[Install\][\s\S]*WantedBy=multi-user\.target/.test(mergeService)) {
   failures.push("lokro-services-merge.service must be enableable by Calamares");
