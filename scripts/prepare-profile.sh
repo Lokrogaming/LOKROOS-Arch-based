@@ -126,7 +126,7 @@ EOF
     done < "${OUT_DIR}/resolved-packages-${variant}.txt"
     shopt -s nullglob
     for cached_package in "$PROFILE_DIR/airootfs/opt/lokro/repo"/*.pkg.tar.zst; do
-        cached_name="$(pacman -Qp --print-format '%n' "$cached_package")"
+        cached_name="$(pacman -Qp "$cached_package" | awk 'NR == 1 { print $1 }')"
         if [[ -n "${embedded_packages[$cached_name]+present}" ]]; then
             rm -f "$cached_package" "${cached_package}.sig"
         fi
