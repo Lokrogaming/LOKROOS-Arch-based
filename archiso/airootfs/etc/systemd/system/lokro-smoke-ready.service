@@ -7,7 +7,7 @@ Wants=sddm.service
 [Service]
 Type=oneshot
 ExecStart=/usr/local/sbin/lokro-smoke-ready
-TimeoutStartSec=330
+TimeoutStartSec=630
 
 [Install]
 WantedBy=graphical.target

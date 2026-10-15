@@ -163,6 +163,10 @@ const smokeScript = fs.readFileSync(path.join(root, "archiso/airootfs/usr/local/
 for (const invariant of ["pgrep -u liveuser -x plasmashell", "LOKRO_SMOKE_WATCHER_STARTED", "LOKRO_PLASMA_READY", "LOKRO_SMOKE_FAILED"]) {
   if (!smokeScript.includes(invariant)) failures.push(`smoke watcher is missing invariant: ${invariant}`);
 }
+const smokeBoot = fs.readFileSync(path.join(root, "scripts/smoke-boot.sh"), "utf8");
+for (const bootInvariant of ["-c /dev/kvm", "acceleration='kvm'", "tcg,thread=multi", "timeout 900s", "attempt < 900"]) {
+  if (!smokeBoot.includes(bootInvariant)) failures.push(`VM smoke boot is missing acceleration/timeout invariant: ${bootInvariant}`);
+}
 for (const smokeArtifact of ["lokro-smoke-ready.service", "/usr/local/sbin/lokro-smoke-ready"]) {
   if (!installerCleanup.includes(smokeArtifact)) failures.push(`installer cleanup does not remove smoke artifact: ${smokeArtifact}`);
 }

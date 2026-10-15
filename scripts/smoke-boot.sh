@@ -15,8 +15,13 @@ iso="$(find "$OUT_DIR" -maxdepth 1 -type f -name "lokro-os-${variant}-*.iso" -pr
 
 tmp_dir="$(mktemp -d "${BUILD_DIR}/smoke-${firmware}-XXXXXX")"
 serial_log="$tmp_dir/serial.log"
+acceleration='tcg,thread=multi'
+if [[ -c /dev/kvm && -r /dev/kvm && -w /dev/kvm ]]; then
+    acceleration='kvm'
+fi
 qemu_args=(
-    -machine "q35,accel=tcg"
+    -machine q35
+    -accel "$acceleration"
     -m 4096
     -smp 2
     -device virtio-vga
@@ -44,12 +49,12 @@ if [[ "$firmware" == uefi ]]; then
     )
 fi
 
-log "waiting for Plasma startup marker (${firmware}, ${variant})"
-timeout 360s qemu-system-x86_64 "${qemu_args[@]}" &
+log "waiting for Plasma startup marker (${firmware}, ${variant}, acceleration=${acceleration})"
+timeout 900s qemu-system-x86_64 "${qemu_args[@]}" &
 qemu_pid=$!
 trap 'kill "$qemu_pid" 2>/dev/null || true; wait "$qemu_pid" 2>/dev/null || true' EXIT
 
-for ((attempt = 0; attempt < 360; attempt++)); do
+for ((attempt = 0; attempt < 900; attempt++)); do
     if [[ -f "$serial_log" ]] && grep -q 'LOKRO_PLASMA_READY' "$serial_log"; then
         log "Plasma live session reached for ${firmware}"
         exit 0
