@@ -15,7 +15,14 @@ bsdtar -C "$LOCAL_REPO_DIR" -caf "$repo_archive" .
 cp "${PROJECT_ROOT}/LOKRO_UPDATE_CHANNEL.json" "$OUT_DIR/LOKRO_UPDATE_CHANNEL.json"
 mapfile -d '' -t iso_files < <(find "$OUT_DIR" -maxdepth 1 -type f -name '*.iso' -print0 | sort -z)
 (( ${#iso_files[@]} > 0 )) || die 'no ISO found in out/'
-sha256sum "${iso_files[@]}" "$repo_archive" > "$OUT_DIR/SHA256SUMS"
+(
+    cd "$OUT_DIR"
+    iso_basenames=()
+    for iso in "${iso_files[@]}"; do
+        iso_basenames+=("$(basename "$iso")")
+    done
+    sha256sum "${iso_basenames[@]}" "$(basename "$repo_archive")"
+) > "$OUT_DIR/SHA256SUMS"
 rm -f "$OUT_DIR"/*.iso.[0-9][0-9][0-9]
 for iso in "${iso_files[@]}"; do
     split --bytes=1900M --numeric-suffixes=1 --suffix-length=3 "$iso" "${iso}."
