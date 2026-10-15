@@ -114,8 +114,28 @@ EOF
         xdg-desktop-portal-hyprland xdg-desktop-portal-gtk \
         vulkan-radeon lib32-vulkan-radeon vulkan-intel lib32-vulkan-intel \
         vulkan-nouveau lib32-vulkan-nouveau
+
+    # pacman resolves the optional bundle against a clean database, so its
+    # cache also contains dependencies that are already installed in the live
+    # root. Keeping those archives would duplicate identical package payloads
+    # inside the SquashFS. The installed target satisfies these dependencies;
+    # retain only packages that are not part of the embedded base transaction.
+    declare -A embedded_packages=()
+    while read -r embedded_name _; do
+        [[ -n "$embedded_name" ]] && embedded_packages["$embedded_name"]=1
+    done < "${OUT_DIR}/resolved-packages-${variant}.txt"
+    shopt -s nullglob
+    for cached_package in "$PROFILE_DIR/airootfs/opt/lokro/repo"/*.pkg.tar.zst; do
+        cached_name="$(pacman -Qp --print-format '%n' "$cached_package")"
+        if [[ -n "${embedded_packages[$cached_name]+present}" ]]; then
+            rm -f "$cached_package" "${cached_package}.sig"
+        fi
+    done
+    offline_packages=("$PROFILE_DIR/airootfs/opt/lokro/repo"/*.pkg.tar.zst)
+    shopt -u nullglob
+    (( ${#offline_packages[@]} > 0 )) || die 'offline optional-package repository is empty'
     repo-add "$PROFILE_DIR/airootfs/opt/lokro/repo/lokro-media.db.tar.zst" \
-        "$PROFILE_DIR/airootfs/opt/lokro/repo"/*.pkg.tar.zst
+        "${offline_packages[@]}"
     mkdir -p "$PROFILE_DIR/airootfs/var/lib/pacman/sync"
     cp "$PROFILE_DIR/airootfs/opt/lokro/repo/lokro-media.db.tar.zst" \
         "$PROFILE_DIR/airootfs/var/lib/pacman/sync/lokro-media.db"

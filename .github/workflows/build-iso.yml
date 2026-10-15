@@ -38,6 +38,7 @@ jobs:
         run: |
           for iso in out/*.iso; do
             size=$(stat -c %s "$iso")
+            printf '%s: %s bytes\n' "$iso" "$size"
             test "$size" -le 4294967296
           done
       - name: Smoke boot BIOS and UEFI
