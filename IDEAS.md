@@ -1,0 +1,293 @@
+# IDEAS.md — Technische Roadmap LokroOS (prüfbares Projektmanagement)
+
+> Stand: 2026-10-15, Version `0.1.0-alpha.11`. Statuswerte sind verbindlich:
+> `IDEA / PLANNED / IN_PROGRESS / PARTIAL / BLOCKED / IMPLEMENTED / TESTED / COMPLETED / DEPRECATED / CANCELLED`.
+> Code vorhanden ≠ fertig. Statuswechsel nur mit Nachweis (Log, Test, Hardware-Protokoll).
+> Quelle dieser Struktur: Master-Prompt vom 2026-10-15 (Volltext im Anhang).
+
+## Statusübersicht (ehrlich, Stand heute)
+
+| # | Feature | Status | Nachweis / Bemerkung |
+|---|---|---|---|
+| F01 | Arch-Basis x86_64 (Kernel, Firmware) | IMPLEMENTED | Quelle vorhanden; HW-Matrix offen |
+| F02 | Build-System + ISO offline/online | IMPLEMENTED | alpha.9 beide ISOs gebaut (3,67/2,65 GiB) |
+| F03 | BIOS-Plasma-Smoke | TESTED | alpha.10: Plasma nach 32 s (BIOS) |
+| F04 | UEFI-Plasma-Smoke | BLOCKED | alpha.10: systemd-boot ohne Linux-Eintrag; alpha.11-Fix ungeprüft → siehe KI-001 |
+| F05 | Calamares-Installation (unpackfs, cleanup) | IMPLEMENTED | Config vorhanden; VM-Installationsnachweis offen |
+| F06 | GRUB BIOS+UEFI + os-prober | IMPLEMENTED | Dual-Boot bleibt best-effort/alpha |
+| F07 | Plymouth-Theme lokro | IMPLEMENTED | minimal (Logo+Puls), kein Fortschritt |
+| F08 | SDDM Live-Autologin | IMPLEMENTED | Teil von BIOS-Smoke |
+| F09 | Plasma 6 Wayland + XWayland | IMPLEMENTED | BIOS-Smoke ok; kein Plasma-X11-Login (gewollt) |
+| F10 | Hyprland-Sitzung (optional) | IMPLEMENTED | Pakete+Chooser vorhanden; Sitzungstest offen |
+| F11 | Netzwerk/Bluetooth/USB | IMPLEMENTED | Pakete+Dienste vorhanden; HW-Tests offen |
+| F12 | PipeWire-Audio | IMPLEMENTED | HW-Test offen |
+| F13 | ZRAM/oomd/power-profiles/fstrim | IMPLEMENTED | Config vorhanden; Lasttest offen |
+| F14 | Firefox + Deutsch | IMPLEMENTED | im ISO; Browser-Abwahl via contextualprocess |
+| F15 | LibreOffice offline | IMPLEMENTED | nur offline-Variante |
+| F16 | Flatpak/Flathub/Discover | PARTIAL | Deskriptor-Download beim Build fragil → KI-002 |
+| F17 | Link-Installer (HTTPS-only) | IMPLEMENTED | validate.mjs-Safety-Invariants bestehen |
+| F18 | LOKRO Media (VLC) | IMPLEMENTED | Assoc. audio/mpeg, video/mp4|matroska geprüft |
+| F19 | Update-System (5h-Timer, Backup, Kernel-Retention) | IMPLEMENTED | Unit-Tests ok; E2E-Update-Test offen |
+| F20 | Task-Manager/Suche/Hub/Welcome (QML) | IMPLEMENTED | qmllint nur in Arch-CI |
+| F21 | Gaming-Bundle (Steam/PrismLauncher/Java/GameMode/…) | PARTIAL | Offline-Dedup vorhanden; kein HW-Test |
+| F22 | NVIDIA-open (Turing+) | PARTIAL | Paketpfad vorhanden; kein HW-Test; Alt-HW → Nouveau |
+| F23 | Update-Kanal-Pinning | IMPLEMENTED | byte-identisch, unattended=false, Unit-Tests ok |
+| F24 | Manifeste/Lizenzen/Provenienz/Split | IMPLEMENTED | `checksums.sh`; dbpath-Verdacht → KI-003 |
+| F25 | Lokaler KI-Assistent (Chat) | IDEA | **nur Konzept** (Kap. 9); nicht implementieren |
+| F25b | OpenClaw-artige Systemsteuerung (Benchmark, Claw-Hook, Permissions, BYOK) | IDEA | **nur Konzept** (Kap. 9.9); kein Code; Modelle nie im ISO |
+| F26 | Ollama-Setup (Downloader, gepinnt) | IMPLEMENTED | nur Downloader; kein Modell im ISO |
+| F27 | Server-Edition | CANCELLED | `server/` Platzhalter, nicht Teil v0.1 |
+| F28 | ARM-Port | IDEA | separates Zukunftsprojekt |
+| F29 | Secure Boot | IDEA | nicht unterstützt |
+
+## Feature-Steckbriefe (kompakt, alle Pflichtfelder)
+
+### F02 Build-System und ISO-Erstellung — IMPLEMENTED (UEFI-Teil BLOCKED)
+- **Ziel:** Reproduzierbare offline-/online-ISOs aus releng + lokro-Overlay.
+- **Stand:** vorhanden (`build-packages.sh`, `prepare-profile.sh`, `build-iso.sh`, `checksums.sh`); alpha.9 beide ISOs gebaut.
+- **Plan:** 1) Flathub-Pin härten 2) profiledef-Verifikation 3) Größen-Warnschwelle 4) BIOS+UEFI-Smoke bestehen.
+- **Anforderungen:** Arch-Container, root, 20 GiB, archiso, edk2-ovmf, qemu.
+- **Ressourcen:** mehrere GiB Cache, lange Build-Zeit (zstd-15).
+- **Abhängigkeiten:** F01, F23. **Sicherheit:** keine AUR-Helper/curl-pipe; `[lokro]` TrustAll nur lokal (offen: Signatur).
+- **Akzeptanz:** beide ISOs ≤4 GiB, BIOS+UEFI `LOKRO_PLASMA_READY`, Manifeste vollständig.
+- **Offen:** UEFI-Smoke nach alpha.11-Fix; GRUB-`linux`-Zeile ohne Serial-Logs.
+- **Priorität:** kritisch. **Nächster Schritt:** `make iso-offline && make smoke-bios smoke-uefi` auf Arch, Logs sichern.
+- **Links:** `scripts/*`, `.github/workflows/build-iso.yml`, `docs/ISO_BUILD_ANALYSE_2026-10-15.md`, KI-001–KI-006.
+
+### F04/F05 Installation und Recovery — IMPLEMENTED
+- **Ziel:** Calamares kopiert eingebettetes SquashFS, richtet User/GRUB/initramfs ein, entfernt Live-Artefakte.
+- **Stand:** `settings.conf`-Flow, Chooser (desktop/apps/browser/graphics/gaming), `installer-cleanup` vorhanden.
+- **Plan:** Calamares-Schema-Validierung einführen; `welcome-online.conf` tatsächlich verkabeln; VM-Install testen (leer, verschlüsselt, alongside mit Backup).
+- **Anforderungen:** calamares-lokro 3.3.14/Qt6, grub, efibootmgr, os-prober.
+- **Akzeptanz:** Leere-VM-Install bootet ohne ISO; `installer-cleanup`-Artefakte weg; disk-root-HOOKS gesetzt.
+- **Offen:** `packagechooser-browser.conf` nutzt `method: legacy` (Kompatibilität mit 3.3.14 verifizieren).
+- **Priorität:** hoch. **Nächster Schritt:** Calamares-Modul-Schema gegen installierte 3.3.14 prüfen.
+
+### F06 Bootprozess (GRUB/systemd-boot/syslinux, Plymouth) — IMPLEMENTED
+- **Ziel:** BIOS+UEFI booten, Diagnose über seriell, schlichte Animation.
+- **Stand:** GRUB für Zielsystem; Live-Serial nur auf `APPEND`/`options` (alpha.11); Plymouth minimal.
+- **Akzeptanz:** Beide Firmwares erreichen SDDM; serielle Logs enthalten Kernel-/systemd-Fortschritt.
+- **Offen:** GRUB-`linux`-Zeile ohne Serial (Diagnose-Lücke). **Priorität:** hoch.
+
+### F09/F10 Desktop und System-Shell — IMPLEMENTED
+- **Ziel:** Plasma-Standard + optionale Hyprland-Sitzung, konsistentes LOKRO-Gefühl.
+- **Stand:** Pakete, Chooser, SDDM-Session-Auswahl vorhanden.
+- **Akzeptanz (TESTING.md):** KRunner/Wofi, Task-Manager, Cursor-Persistenz, Meta+T, Waybar/portals/screenshots.
+- **Priorität:** mittel. **Nächster Schritt:** interaktive VM-Checks protokollieren.
+
+### F11/F12 Netzwerk, Audio, Bluetooth, Hardware — IMPLEMENTED (Tests offen)
+- Pakete/Dienste (NetworkManager, iwd, bluez, PipeWire) vorhanden; Dienste-Enables in `prepare-profile.sh` + `services-systemd.conf`.
+- **Akzeptanz:** HW-Matrix aus TESTING.md (AMD, NVIDIA-open, Nouveau, Dual-Monitor, Suspend, BT-Audio, USB FAT/exFAT/NTFS, Steam, PrismLauncher+Java). **Priorität:** hoch (Menschenarbeit).
+
+### F16 Flatpak/Flathub — PARTIAL
+- **Risiko:** Build lädt `flathub.flatpakrepo` per curl + hartem SHA → Netzwerk-/Rotations-Bruch. **Fix:** cachen/Retry/SHA aus `sources.json`, versionierte Kopie.
+- **Priorität:** hoch (P0 als Build-Blocker).
+
+### F19 Updates und Wartung — IMPLEMENTED
+- Timer 3 min nach Boot + alle 5 h, low-prio, `checkupdates` (kein Partial-Upgrade), Backup `/var/lib/lokro-update/backups/`, Kernel-Modul-Retention via Hooks.
+- **Akzeptanz:** Unit-Tests bestehen; E2E (Download→Bestätigung→`-Syu`→Backup→Reboot-Empfehlung) offen. **Priorität:** mittel.
+
+### F21/F22 Gaming und NVIDIA — PARTIAL
+- Offline-Repo unter `/opt/lokro/repo` mit Dedup (bereits installierte Pakete entfernt); Chooser für Gaming/NVIDIA vorhanden.
+- **Offen:** Dedup-Parsing (`pacman -Qp`+awk) ohne Fehlerbehandlung; Kernel/NVIDIA-Versionsdrift bei Offline-Install; keine HW-Tests. **Priorität:** mittel.
+
+### F25 Lokale KI — IDEA (Konzept, keine Implementierung)
+Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloader + `opencode`-Opt-Dependency, kein Modell im ISO).
+**Anordnung: kein Code dafür in dieser Aufgabe.**
+
+## Roadmap (abhängigkeitsgetrieben)
+
+- **Phase 0 – Doku-Fundament (diese Sitzung):** AGENTS/IDEAS/TODO/ARCHITECTURE/DEVELOPMENT_LOG/KNOWN_ISSUES + ISO-Analyse. Fertig, wenn Links + Checks bestehen.
+- **Phase 1 – Build-Stabilisierung (P0):** KI-001–KI-006 fixen (Flathub-Pin, dbpath, profiledef-Check, Größenpuffer, validate-Robustheit, sudoers-Trap). Gate: `make validate packages iso-offline iso-online checksums` grün.
+- **Phase 2 – Boot-Nachweis:** BIOS+UEFI-Smoke grün, serielle Diagnose für GRUB klären. Gate: beide Smoke-Logs.
+- **Phase 3 – Installations-QA:** Calamares-Schema-Check, VM-Installs (leer/verschlüsselt), Installer-E2E, Target-Boot ohne ISO.
+- **Phase 4 – Hardware-Matrix:** AMD/NVIDIA-open/Nouveau, Monitore, Audio/BT, Suspend, Steam/Minecraft, alongside mit Backup.
+- **Phase 5 – Härtung:** Signaturschlüssel-Design (ADR), Größenbudget-Verteidigung, QML/Desktop-Lint überall, Beta-Kriterien.
+- **Phase 6 – KI-Konzept:** erst wenn Phasen 1–4 stehen: Machbarkeit, Backend-/Modell-Evaluation, Benchmark-Konzept (nur Doku, dann Beschluss).
+
+## 9. Zukünftiges Feature: Lokal integrierte KI (nur Konzept)
+
+### 9.1 Zielsetzung
+Lokal betriebener KI-Assistent mit grafischer Chat-Oberfläche für Fragen, Systembedienung, Fehlerdiagnose, später evtl. Entwickleraufgaben.
+Inferenz lokal, keine Pflicht-Cloud. Datenschutzfreundlich, frei konfigurierbar, ohne unnötige Modell-Zensur-Versprechen.
+„Unzensiert“ ≠ Garantie: Modellgrenzen, Lizenzen, Sicherheit und Einsatzgrenzen separat prüfen. Status: IDEA.
+
+### 9.2 Keine Modellgewichte im ISO
+Ablauf: Erkennung → transparente Info → Hardware-/Ressourcenanalyse → begründete Modell-/Backend-Empfehlung →
+ausdrückliche Zustimmung oder Ablehnung → bei Ja: Download+Setup+Integritäts-/Funktionstests → Freischaltung.
+Bei Nein: keine Downloads, System voll nutzbar. Bootstrap ohne Gewichte prüfen. Status: IDEA.
+
+### 9.3 Hardware-Benchmark und Modellauswahl
+Kriterien: CPU, RAM, GPU/VRAM/Backend, Arch, Platte, Bandbreite, Energie, OS-Kompatibilität.
+Kurzer reproduzierbarer Leistungstest statt reiner Theorie; Abwägung Qualität/Latenz/Durchsatz/RAM/Energie;
+kein Modell über Ressourcen empfehlen; No-GPU-/Low-RAM-Fälle + Fallbacks, Timeouts, manuelle Nachwahl. Status: IDEA.
+
+### 9.4 Modell-/Backend-Auswahl
+Kandidaten (unfestgelegt): llama.cpp/GGUF u. a. Bewertung: Linux-, CPU-/GPU-Support, RAM, Leistung/Stabilität,
+Lizenz, Wartung/Updates, Sicherheit, Offline-Fähigkeit. Quantisierungen/Modellfamilien theoretisch, keine erfundenen Benchmarks. Status: IDEA.
+
+### 9.5 Optionalität und Deinstallation
+Systemeinstellungen: aktivieren/deaktivieren, Status, Modellinfo, Modellauswahl, Speicher, Updates, Komplett-Deinstallation
+(Gewichte, Caches, Backends, Dienste; geteilte Libs nur wenn ungenutzt; Chatdaten nur mit Bestätigung löschen).
+Danach keine Reinstall-Nörgelei. Zustandsautomat: installiert/aktiv/deaktiviert/Update/Fehler/entfernt. Status: IDEA.
+
+### 9.6 Datenschutz und Sicherheit
+Lokal-first, keine Pflicht-Registrierung, keine Chat-Uploads, keine Telemetrie ohne Zustimmung, nur nachvollziehbare Quellen,
+Prüfsummen/Signaturen wo verfügbar, Lizenz-Doku, Ressourcen-Limits, keine unkontrollierte Shell-Ausführung,
+keine privilegierten Auto-Änderungen, Trennung Antwort vs. Aktion, Bestätigung vor Sensiblem/Destruktivem.
+Admin-Fähigkeiten brauchen eigenes Berechtigungs-/Sandbox-/Audit-Design. Status: IDEA.
+
+### 9.7 Phasen
+1 Machbarkeit/ADR, 2 Modell-/Backend-Evaluation, 3 Erkennung/Benchmark, 4 Download/Prüfung/Install,
+5 Inferenzdienst, 6 Chat-UI, 7 Einstellungen, 8 Verwaltung/Updates, 9 Deinstallation, 10 Security-/Offline-/Perf-Tests.
+Keine Phase begonnen. Status: IDEA.
+
+### 9.8 Akzeptanzkriterien
+System läuft voll ohne KI; Ablehnung ⇒ keine Downloads; Auswahl nachvollziehbar; zu wenig Speicher ⇒ kontrollierter Abbruch;
+nach Setup ohne externe API nutzbar; Deaktivierung stoppt Dienste; Deinstallation entfernt Komponenten/Gewichte;
+kein Reinstall-Drängen; Boot bleibt bei Fehlschlag stabil. Status: IDEA.
+
+### 9.9 OpenClaw-artige Systemsteuerung (Konzept, IDEA — kein Code)
+Vorschlag des Projektverantwortlichen vom 2026-10-15: ein lokal gehosteter Agent im Stil von OpenClaw,
+der über einen integrierten Claw-Hook das System steuern kann. Alles hier ist Planung, keine Implementierung.
+
+**9.9.1 Ziel und Leitplanken.** Der Agent soll auf Wunsch Aufgaben am System ausführen (Apps öffnen, Dateien lesen/bearbeiten,
+Einstellungen bedienen, Diagnose), strikt innerhalb einer vom Nutzer definierten Berechtigungsmatrix. „Unzensiert" bedeutet hier:
+Modellauswahl ohne unnötige inhaltliche Filter — es ist **keine** Garantie für Abwesenheit von Modellgrenzen, Fehlern oder
+Sicherheitsrisiken. Gerade uncensored Modelle plus Systemzugriff sind die riskanteste Kombination im ganzen Projekt:
+Deshalb gilt vom ersten Entwurf an Allowlist statt Denylist, Bestätigungspflicht für alles Sensible/Destruktive und ein
+prüfbares Audit-Log. Status: IDEA.
+
+**9.9.2 Benchmark und Modellauswahl (nichts vorinstalliert).** Ablauf: 1) Beim Ersteinrichtungs-Assistenten (nicht bei jedem
+Boot — Boot-Zeit soll nicht leiden; Wiederholung manuell oder bei Hardwarewechsel) läuft ein ressourcenschonender Benchmark:
+CPU-Leistung, RAM, GPU/VRAM/Backend (CPU/ROCm/CUDA-fähig?), Platte, grob Bandbreite. 2) Anhand dokumentierter Schwellen
+(RAM-Bedarf = Modellgröße × Quantisierung + Backend-Overhead + Puffer) wird genau ein passendes Modell empfohlen; passt nichts,
+gibt es kontrolliert „kein Modell möglich" statt eines überforderten Setups. 3) Erst nach ausdrücklicher Zustimmung wird
+das empfohlene Modell aus einer gepinnten Quelle (URL + SHA-256, analog zu `releases.json`) heruntergeladen, verifiziert und
+eingerichtet. 4) Bei Ablehnung: keine Downloads, System läuft normal, keine erneuten Nörgel-Prompts. Status: IDEA.
+
+**9.9.3 Claw-Hook (Werkzeug-Gateway, Ansatz).** Der Agent spricht nie direkt mit System-APIs, sondern nur über ein Gateway mit
+festem Werkzeugkatalog (z. B. App-starten, Datei-lesen/schreiben in freigegebenen Pfaden, Einstellung-setzen, Befehl-vorschlagen).
+Jeder Werkzeugaufruf wird gegen die Nutzer-Policy geprüft, protokolliert (wer/was/wann/mit welchem Ergebnis) und braucht je nach
+Risikoklasse entweder Freigabe (Lesen in erlaubten Bereichen) oder ausdrückliche Bestätigung (Schreiben, Installieren,
+Systemdienste, Netzwerk-Aktionen). Privilegierte Aktionen laufen nie direkt als Root aus dem Modell — Ausführung nur über
+bestehende Mechanismen (Polkit/pkexec) mit sichtbarem Prompt. Unbekannte/unsichere Aufrufe werden abgelehnt statt geraten.
+Status: IDEA.
+
+**9.9.4 Berechtigungseinstellungen (Ansatz).** Eigene Einstellungsseite: Hauptschalter (Agent an/aus), pro Bereich getrennte
+Rechte — Anwendungen (welche darf er öffnen/bedienen), Dateien/Ordner (Lesen/Schreiben je Pfad, Standard: nur explizit
+freigegebene), Aktionen (z. B. keine Paketinstallation, keine Systemdienste, kein Netzwerkversand ohne Nachfrage).
+Alles standardmäßig aus/restriktiv; Änderungen brauchen Admin-Bestätigung; jederzeit einsehbar, was erlaubt ist und was der
+Agent zuletzt getan hat (Audit-Ansicht). Deaktivierung stoppt Agent + Hintergrunddienste sofort. Status: IDEA.
+
+**9.9.5 BYOK (Bring Your Own Key, später).** Optional darf der Nutzer eigene API-Schlüssel externer Anbieter hinterlegen
+(z. B. als Fallback, wenn das lokale Modell nicht reicht). Ansatz: Speicherung im Secret Service (KWallet), nie in Logs/Configs
+im Klartext, pro Schlüssel einseh-/löschbar, Nutzung nur nach expliziter Auswahl pro Anfrage oder als konfigurierter Fallback.
+Ohne Schlüssel bleibt das System vollständig lokal nutzbar. Status: IDEA.
+
+**9.9.6 Abhängigkeiten (was dafür gebraucht wird).** Lokales Inferenz-Backend (Kandidat: llama.cpp/GGUF o. ä., unfestgelegt);
+Modell-Registry mit gepinnten URLs + SHA-256 (Erweiterung von `packages/lokro-ai-setup/.../releases.json`);
+Hardware-Erkennung (CPU/RAM/GPU/VRAM/Platte) + reproduzierbarer Mini-Benchmark; Download-/Verifizierungs-Pipeline
+(nur nach Zustimmung, Checksumme + möglichst Signatur); Gateway-Dienst + Policy-Engine + Audit-Log; Einstellungs-UI
+(Systemeinstellungen-Modul); Secret-Service-Anbindung für BYOK; mehrere GiB Plattenplatz je Modell; Test-Hardware mit/ohne GPU.
+Keine dieser Abhängigkeiten ist derzeit im Repo vorhanden (außer dem Ollama-Downloader als entferntem Verwandten). Status: IDEA.
+
+**9.9.7 Umsetzungsansatz (Schritte, alle noch IDEA).** 1) ADR: Bedrohungsmodell + Policy-Format festlegen. 2) Benchmark-Prototyp
+als reines Messwerkzeug ohne Modell. 3) Modell-Registry-Schema + Verifizierung. 4) Gateway mit 2–3 harmlosen Werkzeugen
+(nur Lesen) hinter Policy + Audit. 5) Einstellungs-UI (An/aus, Matrix, Audit-Ansicht). 6) Download-/Install-/Deinstall-Fluss.
+7) Schreibende Werkzeuge erst nach Security-Review. 8) BYOK-Schlüsselverwaltung. 9) Uncensored-Modell-Evaluation
+(Lizenz, Verhalten, Ressourcen) mit dokumentierten Kriterien. 10) Offline-/Fehler-/Deinstall-Tests.
+**Akzeptanz (zusätzlich zu 9.8):** Agent tut ohne Freigabe nichts; verbotene Aktion wird abgelehnt + geloggt; Deinstallation
+entfernt Modell, Gateway-Regeln und Caches; BYOK-Schlüssel nie im Log; Boot-Zeit ohne Benchmark unverändert.
+
+## 10. Weitere Langfristziele (nur aus Repo ableitbar, nichts erfunden)
+- Eigene Systemoberfläche/UX-Konsistenz (Branding, SDDM, Welcome, Hub) — IMPLEMENTED, Feinschliff offen.
+- Sicheres Update-Modell mit Signatur (Design offen, ADR-Kandidat).
+- Gaming/Windows-Kompatibilität nur via signierte Arch-Pakete (Steam/Proton-Rolle begründen, Lizenzen beachten).
+- Entwicklerwerkzeuge (VS Code etc.) nur bei begründeter Rolle + Lizenzprüfung — derzeit keine konkrete Planung.
+- Wartbarkeit: kleine eigene Paketoberfläche, kein Fork von Kernel/Desktop.
+
+## KI-Notizen-Verzeichnis (Regel ab 2026-10-15)
+Jede KI legt eigene Gedanken/Ideen/Lösungsansätze in `docs/AI_NOTES_<name>_<datum>.md` ab und verlinkt sie hier.
+- (noch keine Einträge — Vorlage: `docs/AI_NOTES_vorlage.md` folgt bei Bedarf)
+
+## Anhang: Master-Prompt (Volltext, Quelle dieser Sitzung, 2026-10-15)
+
+> Der folgende Prompt wurde vom Projektverantwortlichen in den Chat eingefügt und ist hier als Quelle archiviert.
+> Er definiert die Doku-Struktur dieser Sitzung. Die lokale KI (Kap. 9) bleibt Konzept — keine Implementierung.
+
+```
+LOKROOS – MASTER-PROMPT FÜR PROJEKTANALYSE, DOKUMENTATION UND LANGFRISTIGE ENTWICKLUNG
+
+1. Deine Rolle und dein Auftrag
+
+Du bist der leitende Softwarearchitekt, Linux-Systementwickler, technischer Dokumentar und Projektmanager für LokroOS,
+ein eigenständiges Linux-Betriebssystem. Deine Aufgabe besteht darin, das gesamte bestehende Repository gründlich zu
+untersuchen, den aktuellen Entwicklungsstand zu verstehen und eine vollständige, langfristig nutzbare Dokumentations- und
+Projektmanagementstruktur aufzubauen. Du arbeitest nicht nur als Programmierer, sondern auch als technischer
+Verantwortlicher für die langfristige Wartbarkeit, Sicherheit, Stabilität und Weiterentwicklung des gesamten
+Betriebssystems. Alle zukünftigen KI-Agenten und Entwickler müssen anhand deiner Dokumentation nachvollziehen können:
+Was LokroOS ist und welches Ziel das Projekt verfolgt; wie das Betriebssystem technisch aufgebaut ist; welche
+Komponenten bereits implementiert sind; welche teilweise funktionieren oder noch fehlerhaft sind; welche Funktionen noch
+fehlen; welche Architekturentscheidungen getroffen wurden und warum; wie geplante Funktionen technisch umgesetzt werden
+können; welche Abhängigkeiten, Programme, Pakete, Werkzeuge und Ressourcen benötigt werden; welche Probleme,
+technischen Schulden und bekannten Fehler bestehen; welche Aufgaben als Nächstes bearbeitet werden sollten; wie das
+Projekt sicher weiterentwickelt, getestet und gebaut werden kann. Arbeite ausschließlich auf Grundlage des tatsächlich
+vorhandenen Codes und überprüfbarer Ergebnisse. Erfinde keine Implementierungen, Testergebnisse, abgeschlossenen
+Aufgaben oder technischen Eigenschaften. Beginne zunächst mit einer vollständigen Bestandsaufnahme und der
+Dokumentation. Größere Architekturänderungen und neue Features sollen nicht eigenmächtig im Rahmen dieser
+Dokumentationsaufgabe implementiert werden.
+
+2. Verbindliche Repository-Analyse (alle Verzeichnisse/Dateien, AGENTS.md, IDEAS.md, IMPORTANT.md, Doku, Skripte,
+Build-Werkzeuge, Live-Build-Configs, Paketlisten, Hooks, GRUB/Plymouth/SDDM/Calamares, Desktop/Shell, Branding,
+Installer/Live, Paketquellen, Tests/CI/Logs, Git-Historie). Unterscheide vorhanden vs. geplant vs. nachgewiesen.
+Nicht-destruktive Prüfungen, Ergebnisse dokumentieren, keine riskanten Befehle. Bei Build-Fehlschlag Ursache
+dokumentieren; nur klar abgegrenzte sichere Fixes ohne Architekturänderung; jede Änderung dokumentieren.
+
+3. Zentrale Datei AGENTS.md (Abschnitte A–F: Projektidentität; technische Grundlagen inkl. Status umgesetzt/geplant/offen;
+Verzeichnisstruktur mit Zweck/Abhängigkeiten/Wirkung/Prüfung; Entwicklungsregeln 1–14; Build-/Testverfahren mit nur
+verifizierten Befehlen; Dokumentationspflicht mit Auslagerung von Details).
+
+4. Projektplanung IDEAS.md (keine reine Ideensammlung, sondern überprüfbares Projektmanagement: Kategorien,
+Steckbrief je Feature mit Name/Ziel/Status/Aktueller Stand/Umsetzungsplan/Anforderungen/Ressourcen/Abhängigkeiten/
+Sicherheit/Tests+Akzeptanz/Offene Fragen/Priorität/Nächster Schritt/Verknüpfungen; Statuswerte IDEA/PLANNED/
+IN_PROGRESS/PARTIAL/BLOCKED/IMPLEMENTED/TESTED/COMPLETED/DEPRECATED/CANCELLED; Roadmap nach Abhängigkeiten).
+
+5. Entwicklungstagebuch docs/DEVELOPMENT_LOG.md (Datum/Zeit, Bereich, Ausgangszustand, Änderungen, Dateien, Grund,
+Umsetzung, Befehle, Tests, Fehler, Fixes+Ursachen, offene Fehler, Auswirkungen, Schulden, nächste Schritte; chronologisch
+anhängen; keine Pauschalen; keine erfundenen Historien; Quellen angeben).
+
+6. Aufgabenverwaltung TODO.md (kritische Fehler; blockierend; aktuell; kurz-/mittel-/langfristig; Tests/QS; Doku;
+Checkboxen mit P0–P3 + Akzeptanzkriterium; nur bei Nachweis abhaken; Blocker mit Grund+Bedingung).
+
+7. Architektur docs/ARCHITECTURE.md (Zusammenspiel, Abhängigkeiten, Schnittstellen, Config-Entstehung, Paketfluss,
+Hooks, Live-vs-installiert, Ersatzkandidaten) + ADRs unter docs/adr/ (Problem/Anforderungen/Alternativen/Entscheidung/
+Begründung/Nachteile/Auswirkungen; verbindlich vs. Vorschlag).
+
+8. Fehlerverwaltung docs/KNOWN_ISSUES.md (ID, Beschreibung/Symptome, Schweregrad, Komponenten, Repro, erwartet vs.
+tatsächlich, Logs, Ursache vermutet/nachgewiesen, Lösungsversuche, Status, nächste Diagnose, verifizierte Lösung;
+nur Beobachtetes oder aus Logs Ableitbares).
+
+9. Zukünftiges Feature Lokal-KI (nur konzipieren/dokumentieren, NICHT implementieren): Zielsetzung; keine Gewichte im
+ISO (Opt-in-Ablauf beim Erststart); Hardware-Benchmark/Modellauswahl; Backend-/Modell-Evaluation (z. B. llama.cpp/GGUF,
+theoretisch, keine erfundenen Benchmarks); optionale Installation/Deinstallation mit Zustandsautomat; Datenschutz/
+Sicherheit (lokal-first, keine Pflicht-Registrierung/Uploads/Telemetrie, pin + Hash/Signatur, Lizenzen, Limits, keine
+unkontrollierten Shell-/Privileg-Aktionen, Trennung Antwort/Aktion, Bestätigung); Phasen 1–10; Akzeptanzkriterien.
+
+10. Weitere Langfristziele (nur aus Unterlagen/Code ableitbar: eigene Oberfläche/UX, Install/Update, Gaming,
+Dev-Werkzeuge, Wartbarkeit/Sicherheit; Steam/Proton/VS Code/VPN nur mit Begründung+Lizenzprüfung; Wunsch vs. Konzept
+vs. implementiert trennen; nichts erfinden).
+
+11. Regelmäßiger Arbeitsablauf für zukünftige Agenten (Beginn: AGENTS lesen, TODO prüfen, IDEAS lesen, letztes Log,
+KNOWN_ISSUES, git status, nächste Aufgabe; Während: eine Aufgabe, Abhängigkeiten, minimale Dateien, Tests, Fehler+Doku,
+Roadmap nur bei Nachweis; Ende: Zusammenfassung, Log, TODO, IDEAS-Status, KNOWN_ISSUES, Fehlschläge/Fragen, nächster
+Schritt; auch bei Unfertigem).
+
+12. Qualität/Konsistenz (Dateien konsistent halten; Status nur bei Nachweis; überholte ADRs aktualisieren; keine
+Duplikate/Widersprüche; relative Links; Tabellen/Checklisten/Beispiele; keine zwecklosen Dateien).
+
+13. Arbeitsauftrag dieser Sitzung (Phase 1 Bestandsaufnahme; Phase 2 Dateien AGENTS/IDEAS/TODO/ARCHITECTURE/
+DEVELOPMENT_LOG/KNOWN_ISSUES erstellen-erweitern statt blind ersetzen; Phase 3 Verifizierung Links/Code/Status/
+kein Fertig-Schwindel/sichere Prüfungen; Phase 4 Abschlussbericht mit 10 Punkten). Aktuell: Analyse+Doku, KI nur
+dokumentiert, keine riskanten Änderungen. Gründlich, nachvollziehbar, faktenbasiert.
+```
