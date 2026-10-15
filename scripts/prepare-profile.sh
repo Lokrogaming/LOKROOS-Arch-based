@@ -28,7 +28,7 @@ rsync -a "${PROJECT_ROOT}/archiso/airootfs/" "$PROFILE_DIR/airootfs/"
 boot_config_count=0
 while IFS= read -r -d '' boot_config; do
     sed -i -E \
-        '/^[[:space:]]*(APPEND|options|linux)[[:space:]]/ { /console=ttyS0/! s|$| console=tty0 console=ttyS0,115200n8 systemd.show_status=yes systemd.log_target=console|; }' \
+        '/^[[:space:]]*(APPEND|options)[[:space:]]/ { /console=ttyS0/! s|$| console=tty0 console=ttyS0,115200n8 systemd.show_status=yes systemd.log_target=console|; }' \
         "$boot_config"
     boot_config_count=$((boot_config_count + 1))
 done < <(find "$PROFILE_DIR/syslinux" "$PROFILE_DIR/efiboot" "$PROFILE_DIR/grub" \
