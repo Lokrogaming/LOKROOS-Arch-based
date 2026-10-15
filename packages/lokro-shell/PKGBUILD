@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 pkgname=lokro-shell
 pkgver=0.1.0
-pkgrel=4
-pkgdesc='Lokro OS Plasma wallpaper, Hub widget and service manifest support'
+pkgrel=5
+pkgdesc='LOKRO OS desktop integration, graphical tools, search, updates and widgets'
 arch=('any')
 url='https://github.com/jamjam1312/LOKROOS-Arch-based'
 license=('GPL-3.0-or-later' 'CC-BY-SA-4.0')
@@ -19,5 +19,9 @@ package() {
     "$pkgdir/usr/bin/lokro-update" \
     "$pkgdir/usr/bin/lokro-update-gui" \
     "$pkgdir/usr/bin/lokro-search" \
+    "$pkgdir/usr/bin/lokro-link-installer" \
+    "$pkgdir/usr/bin/lokro-link-installer-gui" \
+    "$pkgdir/usr/bin/lokro-media" \
+    "$pkgdir/usr/bin/lokro-boot-manager" \
     "$pkgdir/usr/lib/lokro-update/keep-running-kernel"
 }

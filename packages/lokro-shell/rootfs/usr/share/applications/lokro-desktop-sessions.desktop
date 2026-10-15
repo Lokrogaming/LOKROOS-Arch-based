@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=LOKRO Desktop Sessions
+Name[de]=LOKRO Desktop-Sitzungen
+Comment=Learn how to select Plasma or the optional Hyprland session
+Comment[de]=Plasma oder die optionale Hyprland-Sitzung auswählen
+Exec=lokro-action desktop-session
+Icon=preferences-desktop
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=desktop;session;Plasma;Hyprland;Wayland;login;
+Keywords[de]=Desktop;Sitzung;Plasma;Hyprland;Wayland;Anmeldung;

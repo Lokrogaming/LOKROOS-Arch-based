@@ -5,6 +5,7 @@ bluedevil
 bluez
 bluez-utils
 accountsservice
+ark
 alsa-utils
 alsa-firmware
 bolt
@@ -21,6 +22,7 @@ efibootmgr
 exfatprogs
 flatpak
 flatpak-kcm
+fuse3
 grub
 fwupd
 firefox
@@ -86,3 +88,7 @@ xdg-desktop-portal-kde
 zram-generator
 ntfs-3g
 os-prober
+7zip
+unzip
+vlc
+zip

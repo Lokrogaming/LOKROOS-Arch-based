@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+choice="$(kdialog --title 'LOKRO Link Installer' --menu \
+    'Installiere nur Links aus Quellen, denen du vertraust. Unbekannte Formate und heruntergeladene Skripte werden abgelehnt.' \
+    install 'App über HTTPS-Link installieren' \
+    appimages 'Installierte AppImages aktualisieren' \
+    system 'LOKRO OS und Systempakete aktualisieren' 2>/dev/null || true)"
+
+case "$choice" in
+    install)
+        url="$(kdialog --title 'LOKRO Link Installer' --inputbox \
+            'HTTPS-Link zu .flatpakref, .flatpak, signiertem Arch-Paket oder .AppImage:' 2>/dev/null || true)"
+        [[ -n "$url" ]] || exit 0
+        konsole --hold -e /usr/bin/lokro-link-installer install "$url" &
+        ;;
+    appimages)
+        if kdialog --title 'AppImage-Updates' --warningyesno \
+            'Die gespeicherten ursprünglichen HTTPS-Adressen werden erneut geladen. Jetzt fortfahren?'; then
+            konsole --hold -e /usr/bin/lokro-link-installer update-appimages &
+        fi
+        ;;
+    system) lokro-update-gui & ;;
+esac

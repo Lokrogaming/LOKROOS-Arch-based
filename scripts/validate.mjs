@@ -7,7 +7,7 @@ import process from "node:process";
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/(.:)/, "$1")), "..");
 const failures = [];
 const required = [
-  "VERSION", "Makefile", "CONTRIBUTORS.md", "desktop/README.md", "server/README.md",
+  "VERSION", "Makefile", "CONTRIBUTORS.md", "AI_INFO.md", "desktop/README.md", "server/README.md",
   "LOKRO_UPDATE_CHANNEL.json", "schemas/update-channel.schema.json", "docs/UPDATES.md",
   "docs/RELEASE_STATUS.md", "docs/STANDALONE_INSTALL.md", "archiso/packages/common.x86_64",
   "archiso/packages/offline.x86_64", "archiso/packages/online.x86_64",
@@ -27,6 +27,15 @@ const required = [
   "packages/lokro-shell/rootfs/usr/bin/lokro-search",
   "packages/lokro-shell/rootfs/usr/bin/lokro-update",
   "packages/lokro-shell/rootfs/usr/bin/lokro-update-gui",
+  "packages/lokro-shell/rootfs/usr/bin/lokro-link-installer",
+  "packages/lokro-shell/rootfs/usr/bin/lokro-link-installer-gui",
+  "packages/lokro-shell/rootfs/usr/bin/lokro-media",
+  "packages/lokro-shell/rootfs/usr/bin/lokro-boot-manager",
+  "packages/lokro-shell/rootfs/usr/share/applications/lokro-control-center.desktop",
+  "packages/lokro-shell/rootfs/usr/share/applications/lokro-desktop-sessions.desktop",
+  "packages/lokro-shell/rootfs/usr/share/applications/lokro-link-installer.desktop",
+  "packages/lokro-shell/rootfs/usr/share/applications/lokro-media.desktop",
+  "packages/lokro-shell/rootfs/usr/share/applications/lokro-boot-manager.desktop",
   "packages/lokro-shell/rootfs/usr/lib/systemd/system/lokro-update.timer",
   "packages/lokro-shell/rootfs/usr/lib/lokro-update/keep-running-kernel",
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-gaming.conf",
@@ -36,6 +45,7 @@ const required = [
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-apps-offline.conf",
   "packages/lokro-installer-config/rootfs/etc/calamares/modules/packagechooser-apps-online.conf",
   "archiso/airootfs/usr/local/sbin/lokro-smoke-ready",
+  "archiso/airootfs/etc/systemd/system/lokro-smoke-ready.service",
   "scripts/smoke-boot.sh",
   "scripts/validate-pkgbuilds.sh",
   "third_party/sources.json", "docs/AI_DISCLOSURE.md"
@@ -86,7 +96,8 @@ for (const requiredCommon of [
   "lib32-mesa", "lib32-vulkan-radeon", "lib32-vulkan-intel", "lib32-vulkan-nouveau",
   "pipewire", "wireplumber", "grub", "efibootmgr", "cryptsetup", "sddm",
   "pacman-contrib", "partitionmanager", "flatpak", "discover", "systemsettings", "powerdevil",
-  "plasma-systemmonitor", "kinfocenter", "os-prober"
+  "plasma-systemmonitor", "kinfocenter", "os-prober", "fuse3",
+  "ark", "7zip", "unzip", "zip", "vlc"
 ]) {
   if (!packageSets["archiso/packages/common.x86_64"].includes(requiredCommon)) failures.push(`common ISO package list is missing ${requiredCommon}`);
 }
@@ -134,6 +145,9 @@ const prepareProfile = fs.readFileSync(path.join(root, "scripts/prepare-profile.
 if (!prepareProfile.includes("ln -sfn /etc/systemd/system/lokro-live-user.service")) {
   failures.push("live-user enablement must point to the unit stored under /etc/systemd/system");
 }
+if (!prepareProfile.includes("ln -sfn /etc/systemd/system/lokro-smoke-ready.service")) {
+  failures.push("smoke-watcher enablement must point to the unit stored under /etc/systemd/system");
+}
 if (!prepareProfile.includes('cp -L /etc/pacman.d/mirrorlist')) failures.push("embedded Arch root does not receive a pacman mirrorlist");
 if (/airootfs\/etc\/calamares\/modules\/welcome\.conf/.test(prepareProfile)) {
   failures.push("profile preparation must not overlay package-owned Calamares welcome.conf before pacstrap");
@@ -141,9 +155,27 @@ if (/airootfs\/etc\/calamares\/modules\/welcome\.conf/.test(prepareProfile)) {
 for (const offlineExtra of ["hyprland", "hyprlock", "waybar", "wofi", "xdg-desktop-portal-hyprland"]) {
   if (!prepareProfile.includes(offlineExtra)) failures.push(`offline repository preparation is missing ${offlineExtra}`);
 }
-const liveUserScript = fs.readFileSync(path.join(root, "archiso/airootfs/usr/local/sbin/lokro-create-live-user"), "utf8");
-if (!/--groups\s+[^\n]*\buucp\b/.test(liveUserScript)) {
-  failures.push("live user must be allowed to emit the QEMU readiness marker through Arch serial devices");
+const smokeService = fs.readFileSync(path.join(root, "archiso/airootfs/etc/systemd/system/lokro-smoke-ready.service"), "utf8");
+if (!/ExecStart=\/usr\/local\/sbin\/lokro-smoke-ready/.test(smokeService) || !/WantedBy=graphical\.target/.test(smokeService)) {
+  failures.push("root-owned smoke watcher must run from graphical.target");
+}
+const smokeScript = fs.readFileSync(path.join(root, "archiso/airootfs/usr/local/sbin/lokro-smoke-ready"), "utf8");
+for (const invariant of ["pgrep -u liveuser -x plasmashell", "LOKRO_SMOKE_WATCHER_STARTED", "LOKRO_PLASMA_READY", "LOKRO_SMOKE_FAILED"]) {
+  if (!smokeScript.includes(invariant)) failures.push(`smoke watcher is missing invariant: ${invariant}`);
+}
+for (const smokeArtifact of ["lokro-smoke-ready.service", "/usr/local/sbin/lokro-smoke-ready"]) {
+  if (!installerCleanup.includes(smokeArtifact)) failures.push(`installer cleanup does not remove smoke artifact: ${smokeArtifact}`);
+}
+
+const linkInstaller = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/bin/lokro-link-installer"), "utf8");
+for (const safetyInvariant of ["only HTTPS download links are accepted", "pacman-key --verify", ".flatpakref", ".AppImage", ".deb", ".rpm"]) {
+  if (!linkInstaller.includes(safetyInvariant)) failures.push(`link installer is missing safety invariant: ${safetyInvariant}`);
+}
+if (/\beval\b|curl[^\n|]*\|\s*(sh|bash)/.test(linkInstaller)) failures.push("link installer may not evaluate or pipe downloaded content into a shell");
+
+const mediaDesktop = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/share/applications/lokro-media.desktop"), "utf8");
+for (const mediaInvariant of ["Exec=lokro-media %U", "audio/mpeg", "video/mp4", "video/x-matroska"]) {
+  if (!mediaDesktop.includes(mediaInvariant)) failures.push(`LOKRO Media association is missing: ${mediaInvariant}`);
 }
 const mergeService = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/lib/systemd/system/lokro-services-merge.service"), "utf8");
 if (!/\[Install\][\s\S]*WantedBy=multi-user\.target/.test(mergeService)) {

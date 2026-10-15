@@ -1,0 +1,23 @@
+[Desktop Entry]
+Type=Application
+Name=LOKRO Boot Manager
+Name[de]=LOKRO-Bootmanager
+Comment=Inspect and safely regenerate the GRUB operating-system menu
+Comment[de]=GRUB-Menü für LOKRO, Windows und andere Systeme prüfen und erneuern
+Exec=lokro-boot-manager gui
+Icon=system-run
+Terminal=false
+Categories=System;Settings;
+Keywords=boot;grub;windows;dual boot;partition;operating system;
+Keywords[de]=Boot;GRUB;Windows;Dual-Boot;Partition;Betriebssystem;
+Actions=ShowEntries;Refresh;
+
+[Desktop Action ShowEntries]
+Name=Show boot entries
+Name[de]=Starteinträge anzeigen
+Exec=konsole --hold -e lokro-boot-manager list
+
+[Desktop Action Refresh]
+Name=Detect systems again
+Name[de]=Systeme neu erkennen
+Exec=lokro-boot-manager gui

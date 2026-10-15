@@ -24,6 +24,10 @@ case "$action" in
     settings) launch systemsettings ;;
     users) launch systemsettings kcm_users ;;
     appearance) launch systemsettings kcm_lookandfeel ;;
+    wallpaper)
+        launch kdialog --title "LOKRO Hintergrund" --msgbox \
+            "Klicke mit der rechten Maustaste auf eine freie Stelle des Plasma-Desktops und wähle „Desktop und Hintergrund einrichten“. Dort kannst du Bild, Animation und Darstellung ändern."
+        ;;
     network) launch systemsettings kcm_networkmanagement ;;
     bluetooth) launch systemsettings kcm_bluetooth ;;
     input) launch systemsettings kcm_keyboard ;;
@@ -35,11 +39,18 @@ case "$action" in
             'showWidgetExplorer()' >/dev/null 2>&1 || true
         ;;
     discover) launch plasma-discover ;;
+    link-installer) launch lokro-link-installer-gui ;;
+    media) launch lokro-media ;;
+    boot) launch lokro-boot-manager gui ;;
     updates) launch lokro-update-gui ;;
     partitions) launch partitionmanager ;;
     tiling)
         launch kdialog --title "LOKRO Fensteraufteilung" --msgbox \
             "Plasma: Drücke Meta+T, um den KWin-Kachel-Editor zu öffnen. Ziehe danach ein Fenster mit gedrückter Umschalttaste in eine Zone. Die optionale Hyprland-Sitzung kann beim Anmelden ausgewählt werden."
+        ;;
+    desktop-session)
+        launch kdialog --title "LOKRO Desktop-Sitzungen" --msgbox \
+            "Plasma ist der unterstützte Standard. Wenn Hyprland im Installer gewählt wurde, kannst du am SDDM-Anmeldebildschirm über das Sitzungsmenü zwischen Plasma und Hyprland wechseln."
         ;;
     installer) launch pkexec calamares -d ;;
     steam)

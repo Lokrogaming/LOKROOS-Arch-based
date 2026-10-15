@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+die() { printf '[lokro-link-installer] error: %s\n' "$*" >&2; exit 2; }
+log() { printf '[lokro-link-installer] %s\n' "$*"; }
+
+require_https() {
+    [[ "$1" == https://* ]] || die 'only HTTPS download links are accepted'
+    [[ "$1" != *$'\n'* && "$1" != *$'\r'* ]] || die 'invalid URL'
+}
+
+safe_filename() {
+    local clean="${1%%\?*}" name
+    clean="${clean%%\#*}"
+    name="${clean##*/}"
+    [[ "$name" =~ ^[A-Za-z0-9._+-]+$ ]] || die 'the URL must end in a safe file name'
+    printf '%s\n' "$name"
+}
+
+download() {
+    local url="$1" destination="$2"
+    curl --fail --location --show-error --silent \
+        --proto '=https' --tlsv1.2 --connect-timeout 10 --max-time 1800 \
+        --max-filesize 4294967296 --output "$destination" "$url"
+}
+
+install_flatpak_ref() {
+    local url="$1"
+    command -v flatpak >/dev/null 2>&1 || die 'Flatpak is not installed'
+    log 'Flatpak will verify repository metadata and request authorization when needed.'
+    flatpak install --system --from "$url"
+}
+
+install_flatpak_bundle() {
+    local url="$1" name="$2" temporary bundle
+    temporary="$(mktemp -d)"
+    trap 'rm -rf "$temporary"' RETURN
+    bundle="$temporary/$name"
+    download "$url" "$bundle"
+    log 'Flatpak will verify bundle metadata and request authorization when needed.'
+    flatpak install --system "$bundle"
+}
+
+install_arch_package() {
+    local url="$1" name="$2" temporary package signature
+    id -nG | tr ' ' '\n' | grep -qx wheel || die 'an administrator account in the wheel group is required'
+    temporary="$(mktemp -d)"
+    trap 'rm -rf "$temporary"' RETURN
+    package="$temporary/$name"
+    signature="$package.sig"
+    log 'Downloading package and detached signature...'
+    download "$url" "$package"
+    download "${url%%\?*}.sig" "$signature" || die 'no detached .sig file was found; unsigned system packages are rejected'
+    log 'Verifying the package against the Arch/Pacman trust database...'
+    pacman-key --verify "$signature" "$package" || die 'package signature verification failed'
+    log 'Requesting administrator authorization for Pacman...'
+    pkexec /usr/bin/pacman -U --needed "$package"
+}
+
+install_appimage() {
+    local url="$1" name="$2" app_dir data_dir temporary destination metadata checksum
+    app_dir="${HOME}/Applications"
+    data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/lokro-link-installer/appimages"
+    mkdir -p "$app_dir" "$data_dir"
+    temporary="$(mktemp "${app_dir}/.${name}.XXXXXX")"
+    trap 'rm -f "$temporary"' RETURN
+    download "$url" "$temporary"
+    chmod 0755 "$temporary"
+    destination="$app_dir/$name"
+    mv -f "$temporary" "$destination"
+    checksum="$(sha256sum "$destination" | awk '{print $1}')"
+    metadata="$data_dir/$(printf '%s' "$url" | sha256sum | awk '{print $1}').link"
+    printf 'url=%s\npath=%s\nsha256=%s\n' "$url" "$destination" "$checksum" > "$metadata"
+    chmod 0600 "$metadata"
+    log "Installed user-scoped AppImage: $destination"
+    log 'The original HTTPS address was saved for explicit future updates.'
+}
+
+install_url() {
+    local url="$1" name lower
+    require_https "$url"
+    name="$(safe_filename "$url")"
+    lower="${name,,}"
+    case "$lower" in
+        *.flatpakref) install_flatpak_ref "$url" ;;
+        *.flatpak) install_flatpak_bundle "$url" "$name" ;;
+        *.pkg.tar.zst|*.pkg.tar.xz) install_arch_package "$url" "$name" ;;
+        *.appimage) install_appimage "$url" "$name" ;;
+        *.sh|*.run|*.deb|*.rpm|*.zip|*.tar|*.tar.gz|*.tar.xz|*.tar.zst)
+            die 'this format is not an installable LOKRO link; scripts and foreign packages are never executed'
+            ;;
+        *) die 'supported link types: .flatpakref, .flatpak, signed .pkg.tar.zst/.pkg.tar.xz, and .AppImage' ;;
+    esac
+}
+
+update_appimages() {
+    local data_dir metadata url destination temporary old new updated=0
+    data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/lokro-link-installer/appimages"
+    [[ -d "$data_dir" ]] || { log 'No managed AppImages were found.'; return 0; }
+    shopt -s nullglob
+    for metadata in "$data_dir"/*.link; do
+        url="$(sed -n 's/^url=//p' "$metadata")"
+        destination="$(sed -n 's/^path=//p' "$metadata")"
+        require_https "$url"
+        [[ "$destination" == "$HOME/Applications/"* ]] || die "unsafe AppImage path in $metadata"
+        [[ -f "$destination" ]] || { log "Skipping missing file: $destination"; continue; }
+        temporary="$(mktemp "${destination}.XXXXXX")"
+        if ! download "$url" "$temporary"; then rm -f "$temporary"; log "Download failed: $url"; continue; fi
+        chmod 0755 "$temporary"
+        old="$(sha256sum "$destination" | awk '{print $1}')"
+        new="$(sha256sum "$temporary" | awk '{print $1}')"
+        if [[ "$old" == "$new" ]]; then
+            rm -f "$temporary"
+            log "Current: $(basename "$destination")"
+            continue
+        fi
+        mv -f "$temporary" "$destination"
+        sed -i "s/^sha256=.*/sha256=$new/" "$metadata"
+        log "Updated: $(basename "$destination")"
+        updated=$((updated + 1))
+    done
+    log "$updated AppImage update(s) installed."
+}
+
+case "${1:-}" in
+    install) [[ $# -eq 2 ]] || die 'usage: lokro-link-installer install HTTPS_URL'; install_url "$2" ;;
+    update-appimages) [[ $# -eq 1 ]] || die 'usage: lokro-link-installer update-appimages'; update_appimages ;;
+    *) die 'usage: lokro-link-installer {install HTTPS_URL|update-appimages}' ;;
+esac

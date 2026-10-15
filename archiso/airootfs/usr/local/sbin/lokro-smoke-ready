@@ -2,8 +2,23 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -euo pipefail
 
-# QEMU CI captures this marker. On real hardware without a serial port the
-# write simply fails and does not affect the Plasma session.
-if [[ -w /dev/ttyS0 ]]; then
-    printf '%s\n' 'LOKRO_PLASMA_READY' > /dev/ttyS0
-fi
+serial=/dev/ttyS0
+
+emit() {
+    [[ -w "$serial" ]] && printf '%s\n' "$1" > "$serial" || true
+}
+
+emit 'LOKRO_SMOKE_WATCHER_STARTED'
+for ((attempt = 1; attempt <= 300; attempt++)); do
+    if pgrep -u liveuser -x plasmashell >/dev/null 2>&1; then
+        emit 'LOKRO_PLASMA_READY'
+        exit 0
+    fi
+    if (( attempt % 30 == 0 )); then
+        emit "LOKRO_SMOKE_WAITING attempt=${attempt} sddm=$(systemctl is-active sddm.service 2>/dev/null || true)"
+    fi
+    sleep 1
+done
+
+emit 'LOKRO_SMOKE_FAILED plasmashell-not-running'
+exit 1

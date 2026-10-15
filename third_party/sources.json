@@ -58,6 +58,16 @@
       "usage": "optional signed Arch package providing a secondary dynamic-tiling Wayland session"
     },
     {
+      "name": "VLC media player",
+      "source": "https://archlinux.org/packages/extra/x86_64/vlc/",
+      "usage": "unmodified signed Arch package used by the LOKRO Media launcher and file associations"
+    },
+    {
+      "name": "7-Zip",
+      "source": "https://archlinux.org/packages/extra/x86_64/7zip/",
+      "usage": "unmodified signed Arch archive backend used together with Ark"
+    },
+    {
       "name": "Waybar",
       "source": "https://archlinux.org/packages/extra/x86_64/waybar/",
       "license": "MIT",
