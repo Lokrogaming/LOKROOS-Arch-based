@@ -5,7 +5,9 @@ set -euo pipefail
 serial=/dev/ttyS0
 
 emit() {
-    [[ -w "$serial" ]] && printf '%s\n' "$1" > "$serial" || true
+    if [[ -w "$serial" ]]; then
+        printf '%s\n' "$1" > "$serial" || true
+    fi
 }
 
 emit 'LOKRO_SMOKE_WATCHER_STARTED'

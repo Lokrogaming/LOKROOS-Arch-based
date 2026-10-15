@@ -26,7 +26,7 @@ case "$action" in
     appearance) launch systemsettings kcm_lookandfeel ;;
     wallpaper)
         launch kdialog --title "LOKRO Hintergrund" --msgbox \
-            "Klicke mit der rechten Maustaste auf eine freie Stelle des Plasma-Desktops und wähle „Desktop und Hintergrund einrichten“. Dort kannst du Bild, Animation und Darstellung ändern."
+            'Klicke mit der rechten Maustaste auf eine freie Stelle des Plasma-Desktops und wähle "Desktop und Hintergrund einrichten". Dort kannst du Bild, Animation und Darstellung ändern.'
         ;;
     network) launch systemsettings kcm_networkmanagement ;;
     bluetooth) launch systemsettings kcm_bluetooth ;;
