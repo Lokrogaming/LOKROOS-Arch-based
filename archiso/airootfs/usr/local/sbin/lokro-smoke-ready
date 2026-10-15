@@ -11,7 +11,7 @@ emit() {
 }
 
 emit 'LOKRO_SMOKE_WATCHER_STARTED'
-for ((attempt = 1; attempt <= 300; attempt++)); do
+for ((attempt = 1; attempt <= 600; attempt++)); do
     if pgrep -u liveuser -x plasmashell >/dev/null 2>&1; then
         emit 'LOKRO_PLASMA_READY'
         exit 0

@@ -1,4 +1,4 @@
-# LOKRO OS 0.1.0-alpha.5 release status
+# LOKRO OS 0.1.0-alpha.6 release status
 
 This file separates implemented source from tested release claims. An item being configured does not prove that it works on every physical computer.
 
@@ -34,7 +34,7 @@ This file separates implemented source from tested release claims. An item being
 
 QML linting and PKGBUILD parsing are enforced in the Arch build workflow, where the required Arch/KDE tools are available.
 
-The previous alpha.4 CI attempt successfully produced both hybrid ISO files but did not publish them because the live-desktop smoke marker timed out. Alpha.5 replaces the fragile user-autostart marker with a root-owned graphical-target watcher that waits for the actual `plasmashell` process and emits serial diagnostics. This change still requires a successful CI BIOS and UEFI run.
+The alpha.5 CI attempt successfully produced both hybrid ISO files, including a roughly 2.5 GiB online image, but software-emulated QEMU reached kernel/initramfs loading only as the old six-minute timeout expired. Alpha.6 uses KVM when the runner exposes it, retains a multi-threaded TCG fallback, allows a realistic fallback boot window and keeps the root-owned watcher for the actual `plasmashell` process. BIOS and UEFI still must both pass before publication.
 
 ## Required before sharing an ISO as tested
 
