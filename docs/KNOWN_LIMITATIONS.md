@@ -1,4 +1,4 @@
-# Known limitations — 0.1.0-alpha.4
+# Known limitations — 0.1.0-alpha.5
 
 - This is an alpha for test machines. Secure Boot and guaranteed dual-boot are not supported.
 - LUKS1 encryption is available but remains experimental until BIOS and UEFI installs have completed the full reboot test. LUKS2/Argon2 is intentionally deferred because stock GRUB compatibility needs more integration work.
@@ -6,6 +6,8 @@
 - NVIDIA's packaged open kernel module supports Turing / GTX 16 / RTX 20 and newer. Older NVIDIA hardware stays on Nouveau; no legacy AUR driver is installed.
 - Plasma is Wayland-only. X11 applications run through XWayland, but there is no Plasma X11 login session.
 - Hyprland is an optional secondary Wayland session, not a second full LOKRO desktop. Plasma remains the supported default and some KDE settings only affect Plasma.
+- LOKRO Media is a branded launcher and file-association layer around unmodified VLC, not a fork or a new decoding engine. VLC retains its own interface and license.
+- The Link Installer cannot safely turn every Linux download URL into an installable application. It accepts only HTTPS Flatpak refs/bundles, signature-verifiable Arch packages and AppImages; scripts, DEB/RPM packages and archives are rejected intentionally.
 - KRunner and Baloo approximate Everything-style search, but Linux permission boundaries still apply and filename results become complete only after initial indexing.
 - GRUB runs `os-prober` for discoverable systems, but encrypted Windows volumes, BitLocker, Fast Startup and mismatched BIOS/UEFI modes can prevent detection. Dual boot remains an alpha feature.
 - The LOKRO Hub contains only the Twitch-confirmed public Twitch, TikTok and Discord destinations. It has no SSO, account integration, private API or verified standalone website yet.

@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+readonly grub_config=/boot/grub/grub.cfg
+readonly backup_dir=/var/lib/lokro-boot-manager
+
+list_entries() {
+    [[ -r "$grub_config" ]] || { printf 'Noch keine GRUB-Konfiguration gefunden.\n'; return 0; }
+    sed -nE "s/^[[:space:]]*menuentry ['\"]([^'\"]+).*/• \1/p" "$grub_config"
+}
+
+refresh() {
+    (( EUID == 0 )) || { printf 'Administratorrechte erforderlich.\n' >&2; exit 1; }
+    command -v grub-mkconfig >/dev/null 2>&1 || { printf 'grub-mkconfig fehlt.\n' >&2; exit 1; }
+    install -d -m 0700 "$backup_dir"
+    if [[ -f "$grub_config" ]]; then
+        cp -a "$grub_config" "$backup_dir/grub.cfg.$(date -u +%Y%m%dT%H%M%SZ)"
+    fi
+    temporary="${grub_config}.lokro-new"
+    trap 'rm -f "$temporary"' EXIT
+    grub-mkconfig -o "$temporary"
+    grep -q '^[[:space:]]*menuentry ' "$temporary" || { printf 'Keine startfähigen Einträge erzeugt; alte Konfiguration bleibt erhalten.\n' >&2; exit 1; }
+    chmod 0600 "$temporary"
+    mv -f "$temporary" "$grub_config"
+    printf 'GRUB-Menü wurde atomar erneuert. Sicherungen: %s\n' "$backup_dir"
+}
+
+gui() {
+    choice="$(kdialog --title 'LOKRO Boot Manager' --menu \
+        'GRUB verwaltet LOKRO OS und bestmöglich erkannte weitere Systeme. Vor Partitionsänderungen ist ein Backup Pflicht.' \
+        show 'Gefundene Starteinträge anzeigen' \
+        refresh 'Betriebssysteme neu suchen und GRUB aktualisieren' \
+        partitions 'KDE-Partitionsverwaltung öffnen' 2>/dev/null || true)"
+    case "$choice" in
+        show)
+            entries="$(list_entries)"
+            kdialog --title 'GRUB-Starteinträge' --msgbox "${entries:-Keine Einträge gefunden.}"
+            ;;
+        refresh)
+            if kdialog --title 'GRUB aktualisieren' --warningyesno \
+                'Vorherige grub.cfg wird gesichert. os-prober sucht nach Windows und anderen Systemen. Jetzt fortfahren?'; then
+                konsole --hold -e pkexec /usr/bin/lokro-boot-manager refresh &
+            fi
+            ;;
+        partitions) partitionmanager & ;;
+    esac
+}
+
+case "${1:-gui}" in
+    gui) gui ;;
+    list) list_entries ;;
+    refresh) refresh ;;
+    *) printf 'usage: lokro-boot-manager {gui|list|refresh}\n' >&2; exit 2 ;;
+esac

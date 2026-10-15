@@ -1,5 +1,25 @@
 [Default Applications]
 x-scheme-handler/lokro-action=lokro-action-handler.desktop
+audio/mpeg=lokro-media.desktop
+audio/flac=lokro-media.desktop
+audio/ogg=lokro-media.desktop
+audio/x-wav=lokro-media.desktop
+audio/mp4=lokro-media.desktop
+video/mp4=lokro-media.desktop
+video/x-matroska=lokro-media.desktop
+video/webm=lokro-media.desktop
+video/mpeg=lokro-media.desktop
+application/ogg=lokro-media.desktop
 
 [Added Associations]
 x-scheme-handler/lokro-action=lokro-action-handler.desktop;
+audio/mpeg=lokro-media.desktop;
+audio/flac=lokro-media.desktop;
+audio/ogg=lokro-media.desktop;
+audio/x-wav=lokro-media.desktop;
+audio/mp4=lokro-media.desktop;
+video/mp4=lokro-media.desktop;
+video/x-matroska=lokro-media.desktop;
+video/webm=lokro-media.desktop;
+video/mpeg=lokro-media.desktop;
+application/ogg=lokro-media.desktop;

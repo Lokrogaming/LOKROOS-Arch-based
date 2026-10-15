@@ -2,9 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -euo pipefail
 if ! id liveuser >/dev/null 2>&1; then
-    # uucp grants the disposable live user access to Arch's serial devices so
-    # the graphical-session smoke marker can be captured by QEMU CI.
-    useradd --create-home --shell /bin/bash --groups wheel,audio,video,storage,input,lp,network,uucp liveuser
+    useradd --create-home --shell /bin/bash --groups wheel,audio,video,storage,input,lp,network liveuser
     passwd --delete liveuser
 fi
 chown -R liveuser:liveuser /home/liveuser

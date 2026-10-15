@@ -1,0 +1,62 @@
+[Desktop Entry]
+Type=Application
+Name=LOKRO Settings
+Name[de]=LOKRO-Einstellungen
+Comment=Configure appearance, cursor, devices, users, shortcuts and power
+Comment[de]=Aussehen, Cursor, Geräte, Benutzer, Tastenkürzel und Energie grafisch einstellen
+Exec=lokro-action settings
+Icon=preferences-system
+Terminal=false
+Categories=Settings;
+Keywords=settings;appearance;wallpaper;cursor;users;network;bluetooth;power;shortcuts;widgets;
+Keywords[de]=Einstellungen;Aussehen;Hintergrund;Cursor;Benutzer;Netzwerk;Bluetooth;Energie;Tastenkürzel;Widgets;
+Actions=Appearance;Wallpaper;Cursor;Users;Network;Bluetooth;Shortcuts;Power;Widgets;DesktopSession;
+
+[Desktop Action Appearance]
+Name=Appearance and style
+Name[de]=Aussehen und Stil
+Exec=lokro-action appearance
+
+[Desktop Action Wallpaper]
+Name=Wallpaper help
+Name[de]=Hintergrund-Hilfe
+Exec=lokro-action wallpaper
+
+[Desktop Action Cursor]
+Name=Cursor theme and size
+Name[de]=Cursor-Design und Größe
+Exec=lokro-action cursor
+
+[Desktop Action Users]
+Name=Local users
+Name[de]=Lokale Benutzer
+Exec=lokro-action users
+
+[Desktop Action Network]
+Name=Network
+Name[de]=Netzwerk
+Exec=lokro-action network
+
+[Desktop Action Bluetooth]
+Name=Bluetooth
+Exec=lokro-action bluetooth
+
+[Desktop Action Shortcuts]
+Name=Keyboard shortcuts
+Name[de]=Tastenkürzel
+Exec=lokro-action shortcuts
+
+[Desktop Action Power]
+Name=Power management
+Name[de]=Energieverwaltung
+Exec=lokro-action power
+
+[Desktop Action Widgets]
+Name=Desktop widgets
+Name[de]=Desktop-Widgets
+Exec=lokro-action widgets
+
+[Desktop Action DesktopSession]
+Name=Desktop sessions
+Name[de]=Desktop-Sitzungen
+Exec=lokro-action desktop-session

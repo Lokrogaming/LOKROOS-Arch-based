@@ -1,4 +1,4 @@
-# LOKRO OS 0.1.0-alpha.4 release status
+# LOKRO OS 0.1.0-alpha.5 release status
 
 This file separates implemented source from tested release claims. An item being configured does not prove that it works on every physical computer.
 
@@ -14,8 +14,12 @@ This file separates implemented source from tested release claims. An item being
 - NetworkManager, Wi-Fi database and iwd tooling, LAN support through the Linux kernel, Bluetooth, USB utilities, Thunderbolt tooling and current Arch firmware packages.
 - Mesa/OpenGL, AMD/Intel/Nouveau Vulkan and video acceleration. The offline installer can optionally install `nvidia-open`, `nvidia-utils` and `lib32-nvidia-utils` for supported Turing-or-newer NVIDIA hardware.
 - PipeWire audio, power management, ZRAM, KDE settings, theming and desktop widgets.
-- Plasma System Monitor exposed as the LOKRO Task Manager, KRunner/Baloo global search, searchable power/update actions, cursor settings and an optional Hyprland tiling session.
-- Firefox, LibreOffice, Dolphin, Kate, Konsole, Okular, Ark, Gwenview, Spectacle, Haruna, KDE Connect and Flatseal in the offline payload.
+- Plasma System Monitor exposed as the LOKRO Task Manager, KRunner/Baloo global search, searchable system actions, cursor/style settings and an optional Hyprland tiling session.
+- LOKRO Settings shortcuts for users, appearance, wallpaper, cursor, network, Bluetooth, keyboard shortcuts, power, widgets and desktop-session guidance.
+- A graphical LOKRO Boot Manager that displays generated GRUB entries and performs a backed-up, atomic `grub-mkconfig` refresh through administrator authorization.
+- A safe HTTPS Link Installer for Flatpak refs/bundles, signed Arch packages and user-scoped AppImages. Scripts and foreign package formats are rejected.
+- VLC-based LOKRO Media file associations for common MP3, MP4 and other audio/video formats, plus Ark, 7zip, unzip and zip archive support in both images.
+- Firefox, LibreOffice, Dolphin, Kate, Konsole, Okular, Gwenview, Spectacle, KDE Connect and Flatseal in the offline payload.
 - Optional Steam, Prism Launcher, Java 8/17/21, GameMode, Gamescope and MangoHud installation from the offline media.
 - Separate offline and smaller online profiles, release checksums, manifests, provenance and license reports.
 - Boot-time and five-hour update checks with low resource priority, safe pre-download, local confirmation, recovery metadata backups and running-kernel module retention.
@@ -29,6 +33,8 @@ This file separates implemented source from tested release claims. An item being
 - Git whitespace checks.
 
 QML linting and PKGBUILD parsing are enforced in the Arch build workflow, where the required Arch/KDE tools are available.
+
+The previous alpha.4 CI attempt successfully produced both hybrid ISO files but did not publish them because the live-desktop smoke marker timed out. Alpha.5 replaces the fragile user-autostart marker with a root-owned graphical-target watcher that waits for the actual `plasmashell` process and emits serial diagnostics. This change still requires a successful CI BIOS and UEFI run.
 
 ## Required before sharing an ISO as tested
 

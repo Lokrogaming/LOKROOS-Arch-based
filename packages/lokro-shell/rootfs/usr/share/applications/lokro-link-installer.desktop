@@ -1,0 +1,28 @@
+[Desktop Entry]
+Type=Application
+Name=LOKRO Link Installer
+Name[de]=LOKRO-Link-Installer
+Comment=Safely install a supported application download link
+Comment[de]=Unterstützte App-Downloadlinks kontrolliert installieren
+Exec=lokro-link-installer-gui
+Icon=lokro-link-installer
+Terminal=false
+Categories=System;Utility;
+Keywords=install;link;url;flatpak;appimage;package;update;
+Keywords[de]=Installieren;Link;URL;Flatpak;AppImage;Paket;Update;
+Actions=InstallLink;UpdateAppImages;SystemUpdate;
+
+[Desktop Action InstallLink]
+Name=Install from link
+Name[de]=Von Link installieren
+Exec=lokro-link-installer-gui
+
+[Desktop Action UpdateAppImages]
+Name=Update managed AppImages
+Name[de]=Verwaltete AppImages aktualisieren
+Exec=konsole --hold -e lokro-link-installer update-appimages
+
+[Desktop Action SystemUpdate]
+Name=Update LOKRO OS
+Name[de]=LOKRO OS aktualisieren
+Exec=lokro-update-gui

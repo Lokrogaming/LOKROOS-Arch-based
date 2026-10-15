@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=LOKRO Media
+Comment=Play audio and video with the VLC engine
+Comment[de]=Audio und Video mit der VLC-Engine wiedergeben
+Exec=lokro-media %U
+Icon=lokro-media
+Terminal=false
+Categories=AudioVideo;Player;
+Keywords=video;audio;music;mp3;mp4;vlc;player;
+Keywords[de]=Video;Audio;Musik;MP3;MP4;VLC;Player;
+MimeType=audio/mpeg;audio/flac;audio/ogg;audio/x-wav;audio/mp4;video/mp4;video/x-matroska;video/webm;video/mpeg;application/ogg;
+StartupNotify=true

@@ -3,14 +3,16 @@
 set -euo pipefail
 
 systemctl disable lokro-live-user.service 2>/dev/null || true
+systemctl disable lokro-smoke-ready.service 2>/dev/null || true
 rm -f /etc/systemd/system/multi-user.target.wants/lokro-live-user.service
+rm -f /etc/systemd/system/graphical.target.wants/lokro-smoke-ready.service
 rm -f /etc/systemd/system/lokro-live-user.service
+rm -f /etc/systemd/system/lokro-smoke-ready.service
 rm -f /etc/sddm.conf.d/10-lokro-live.conf /etc/sudoers.d/10-liveuser
 rm -f /etc/systemd/system/getty@tty1.service.d/autologin.conf
 rm -f /etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf
 rm -f /usr/local/sbin/lokro-create-live-user
 rm -f /usr/local/sbin/lokro-smoke-ready
-rm -f /etc/xdg/autostart/lokro-smoke-ready.desktop
 rm -f /root/customize_airootfs.sh /root/.automated_script.sh
 rm -f /usr/local/bin/Installation_guide /etc/motd
 rm -f /etc/pacman.d/hooks/uncomment-mirrors.hook

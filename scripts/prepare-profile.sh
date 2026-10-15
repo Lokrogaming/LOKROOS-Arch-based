@@ -117,6 +117,8 @@ ln -sfn /usr/lib/systemd/system/NetworkManager.service \
     "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service"
 ln -sfn /usr/lib/systemd/system/sddm.service \
     "$PROFILE_DIR/airootfs/etc/systemd/system/display-manager.service"
+ln -sfn /etc/systemd/system/lokro-smoke-ready.service \
+    "$PROFILE_DIR/airootfs/etc/systemd/system/graphical.target.wants/lokro-smoke-ready.service"
 ln -sfn /usr/lib/systemd/system/lokro-services-merge.service \
     "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/lokro-services-merge.service"
 ln -sfn /usr/lib/systemd/system/lokro-services-merge.path \

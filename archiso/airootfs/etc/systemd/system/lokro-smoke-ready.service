@@ -1,0 +1,13 @@
+[Unit]
+Description=Report a verified LOKRO Plasma live session to VM smoke tests
+After=lokro-live-user.service sddm.service
+Requires=lokro-live-user.service
+Wants=sddm.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/lokro-smoke-ready
+TimeoutStartSec=330
+
+[Install]
+WantedBy=graphical.target

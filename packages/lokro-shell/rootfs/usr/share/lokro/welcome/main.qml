@@ -225,12 +225,22 @@ ApplicationWindow {
                 WelcomeCard {
                     title: qsTr("Apps")
                     iconName: "plasmadiscover"
-                    detail: qsTr("Discover installiert Flatpaks. Das Basissystem bleibt ausschließlich unter Pacman-Verwaltung.")
+                    detail: qsTr("Discover installiert Flatpaks. Unterstützte HTTPS-Downloads lassen sich kontrolliert über den Link Installer hinzufügen.")
                     primaryText: qsTr("Discover öffnen")
-                    secondaryText: qsTr("Partitionen")
+                    secondaryText: qsTr("Link installieren")
                     onPrimary: root.openAction("discover")
+                    onSecondary: root.openAction("link-installer")
+                    footer: qsTr("Pacman bleibt alleiniger Manager des Basissystems")
+                }
+                WelcomeCard {
+                    title: qsTr("System & Boot")
+                    iconName: "system-run"
+                    detail: qsTr("GRUB zeigt LOKRO OS und bestmöglich erkannte weitere Systeme. Partitionen werden ausschließlich mit ausdrücklicher Bestätigung geändert.")
+                    primaryText: qsTr("Bootmanager")
+                    secondaryText: qsTr("Partitionen")
+                    onPrimary: root.openAction("boot")
                     onSecondary: root.openAction("partitions")
-                    footer: qsTr("Flathub wird systemweit eingerichtet")
+                    footer: qsTr("Windows-Erkennung über os-prober · Backup erforderlich")
                 }
                 WelcomeCard {
                     title: qsTr("Taskmanager & Suche")
@@ -251,6 +261,16 @@ ApplicationWindow {
                     onPrimary: root.openAction("tiling")
                     onSecondary: root.openAction("shortcuts")
                     footer: qsTr("Plasma: Meta+T · Hyprland: Meta+Pfeiltasten")
+                }
+                WelcomeCard {
+                    title: qsTr("Medien & Archive")
+                    iconName: "lokro-media"
+                    detail: qsTr("LOKRO Media nutzt die VLC-Engine für MP3, MP4 und viele weitere Formate. Ark öffnet ZIP-, 7z- und andere Archive.")
+                    primaryText: qsTr("Media öffnen")
+                    secondaryText: qsTr("Dateien")
+                    onPrimary: root.openAction("media")
+                    onSecondary: root.openAction("files")
+                    footer: qsTr("VLC-Engine · Ark · 7-Zip")
                 }
                 WelcomeCard {
                     title: qsTr("Gaming")
