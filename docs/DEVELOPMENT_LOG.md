@@ -67,3 +67,14 @@
   fehlende Folge-Commits, z. B. `server/README.md` Versionsstring alpha.2→alpha.11 längst in `main`).
 - **Änderungen:** `TODO.md` um Aufräum-Aufgabe ergänzt (Löschen erst nach laufendem Codex-Build). Remote-Branches wurden
   **nicht** gelöscht (laufender Build soll nicht gestört werden). Keine Auswirkung auf `IDEAS.md`-Statuswerte.
+
+## 2026-10-15 — Fork + eigene Branch gesichert (Fortschritt saved)
+
+- **Bereich:** Remote-Setup. Befehle: `gh repo fork jamjam1312/LOKROOS-Arch-based --clone=false` →
+  `https://github.com/Lokrogaming/LOKROOS-Arch-based`; `git remote add fork …`; Commit `26a9fe7`
+  (8 Doku-Dateien, 759 Zeilen, Autor Lokrogamer via noreply); `git push -u fork docs/session-2026-10-15`.
+- **Ausgangszustand:** Direkt-Push nach `origin` scheiterte mit 403 (nur Lesezugriff für Lokrogaming).
+- **Neuer Workflow (verbindlich ab jetzt):** Gearbeitet wird auf Branch `docs/session-2026-10-15` mit Upstream `fork`;
+  `origin` (Freundes-Repo, Codex-Build) wird weder beschrieben noch angetoucht. Dieses Tagebuch wird strikt weitergeführt,
+  damit Codex später jede Änderung zurückverfolgen kann.
+- **Tests:** keine (Remote-/Git-Operationen). Branch-Tracking verifiziert (`git push` geht künftig an `fork`).
