@@ -22,6 +22,18 @@ rm -rf "$PROFILE_DIR"
 mkdir -p "$PROFILE_DIR"
 cp -a /usr/share/archiso/configs/releng/. "$PROFILE_DIR/"
 rsync -a "${PROJECT_ROOT}/archiso/airootfs/" "$PROFILE_DIR/airootfs/"
+
+# Preserve the normal local console while exposing kernel/systemd progress to
+# QEMU's serial log. This also makes real-hardware boot failures diagnosable.
+boot_config_count=0
+while IFS= read -r -d '' boot_config; do
+    sed -i -E \
+        '/^[[:space:]]*(APPEND|options|linux)[[:space:]]/ { /console=ttyS0/! s|$| console=tty0 console=ttyS0,115200n8 systemd.show_status=yes systemd.log_target=console|; }' \
+        "$boot_config"
+    boot_config_count=$((boot_config_count + 1))
+done < <(find "$PROFILE_DIR/syslinux" "$PROFILE_DIR/efiboot" "$PROFILE_DIR/grub" \
+    -type f \( -name '*.cfg' -o -name '*.conf' \) -print0 2>/dev/null)
+(( boot_config_count > 0 )) || die 'no Archiso bootloader configurations were found'
 mkdir -p "$PROFILE_DIR/airootfs/usr/share/lokro"
 curl --fail --location --silent --show-error \
     --output "$PROFILE_DIR/airootfs/usr/share/lokro/flathub.flatpakrepo" \
@@ -109,8 +121,7 @@ EOF
         "$PROFILE_DIR/airootfs/var/lib/pacman/sync/lokro-media.db"
 fi
 
-mkdir -p "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants" \
-         "$PROFILE_DIR/airootfs/etc/systemd/system/graphical.target.wants"
+mkdir -p "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants"
 ln -sfn /etc/systemd/system/lokro-live-user.service \
     "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/lokro-live-user.service"
 ln -sfn /usr/lib/systemd/system/NetworkManager.service \
@@ -118,7 +129,7 @@ ln -sfn /usr/lib/systemd/system/NetworkManager.service \
 ln -sfn /usr/lib/systemd/system/sddm.service \
     "$PROFILE_DIR/airootfs/etc/systemd/system/display-manager.service"
 ln -sfn /etc/systemd/system/lokro-smoke-ready.service \
-    "$PROFILE_DIR/airootfs/etc/systemd/system/graphical.target.wants/lokro-smoke-ready.service"
+    "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/lokro-smoke-ready.service"
 ln -sfn /usr/lib/systemd/system/lokro-services-merge.service \
     "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/lokro-services-merge.service"
 ln -sfn /usr/lib/systemd/system/lokro-services-merge.path \

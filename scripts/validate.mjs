@@ -156,8 +156,12 @@ for (const offlineExtra of ["hyprland", "hyprlock", "waybar", "wofi", "xdg-deskt
   if (!prepareProfile.includes(offlineExtra)) failures.push(`offline repository preparation is missing ${offlineExtra}`);
 }
 const smokeService = fs.readFileSync(path.join(root, "archiso/airootfs/etc/systemd/system/lokro-smoke-ready.service"), "utf8");
-if (!/ExecStart=\/usr\/local\/sbin\/lokro-smoke-ready/.test(smokeService) || !/WantedBy=graphical\.target/.test(smokeService)) {
-  failures.push("root-owned smoke watcher must run from graphical.target");
+if (!/ExecStart=\/usr\/local\/sbin\/lokro-smoke-ready/.test(smokeService) || !/WantedBy=multi-user\.target/.test(smokeService)) {
+  failures.push("root-owned smoke watcher must start from multi-user.target before the graphical result is known");
+}
+const liveSddm = fs.readFileSync(path.join(root, "archiso/airootfs/etc/sddm.conf.d/10-lokro-live.conf"), "utf8");
+for (const displayInvariant of ["Session=plasma", "DisplayServer=x11"]) {
+  if (!liveSddm.includes(displayInvariant)) failures.push(`live SDDM configuration is missing: ${displayInvariant}`);
 }
 const smokeScript = fs.readFileSync(path.join(root, "archiso/airootfs/usr/local/sbin/lokro-smoke-ready"), "utf8");
 for (const invariant of ["pgrep -u liveuser -x plasmashell", "LOKRO_SMOKE_WATCHER_STARTED", "LOKRO_PLASMA_READY", "LOKRO_SMOKE_FAILED"]) {
@@ -169,6 +173,18 @@ for (const bootInvariant of ["-c /dev/kvm", "acceleration='kvm'", "tcg,thread=mu
 }
 for (const smokeArtifact of ["lokro-smoke-ready.service", "/usr/local/sbin/lokro-smoke-ready"]) {
   if (!installerCleanup.includes(smokeArtifact)) failures.push(`installer cleanup does not remove smoke artifact: ${smokeArtifact}`);
+}
+for (const serialInvariant of ["console=tty0", "console=ttyS0,115200n8", "systemd.log_target=console", "boot_config_count > 0"]) {
+  if (!prepareProfile.includes(serialInvariant)) failures.push(`prepared Archiso boot entries are missing serial diagnostic invariant: ${serialInvariant}`);
+}
+
+const workflow = fs.readFileSync(path.join(root, ".github/workflows/build-iso.yml"), "utf8");
+for (const releaseInvariant of ["Smoke boot BIOS and UEFI", "out/*.iso.[0-9][0-9][0-9]", "--notes-file out/REASSEMBLE.md"]) {
+  if (!workflow.includes(releaseInvariant)) failures.push(`release workflow is missing multipart/smoke invariant: ${releaseInvariant}`);
+}
+const checksumScript = fs.readFileSync(path.join(root, "scripts/checksums.sh"), "utf8");
+for (const partInvariant of ["--bytes=1900M", "ISO-PARTS-SHA256SUMS", "REASSEMBLE.md"]) {
+  if (!checksumScript.includes(partInvariant)) failures.push(`release metadata is missing multipart invariant: ${partInvariant}`);
 }
 
 const linkInstaller = fs.readFileSync(path.join(root, "packages/lokro-shell/rootfs/usr/bin/lokro-link-installer"), "utf8");

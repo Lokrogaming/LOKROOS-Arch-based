@@ -5,6 +5,7 @@ source "$(dirname "$0")/common.sh"
 need sha256sum
 need pacman
 need bsdtar
+need split
 mkdir -p "$OUT_DIR"
 repo_archive="$OUT_DIR/lokro-repo-${VERSION}.tar.zst"
 [[ -d "$LOCAL_REPO_DIR" ]] || die 'local package repository is missing; run make packages first'
@@ -15,6 +16,41 @@ cp "${PROJECT_ROOT}/LOKRO_UPDATE_CHANNEL.json" "$OUT_DIR/LOKRO_UPDATE_CHANNEL.js
 mapfile -d '' -t iso_files < <(find "$OUT_DIR" -maxdepth 1 -type f -name '*.iso' -print0 | sort -z)
 (( ${#iso_files[@]} > 0 )) || die 'no ISO found in out/'
 sha256sum "${iso_files[@]}" "$repo_archive" > "$OUT_DIR/SHA256SUMS"
+rm -f "$OUT_DIR"/*.iso.[0-9][0-9][0-9]
+for iso in "${iso_files[@]}"; do
+    split --bytes=1900M --numeric-suffixes=1 --suffix-length=3 "$iso" "${iso}."
+done
+mapfile -d '' -t iso_parts < <(find "$OUT_DIR" -maxdepth 1 -type f -name '*.iso.[0-9][0-9][0-9]' -print0 | sort -z)
+(( ${#iso_parts[@]} > 0 )) || die 'ISO release parts were not generated'
+sha256sum "${iso_parts[@]}" > "$OUT_DIR/ISO-PARTS-SHA256SUMS"
+cat > "$OUT_DIR/REASSEMBLE.md" <<'EOF'
+# LOKRO OS alpha download
+
+GitHub requires every individual release file to be smaller than 2 GiB, so each ISO is published as numbered raw parts. Download every `.001`, `.002`, and following part for the chosen `offline` or `online` image into one folder.
+
+Linux/macOS reconstruction (replace `VARIANT` and `VERSION` with the downloaded name):
+
+```bash
+cat lokro-os-VARIANT-VERSION-x86_64.iso.??? > lokro-os-VARIANT-VERSION-x86_64.iso
+sha256sum -c SHA256SUMS --ignore-missing
+```
+
+Windows PowerShell reconstruction (replace the two file names first):
+
+```powershell
+$base = 'lokro-os-VARIANT-VERSION-x86_64.iso'
+$output = [IO.File]::Create($base)
+Get-ChildItem "$base.???" | Sort-Object Name | ForEach-Object {
+    $input = [IO.File]::OpenRead($_.FullName)
+    $input.CopyTo($output)
+    $input.Dispose()
+}
+$output.Dispose()
+Get-FileHash $base -Algorithm SHA256
+```
+
+Compare the resulting hash with the matching ISO line in `SHA256SUMS` before writing it to USB. This remains an experimental x86_64 alpha for virtual machines and test hardware, not a production or daily-driver release.
+EOF
 for variant in offline online; do
     installed_root="${BUILD_DIR}/archiso-work-${variant}/x86_64/airootfs"
     manifest="$OUT_DIR/package-manifest-${variant}.txt"

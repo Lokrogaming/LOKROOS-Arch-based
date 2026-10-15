@@ -1,4 +1,4 @@
-# Known limitations — 0.1.0-alpha.6
+# Known limitations — 0.1.0-alpha.7
 
 - This is an alpha for test machines. Secure Boot and guaranteed dual-boot are not supported.
 - LUKS1 encryption is available but remains experimental until BIOS and UEFI installs have completed the full reboot test. LUKS2/Argon2 is intentionally deferred because stock GRUB compatibility needs more integration work.
@@ -19,3 +19,4 @@
 - Steam and Minecraft are proprietary. The optional bundle prepares drivers and launchers, but game assets, accounts and online authentication are never embedded in the ISO.
 - Automatic install-alongside depends on the existing filesystem and free space. BitLocker, Windows Fast Startup and unusual storage controllers can prevent safe resizing; a verified backup is mandatory.
 - ARM is a separate future port based on Arch Linux ARM and cannot reuse the x86_64 Archiso image.
+- GitHub release files must each remain below 2 GiB. The larger ISO images are published as numbered raw parts and must be reassembled and checksum-verified before use.

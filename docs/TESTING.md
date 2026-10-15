@@ -15,7 +15,7 @@ make smoke-bios
 make smoke-uefi
 ```
 
-The smoke targets run QEMU without a visible display and succeed only when a Plasma autostart helper writes `LOKRO_PLASMA_READY` to the emulated serial port. The GitHub ISO workflow executes both BIOS and UEFI smoke boots after building the images.
+The smoke targets run QEMU without a visible display and succeed only when a root-owned systemd watcher observes the live user's `plasmashell` process and writes `LOKRO_PLASMA_READY` to the emulated serial port. Bootloader entries retain the normal local console and also route kernel/systemd diagnostics to serial. The GitHub ISO workflow executes both BIOS and UEFI smoke boots after building the images.
 
 For each mode and image variant, verify the live session reaches Plasma, the welcome center opens, networking works, `lokro-services-merge` produces valid JSON, Dolphin finds a newly-created file after Baloo indexing, and Calamares installs to an empty 32 GiB virtual disk. Test Plasma and optional Hyprland, Firefox and no-browser, minimal/complete and gaming selections, both an unencrypted installation and the optional encrypted layout. Remove the ISO and boot the installed disk to confirm GRUB, SDDM, NetworkManager, PipeWire, Bluetooth and Flatpak initialization.
 
