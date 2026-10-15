@@ -181,6 +181,12 @@ for (const smokeArtifact of ["lokro-smoke-ready.service", "/usr/local/sbin/lokro
 for (const serialInvariant of ["console=tty0", "console=ttyS0,115200n8", "systemd.log_target=console", "boot_config_count > 0"]) {
   if (!prepareProfile.includes(serialInvariant)) failures.push(`prepared Archiso boot entries are missing serial diagnostic invariant: ${serialInvariant}`);
 }
+if (prepareProfile.includes("(APPEND|options|linux)")) {
+  failures.push("serial diagnostics must never be appended to the systemd-boot linux kernel-path directive");
+}
+if (!prepareProfile.includes("(APPEND|options)")) {
+  failures.push("serial diagnostics must be limited to bootloader kernel-parameter directives");
+}
 
 const workflow = fs.readFileSync(path.join(root, ".github/workflows/build-iso.yml"), "utf8");
 for (const releaseInvariant of ["Smoke boot BIOS and UEFI", "out/*.iso.[0-9][0-9][0-9]", "--notes-file out/REASSEMBLE.md"]) {
