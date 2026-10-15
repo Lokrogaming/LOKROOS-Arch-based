@@ -4,7 +4,7 @@ Before=sddm.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/lokro-create-live-user
+ExecStart=/usr/bin/bash /usr/local/sbin/lokro-create-live-user
 RemainAfterExit=yes
 
 [Install]

@@ -1,4 +1,4 @@
-# LOKRO OS 0.1.0-alpha.9 release status
+# LOKRO OS 0.1.0-alpha.10 release status
 
 This file separates implemented source from tested release claims. An item being configured does not prove that it works on every physical computer.
 
@@ -34,7 +34,7 @@ This file separates implemented source from tested release claims. An item being
 
 QML linting and PKGBUILD parsing are enforced in the Arch build workflow, where the required Arch/KDE tools are available.
 
-The alpha.5 CI attempt successfully produced both hybrid ISO files, including a roughly 2.5 GiB online image, but its six-minute BIOS check ended without userspace diagnostics. Alpha.6 confirmed the runner exposes KVM and reproduced the missing marker after 15 minutes; its serial log still showed only the bootloader because the kernel command line did not route boot output to serial. Alpha.7 added kernel/systemd serial diagnostics and successfully built both images, but the offline image exceeded the 4 GiB acceptance limit by about 39 MB because the optional offline repository duplicated package archives already installed in the live root. Alpha.8 introduced duplicate removal but stopped before ISO creation because the current Pacman rejects `--print-format` for file queries. Alpha.9 uses Pacman's portable query output while preserving the offline optional-package set. BIOS and UEFI still must both pass before publication.
+The alpha.5 CI attempt successfully produced both hybrid ISO files, including a roughly 2.5 GiB online image, but its six-minute BIOS check ended without userspace diagnostics. Alpha.6 confirmed the runner exposes KVM and reproduced the missing marker after 15 minutes; its serial log still showed only the bootloader because the kernel command line did not route boot output to serial. Alpha.7 added kernel/systemd serial diagnostics and successfully built both images, but the offline image exceeded the 4 GiB acceptance limit by about 39 MB because the optional offline repository duplicated package archives already installed in the live root. Alpha.8 introduced duplicate removal but stopped before ISO creation because the current Pacman rejects `--print-format` for file queries. Alpha.9 produced a 3,670,376,448-byte offline ISO and a 2,646,310,912-byte online ISO; BIOS reached userspace in 13.2 seconds but the live-user helper received `203/EXEC` before Plasma. Alpha.10 invokes both live helper scripts through the explicit Bash interpreter. BIOS and UEFI still must both pass before publication.
 
 ## Required before sharing an ISO as tested
 

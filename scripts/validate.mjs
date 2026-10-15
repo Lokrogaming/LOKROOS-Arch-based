@@ -156,8 +156,12 @@ for (const offlineExtra of ["hyprland", "hyprlock", "waybar", "wofi", "xdg-deskt
   if (!prepareProfile.includes(offlineExtra)) failures.push(`offline repository preparation is missing ${offlineExtra}`);
 }
 const smokeService = fs.readFileSync(path.join(root, "archiso/airootfs/etc/systemd/system/lokro-smoke-ready.service"), "utf8");
-if (!/ExecStart=\/usr\/local\/sbin\/lokro-smoke-ready/.test(smokeService) || !/WantedBy=multi-user\.target/.test(smokeService)) {
+if (!/ExecStart=\/usr\/bin\/bash \/usr\/local\/sbin\/lokro-smoke-ready/.test(smokeService) || !/WantedBy=multi-user\.target/.test(smokeService)) {
   failures.push("root-owned smoke watcher must start from multi-user.target before the graphical result is known");
+}
+const liveUserService = fs.readFileSync(path.join(root, "archiso/airootfs/etc/systemd/system/lokro-live-user.service"), "utf8");
+if (!/ExecStart=\/usr\/bin\/bash \/usr\/local\/sbin\/lokro-create-live-user/.test(liveUserService) || !/Before=sddm\.service/.test(liveUserService)) {
+  failures.push("live-user creation must run through Bash before SDDM starts");
 }
 const liveSddm = fs.readFileSync(path.join(root, "archiso/airootfs/etc/sddm.conf.d/10-lokro-live.conf"), "utf8");
 for (const displayInvariant of ["Session=plasma", "DisplayServer=x11"]) {
