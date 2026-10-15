@@ -58,6 +58,17 @@
 - **Tests:** keine (Doku). `validate.mjs`-relevante Muster vermieden (keine Shell-Pipelines im Text).
 - **Offen:** ADR Bedrohungsmodell/Policy-Format als nächster Doku-Schritt, erst nach Build-Stabilisierung (P0).
 
+## 2026-10-15 — CI-Erfolg: BIOS+UEFI-Smoke grün, v0.1.0-alpha.11 publiziert
+
+- **Quelle:** `gh run view 38801087314` (origin-Repo, Codex-Build, angestoßen per Push ca. 20:20 UTC; Job `build` ✅ in 23m57s).
+- **Nachweise aus dem Log:** `Plasma live session reached for bios` (20:41:43Z) + `reached for uefi` (20:42:15Z);
+  Size-Gate: offline 3.670.376.448 B, online 2.646.310.912 B (beide < 4 GiB); Prerelease `v0.1.0-alpha.11` publiziert
+  (u. a. je 2 ISO-Teile pro Variante, Manifeste, Lizenzen, Provenienz). Nebenbei: qmllint meldet nur Warnungen
+  (`Unqualified access` im Hub-Plasmoid, nicht fatal); Arch zieht inzwischen Plasma 6.8.0.
+- **Doku-Folgen (Fork-Branch):** KI-001 → gelöst/verifiziert; `IDEAS.md` F04 BLOCKED → TESTED; `TODO.md` P0-UEFI abgehakt.
+  Verbleibend für „getestetes ISO" laut `RELEASE_STATUS.md`: VM-Installation + Hardware-Matrix (Menschenarbeit).
+- **Tests:** keine lokalen (nur Log-Auswertung per `gh`). Kein Eingriff in Codex' Build.
+
 ## 2026-10-15 — Codex-Branches per `gh` geprüft (kein Commit/Push)
 
 - **Bereich:** Branch-Hygiene. Befehle (lesend): `gh auth status` (ok, Account Lokrogaming),

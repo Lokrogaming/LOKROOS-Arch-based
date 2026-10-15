@@ -12,7 +12,9 @@
 - **Tatsächlich:** Kein Eintrag (alpha.10).
 - **Ursache (nachgewiesen laut RELEASE_STATUS):** Rewrite hing Serial-Parameter an `linux`-Kernelpfad-Direktive an.
 - **Fix-Versuch:** alpha.11 begrenzt Rewrite auf `APPEND`/`options` + Regressionstest in `validate.mjs`.
-- **Status:** Fix implementiert, **nicht verifiziert** — BIOS+UEFI müssen beide bestehen.
+- **Status:** ✅ GELÖST/VERIFIZIERT am 2026-10-15 — CI-Run 38801087314 (`v0.1.0-alpha.11 Build alpha ISO`):
+  `Plasma live session reached for bios` + `reached for uefi`; Size-Gate ok
+  (offline 3.670.376.448 B, online 2.646.310.912 B); Prerelease publiziert. Alpha.11-Fix wirkt.
 - **Nächste Diagnose:** Auf Arch beide Smokes laufen lassen, serielle Logs + `efiboot`-Einträge sichern.
 
 ## KI-002 — Flathub-Deskriptor: externer Single Point of Failure im Build

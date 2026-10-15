@@ -5,7 +5,7 @@
 
 ## Kritische Fehler (P0 — blockieren Build/Release)
 
-- [ ] `[P0]` UEFI-Smoke nach alpha.11-Fix bestehen (KI-001). Akzeptanz: `make smoke-uefi` → `LOKRO_PLASMA_READY`; Log archivieren.
+- [x] `[P0]` UEFI-Smoke nach alpha.11-Fix bestehen (KI-001). ✅ Verifiziert in Run 38801087314 (2026-10-15, `Plasma live session reached for uefi`); Prerelease v0.1.0-alpha.11 publiziert.
 - [ ] `[P0]` Flathub-Deskriptor-Pinning härten (KI-002). Akzeptanz: Build überlebt Flathub-Rotation/Netzwerk-Aussetzer (Cache+Retry, SHA aus `sources.json`).
 - [ ] `[P0]` `profiledef.sh`-Rewrite verifizieren (KI-006). Akzeptanz: Build bricht ab, wenn `iso_name/iso_version/iso_label` nicht gesetzt wurden.
 - [ ] `[P0]` Manifest-Generierung (`pacman --root/--dbpath`) auf Arch verifizieren (KI-003). Akzeptanz: `package-manifest-*.txt` enthält ISO- (nicht Host-) Pakete.

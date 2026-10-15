@@ -12,7 +12,7 @@
 | F01 | Arch-Basis x86_64 (Kernel, Firmware) | IMPLEMENTED | Quelle vorhanden; HW-Matrix offen |
 | F02 | Build-System + ISO offline/online | IMPLEMENTED | alpha.9 beide ISOs gebaut (3,67/2,65 GiB) |
 | F03 | BIOS-Plasma-Smoke | TESTED | alpha.10: Plasma nach 32 s (BIOS) |
-| F04 | UEFI-Plasma-Smoke | BLOCKED | alpha.10: systemd-boot ohne Linux-Eintrag; alpha.11-Fix ungeprüft → siehe KI-001 |
+| F04 | UEFI-Plasma-Smoke | TESTED | Run 38801087314 (2026-10-15): `LOKRO_PLASMA_READY` via UEFI |
 | F05 | Calamares-Installation (unpackfs, cleanup) | IMPLEMENTED | Config vorhanden; VM-Installationsnachweis offen |
 | F06 | GRUB BIOS+UEFI + os-prober | IMPLEMENTED | Dual-Boot bleibt best-effort/alpha |
 | F07 | Plymouth-Theme lokro | IMPLEMENTED | minimal (Logo+Puls), kein Fortschritt |
