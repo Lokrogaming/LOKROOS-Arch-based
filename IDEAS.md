@@ -117,6 +117,10 @@ Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloa
 
 ### F30 Mobile-Version — IDEA (nur Planung, Wunsch aus TODO-Rework 2026-10-16)
 - **Ziel:** LokroOS auf Smartphones/Tablets (neue + ältere Chips) nutzbar machen.
+- **Verbindliche Vorgabe (2026-10-16):** Die Mobile-Version enthält **keine integrierte lokale KI**.
+  Begründung: Prozessor, RAM und Storage mobiler Geräte reichen nicht für ein fähiges lokales Modell.
+  KI gibt es mobil ausschließlich per **BYOK** (nutzereigene Schlüssel, z. B. ChatGPT/Claude/Anthropic);
+  ohne Schlüssel läuft das System vollständig ohne KI. Der Benchmark-/Download-Pfad (9.9.2) gilt nur für Desktop.
 - **Stand:** Nichts vorhanden. x86_64-ISO ist nicht wiederverwendbar; `docs/ARM_PORT.md` erklärt ARM als separates Zukunftsprojekt.
 - **Plan:** 1) ARM-Port beschließen (F28: Arch Linux ARM-Basis, Kernel/Bootloader je SoC). 2) Mobile-Shell evaluieren (z. B. Plasma Mobile vs. Phosh — unfestgelegt). 3) Telefonie-/SMS-/Modem-Stack (ModemManager vorhanden, Rest offen). 4) Strom-/Touch-/Sensor-Tests auf Referenzgeräten.
 - **Anforderungen:** ARM-Build-Infra, SoC-Kernel, mobile Shell, angepasster Calamares- oder OEM-Flow.
@@ -218,7 +222,9 @@ Alles standardmäßig aus/restriktiv; Änderungen brauchen Admin-Bestätigung; j
 Agent zuletzt getan hat (Audit-Ansicht). Deaktivierung stoppt Agent + Hintergrunddienste sofort. Status: IDEA.
 
 **9.9.5 BYOK (Bring Your Own Key, später).** Optional darf der Nutzer eigene API-Schlüssel externer Anbieter hinterlegen
-(z. B. als Fallback, wenn das lokale Modell nicht reicht). Ansatz: Speicherung im Secret Service (KWallet), nie in Logs/Configs
+(z. B. als Fallback, wenn das lokale Modell nicht reicht). **BYOK ist zugleich der einzige KI-Pfad der geplanten
+Mobile-Version (F30): Mobil gibt es keine lokale Inferenz, nur Schlüssel-basierte Nutzung.**
+Ansatz: Speicherung im Secret Service (KWallet), nie in Logs/Configs
 im Klartext, pro Schlüssel einseh-/löschbar, Nutzung nur nach expliziter Auswahl pro Anfrage oder als konfigurierter Fallback.
 Ohne Schlüssel bleibt das System vollständig lokal nutzbar. Status: IDEA.
 

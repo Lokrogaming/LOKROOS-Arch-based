@@ -116,3 +116,10 @@
   9.9.9 Benchmark-Schwellen, 9.9.10 Registry-Schema, 9.9.11 Bedrohungsmodell-Kurzfassung). 5) Docs-Branch in Fork-`main`
   gemergt (Fast-Forward) — TODO-Rework steht damit auf allen aktiven Fork-Branches.
 - **Tests:** `node scripts/validate.mjs` ✅ (63 Dateien nach alpha.12-Anforderungen). Kein Code, keine Builds.
+
+## 2026-10-16 — Mobile-Vorgabe: keine lokale KI, nur BYOK
+
+- **Bereich:** `IDEAS.md` (F30 + 9.9.5). Kein Code.
+- **Vorgabe des Projektverantwortlichen:** Mobile bekommt keine integrierte KI (Prozessor/RAM/Storage zu klein für ein
+  fähiges Modell); KI mobil ausschließlich per BYOK (z. B. ChatGPT-/Claude-/Anthropic-Schlüssel), sonst läuft das System ohne KI.
+- **Tests:** keine (Doku).
