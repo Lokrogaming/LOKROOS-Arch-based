@@ -1,4 +1,4 @@
-# TODO.md — Zentrale Aufgabenliste (Stand 2026-10-16, v0.1.0-alpha.12)
+# TODO.md — Zentrale Aufgabenliste (Stand 2026-10-16, v0.1.0-alpha.14)
 
 > Pflege: jede Sitzung. Abhaken nur mit Nachweis. Blocker mit Grund + Fortsetzungsbedingung.
 > Details zu Ursachen/Fixes: `docs/KNOWN_ISSUES.md`, `docs/ISO_BUILD_ANALYSE_2026-10-15.md`.

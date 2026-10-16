@@ -2,7 +2,7 @@
 
 > Zentrale Einstiegsdatei. Jeder Agent liest diese Datei zuerst, bevor er Code ändert.
 > Detailwissen liegt in den verlinkten Dateien. Diese Datei bleibt die verbindliche Regel- und Orientierungsquelle.
-> Stand: 2026-10-16, Version `0.1.0-alpha.12`, Branch `main`. Alle Statusangaben sind nur so gut wie ihre Nachweise —
+> Stand: 2026-10-16, Version `0.1.0-alpha.14`, Branch `main`. Alle Statusangaben sind nur so gut wie ihre Nachweise —
 > erfundene Build-Erfolge oder Testergebnisse sind verboten.
 
 ## A. Projektidentität
@@ -11,7 +11,7 @@
 - **Ziel:** Eigenständiges, experimentelles x86_64-Desktop-Betriebssystem auf Arch-Basis mit eigener Identität
   (eigenes Branding, eigener Look-and-Feel, eigene Systemwerkzeuge, konsistente Architektur) — kein Ubuntu-/Kubuntu-Reskin.
 - **Langfristige Vision:** Unabhängig wartbares System mit Plasma-Standarddesktop, optionaler Hyprland-Sitzung,
-  Calamares-Installation, sicherem Update-Modell und общественного nachvollziehbarer Build-Pipeline.
+  Calamares-Installation, sicherem Update-Modell und öffentlich nachvollziehbarer Build-Pipeline.
   Später evtl. optionale, vollständig lokale KI-Assistenz (derzeit **nur Konzept**, keine Implementierung).
 - **Zielgruppe (Alpha):** Test-VMs und Test-Hardware. Kein Produktiv-, kein Daily-Driver-, kein garantierter Dual-Boot-Release.
 - **Designprinzipien:**
@@ -20,21 +20,23 @@
   3. Live-Image = generische Archiso-Hooks; installiertes Ziel = normale Disk-root-initramfs (wird erst vom Installer erzeugt).
   4. Jede Automatik braucht lokale Bestätigung (kein unattended Install von LOKRO-Artefakten).
   5. Alles, was als „fertig“ gilt, braucht einen reproduzierbaren Nachweis (Build-Log, Smoke-Log, Hardware-Protokoll).
+  6. Chamfer mit Maß: Chamfer-Ecken nur dort, wo sie gestalterisch Sinn ergeben; Standard bleibt
+     Rundung × Glass-Look. Desktop-Widgets werden per Customize-Dialog umschaltbar
+     (rund / Chamfer / weitere Stile); KI-seitige Theming-Hooks dafür sind geplant (F34).
 - **Design-System (verbindlich seit 2026-10-16):** Stil folgt dem LOKRO-Branding-Guide
   ([lokro.dev/branding](https://lokro.dev/branding), Repo `Lokrogaming/lokrogaming.github.io`, `assets/site.css`):
   Dark/Glass, Chamfer-Ecken statt Rundungen (18/10/28 px), Tokens `#0a0a0b`/`#111113`/`#f2f2f0`,
   Mint-Akzent `#7fe3b4`, Space Grotesk/Inter/JetBrains Mono. Details + Migrationsstand: `IDEAS.md` F34/Kap. 10.1.
 - **Abgrenzung:** Keine eigene Distribution im Sinne eines eigenen Kernels/Repos. Basis = Arch-Repos + Archiso-`releng`-Profil
-  + 4 eigene Pakete + gepinnter Calamares-Build. CachyOS-Kernel/Repos/Ananicy werden bewusst **nicht** übernommen
+  + 5 eigene Pakete + gepinnter Calamares-Build. CachyOS-Kernel/Repos/Ananicy werden bewusst **nicht** übernommen
   (eigener Trust-Root, siehe `docs/ARCHITECTURE.md`).
-- **Entwicklungsstand (überprüfbar am 2026-10-15):**
-  - Quelle vollständig vorhanden; `scripts/validate.mjs` besteht (55 Pflichtdateien, 102 Paketeinträge);
-    Python-Unit-Tests 6/6 bestehen; `bash -n` über alle Skripte besteht.
-  - Laut `docs/RELEASE_STATUS.md`: alpha.10 erreichte BIOS-Plasma-Smoke nach 32 s; UEFI zeigte systemd-boot ohne
-    Linux-Eintrag (Ursache: serielle Boot-Diagnose wurde an `linux`-Direktive angehängt). Alpha.11 begrenzt den Rewrite
-    auf `APPEND`/`options` + Regressionstest. **BIOS + UEFI müssen beide noch bestehen, bevor ein ISO als getestet gilt.**
-  - Echte Hardware-Matrix (AMD/NVIDIA, Multi-Monitor, Audio, Bluetooth, Suspend, Steam, Minecraft, Install-alongside)
-    ist laut Release-Status **noch Menschenarbeit** — nicht als erledigt betrachten.
+- **Entwicklungsstand (überprüfbar am 2026-10-16):**
+  - Quelle vollständig vorhanden; `scripts/validate.mjs` besteht; Python-Unit-Tests bestehen; `bash -n` besteht.
+    Seit alpha.12: deklarative **Design Packs** (user-scoped, kein Code); seit alpha.13: **`lokro-store`**
+    (gepinnter App-/Design-Katalog als 5. eigenes Paket, PySide6-GUI); alpha.14 dokumentiert den Release-Stand.
+  - Laut `docs/RELEASE_STATUS.md`: alpha.11 bestand BIOS- **und** UEFI-Plasma-Smoke (Run 38801087314);
+    alpha.12/13/14 bauten darauf auf (Design Packs, Store, Release-Doku). BIOS + UEFI gelten als verifiziert,
+    Installations- und Hardware-Nachweise bleiben Menschenarbeit.
 
 ## B. Technische Grundlagen
 
@@ -42,8 +44,8 @@
 |---|---|---|
 | Linux-Basis | Arch Linux x86_64, Stock-Kernel `linux`, `linux-firmware`, `sof-firmware` | IMPLEMENTED (HW-Tests offen) |
 | Paketverwaltung | Pacman (offizielle Repos + Multilib); lokales `[lokro]`-Repo via `repo-add`; offline `[lokro-media]`-Repo unter `/opt/lokro/repo` | IMPLEMENTED |
-| Eigene Pakete | `lokro-branding`, `lokro-shell`, `lokro-installer-config`, `lokro-ai-setup` (+ `vendor/ckbcomp`, `vendor/calamares` → `calamares-lokro`) | IMPLEMENTED |
-| Build/ISO | `scripts/build-packages.sh` → `scripts/prepare-profile.sh` → `mkarchiso` (offline- + online-Variante), `scripts/checksums.sh` (SHA256, Split <2 GiB) | IMPLEMENTED, UEFI-Smoke BLOCKED |
+| Eigene Pakete | `lokro-branding`, `lokro-shell`, `lokro-installer-config`, `lokro-ai-setup`, `lokro-store` (+ `vendor/ckbcomp`, `vendor/calamares` → `calamares-lokro`) | IMPLEMENTED |
+| Build/ISO | `scripts/build-packages.sh` → `scripts/prepare-profile.sh` → `mkarchiso` (offline- + online-Variante), `scripts/checksums.sh` (SHA256, Split <2 GiB) | IMPLEMENTED, BIOS+UEFI-Smoke TESTED |
 | Bootloader | GRUB (BIOS+UEFI), systemd-boot/syslinux aus releng-Profil; `os-prober` best-effort | IMPLEMENTED |
 | Bootanimation | Plymouth, Theme `lokro` (minimal: Logo + Puls) | IMPLEMENTED |
 | Display-Manager | SDDM (Live-Autologin `liveuser`, Greeter X11, Session Plasma-Wayland) | IMPLEMENTED |
@@ -51,7 +53,7 @@
 | Installer/Live | Calamares 3.3.14 (gepinnt, Qt6), kopiert eingebettetes SquashFS, `installer-cleanup` entfernt Live-Artefakte | IMPLEMENTED |
 | Sprachen/Tools | Bash, Python (Tests/YAML), Node (validate.mjs), QML, CMake/Ninja (Calamares), makepkg, `mkarchiso` | IMPLEMENTED |
 | Dev-Umgebung | Arch-Linux-VM oder privilegierter `archlinux:base-devel`-Container, root, ≥20 GiB frei | verbindlich |
-| Externe Quellen | Arch-Mirror, Flathub-Deskriptor (gepinnt, SHA-verifiziert), Ollama-GitHub-Releases (gepinnt, opt-in), Debian-Console-Setup-Quelle (ckbcomp), Codeberg-Calamares | siehe `third_party/sources.json` |
+| Externe Quellen | Arch-Mirror, Flathub-Deskriptor (gepinnt, SHA-verifiziert), Ollama-GitHub-Releases (gepinnt, opt-in), Debian-Console-Setup-Quelle (ckbcomp), Codeberg-Calamares, LOKRO-Store-Upstream-Tarball (gepinnt, SHA-verifiziert) | siehe `third_party/sources.json` |
 
 **Explizit nicht enthalten / noch zu entscheiden:** eigener Paketserver mit Signaturschlüssel (offen),
 Secure Boot (nicht unterstützt), ARM-Port (separates Zukunftsprojekt), Server-Edition (`server/` = Platzhalter, CANCELLED für v0.1),
@@ -64,9 +66,10 @@ KI-Chat-Assistent (nur Konzept in `IDEAS.md`, keine Implementierung in dieser Au
 | `archiso/packages/{common,offline,online}.x86_64` | Paketmanifest je Variante; wird an releng-`packages.x86_64` angehängt + `sort -u` | Jeder Name muss in Arch-Repos oder lokalem `[lokro]`-Repo auflösbar sein, sonst stirbt `prepare-profile.sh` beim `pacman -Sp` | `make check-repos`, `node scripts/validate.mjs` |
 | `archiso/airootfs/` | Kleines Live-Overlay (liveuser, smoke-watcher, SDDM, sudoers, plymouthd, zram) | Wird per rsync über releng gelegt; **keine** paket-eigenen Pfade vor pacstrap überschreiben (Pacman-Konflikt) | Smoke-Boot-Logs |
 | `packages/lokro-branding/` | Plasma-Defaults, Farben, Hintergrund, Plymouth, SDDM, First-Login | Wirkt auf Live- **und** Zielsystem | `desktop-file-validate`, qmllint (Arch-CI) |
-| `packages/lokro-shell/` | Suche, Hub, Welcome, Updater, Link-Installer, Media-Launcher, Service-Merge, Flatpak-Setup | Viele ausführbare Tools; chmod-Liste in PKGBUILD muss Dateiliste exakt abdecken | Unit-Tests `tests/`, ShellCheck |
+| `packages/lokro-shell/` | Suche, Hub, Welcome, Updater, Link-Installer, Media-Launcher, Service-Merge, Flatpak-Setup, Design-Pack-Importer | Viele ausführbare Tools; chmod-Liste in PKGBUILD muss Dateiliste exakt abdecken | Unit-Tests `tests/`, ShellCheck |
 | `packages/lokro-installer-config/` | Calamares-Flow (`settings.conf`), Chooser, `installer-cleanup` | Falsche Chooser-Pakete → Installation schlägt erst zur Laufzeit fehl (kein Build-Fehler!) | `python3 scripts/validate_yaml.py`, Calamares-Schema-Check (offen, siehe TODO) |
 | `packages/lokro-ai-setup/` | Nur Downloader/Setup für Ollama (gepinnt) + `opencode`-Opt-Dependency; **kein Modell im ISO** | Downloads nur nach expliziter Zustimmung | SHA-Prüfung in `releases.json` |
+| `packages/lokro-store/` | Gepinnter App-/Design-Katalog (eigene Upstream-Quelle, PySide6-GUI, validiertes Katalog-JSON) | Nur bekannte Katalog-Kommandos; keine unbekannten Katalogbefehle | `make validate`, Schema-Check |
 | `vendor/ckbcomp`, `vendor/calamares/` | Gepinnte Quellen mit SHA256; ckbcomp muss **vor** calamares-lokro gebaut+installiert werden | Reihenfolge in `build-packages.sh` nicht ändern | `make packages` auf Arch |
 | `scripts/` | `common.sh` (Pfade/Version), `build-packages.sh`, `prepare-profile.sh`, `build-iso.sh`, `checksums.sh`, `smoke-boot.sh`, `run-vm.sh`, Validierungen | Herz der Pipeline; ShellCheck-pflichtig | `make validate`, `bash -n`, ShellCheck |
 | `LOKRO_UPDATE_CHANNEL.json` ↔ `packages/lokro-shell/.../update-channel.json` | Update-Kanal, byte-identisch, Repo gepinnt, `installWithoutLocalConfirmation: false` | Drift blockiert Release-Vertrauen | `validate.mjs`-Check |
@@ -92,6 +95,8 @@ KI-Chat-Assistent (nur Konzept in `IDEAS.md`, keine Implementierung in dieser Au
     Lösungsansätze und offene Fragen in einer **eigenen MD-Datei** ab (z. B. `docs/AI_NOTES_<name>_<datum>.md`),
     statt sie nur im Chat zu lassen. Dateiname + Datum + Status (IDEA/PLANNED/…) angeben und in `IDEAS.md` verlinken.
     Der Master-Prompt-Volltext dieser Sitzung ist als Quelle im Anhang von `IDEAS.md` archiviert.
+14. **Store-Katalog-Regel (aus Upstream alpha.13 übernommen):** Keine unbekannten Katalog-Kommandos;
+    Store-Quellen nur gepinnt mit SHA-256; generierte ISOs/`out/` gehören nie ins Git.
 
 ## E. Build- und Testverfahren (nur verifizierte Befehle)
 
@@ -132,8 +137,9 @@ make vm-bios / make vm-uefi  # interaktive QEMU-Tests (braucht Display/GL)
 ## G. Architecture Decision Records (neu ab 2026-10-15)
 
 Größere Entscheidungen als ADR unter `docs/adr/NNNN-titel.md` ablegen (Problem, Anforderungen, Alternativen,
-Entscheidung, Begründung, Nachteile, Auswirkungen; Status: verbindlich vs. Vorschlag). Erste Kandidaten:
-Flathub-Pinning-Strategie, Offline-Dedup-Verfahren, Serial-Diagnose-Umfang (GRUB-`linux`-Zeile), Manifest-Generierung
+Entscheidung, Begründung, Nachteile, Auswirkungen; Status: verbindlich vs. Vorschlag). Vorhanden: `0001-mobile-shell`,
+`0002-shared-wizard` (beide Vorschlag). Weitere Kandidaten: Store-Katalog-Modell, Flathub-Pinning-Strategie,
+Offline-Dedup-Verfahren, Serial-Diagnose-Umfang (GRUB-`linux`-Zeile), Manifest-Generierung
 (`pacman --root/--dbpath`), Größenbudget 4 GiB.
 
 ## Regelmäßiger Arbeitsablauf (verbindlich)

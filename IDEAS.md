@@ -1,6 +1,6 @@
 # IDEAS.md — Technische Roadmap LokroOS (prüfbares Projektmanagement)
 
-> Stand: 2026-10-16, Version `0.1.0-alpha.12`. Statuswerte sind verbindlich:
+> Stand: 2026-10-16, Version `0.1.0-alpha.14`. Statuswerte sind verbindlich:
 > `IDEA / PLANNED / IN_PROGRESS / PARTIAL / BLOCKED / IMPLEMENTED / TESTED / COMPLETED / DEPRECATED / CANCELLED`.
 > Code vorhanden ≠ fertig. Statuswechsel nur mit Nachweis (Log, Test, Hardware-Protokoll).
 > Quelle dieser Struktur: Master-Prompt vom 2026-10-15 (Volltext im Anhang).
@@ -40,7 +40,7 @@
 | F28 | ARM-Port | IDEA | separates Zukunftsprojekt; Voraussetzung für F30 |
 | F29 | Secure Boot | IDEA | nicht unterstützt |
 | F30 | Mobile-Version (Smartphone/Tablet) | IDEA | nur Planung (Kap. 9.10); braucht ARM-Port + Mobile-Shell |
-| F31 | Eigener Appstore (+ Google Play?) | IDEA | nur Planung (Kap. 9.10); Play braucht Google-Lizenzierung |
+| F31 | Eigener Appstore (+ Google Play?) | PARTIAL | Desktop-Store `lokro-store` seit alpha.13 (Katalog+GUI); Play/Mobile weiter IDEA |
 | F32 | APK-/Android-App-Unterstützung | IDEA | nur Planung (Kap. 9.10); „fast alle" unrealistisch ohne Nachweis |
 | F33 | Design Packs (deklarativ, user-scoped) | IMPLEMENTED | seit alpha.12: `design-packs/`, Schema, Importer+GUI, Tests |
 | F34 | Design-System nach lokro.dev-Branding | PLANNED | Beschluss 2026-10-16 (Kap. 10.1); Umsetzung offen |
@@ -147,13 +147,21 @@ Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloa
     (siehe `docs/adr/0002-shared-first-boot-wizard.md`).
 - **Offen:** Alles — Geräteauswahl, Shell, Ressourcen. **Priorität:** niedrig (Fernziel). **Nächster Schritt:** Kein Code; erst F28-ADR (ARM-Strategie).
 
-### F31 Eigener Appstore (+ Google Play?) — IDEA (nur Planung)
+### F31 Eigener Appstore (+ Google Play?) — PARTIAL (Desktop-Store da, Rest Planung)
 - **Ziel:** Grafischer Laden für Apps neben Pacman/Discover.
-- **Stand:** Design-Packs-Format (F33) ist als wiederverwendbares, privilegienloses Format dafür vorgesehen; Store selbst existiert nicht.
-- **Ehrlicher Hinweis:** **Google Play kann nicht einfach mitgeliefert werden** — Play Store/Play-Dienste (GMS) erfordern Googles Lizenzierung und Gerätezertifizierung; ohne das gibt es kein legales Play auf eigenem OS. Realistische Pfade: eigener Store für Flatpaks/Packs, optional F-Droid-Repos, Play nur per Nutzer-eigener Installation (deren Legalität/Funktion der Nutzer verantwortet).
-- **Plan:** 1) Store-Umfang festlegen (nur Flatpak/Packs Kuratierung?). 2) Paketquellen-/Signatur-Modell (baut auf Update-Kanal F23 + Signatur-ADR auf). 3) GUI (Discover erweitern vs. eigene App — unfestgelegt).
-- **Abhängigkeiten:** F16, F23, Signatur-ADR. **Akzeptanz:** Installieren/Deinstallieren/Updates aus kuratierter Quelle mit Signaturprüfung.
-- **Priorität:** niedrig. **Nächster Schritt:** Umfang als ADR festhalten, kein Code.
+- **Stand:** Seit alpha.13 Paket `lokro-store` (Upstream-Tarball `LOKROOS-Appstore-githubconnection` v0.1.0-alpha.3,
+  gepinnt mit SHA-256): Katalog `catalog/v1/catalog.json` + Schema, PySide6-GUI, Desktop-Datei, Icons.
+  Design-Packs-Format (F33) als privilegienloses Format vorgesehen.
+- **Ehrlicher Hinweis:** **Google Play kann nicht einfach mitgeliefert werden** — Play Store/Play-Dienste (GMS)
+  erfordern Googles Lizenzierung und Gerätezertifizierung; ohne das gibt es kein legales Play auf eigenem OS.
+  Realistische Pfade: eigener Store für Flatpaks/Packs, optional F-Droid-Repos, Play nur per Nutzer-eigener
+  Installation (deren Legalität/Funktion der Nutzer verantwortet).
+- **Plan:** 1) Store-Umfang/QA (Katalog-Kommandos nur aus Allowlist — Upstream-Regel). 2) Signatur-Modell
+  (baut auf Update-Kanal F23 + Signatur-ADR auf). 3) Mobile Stores (Aurora/F-Droid, siehe F30-Vertiefung).
+- **Abhängigkeiten:** F16, F23, Signatur-ADR. **Akzeptanz:** Installieren/Deinstallieren/Updates aus kuratierter Quelle
+  mit Signaturprüfung; `make validate` prüft Katalog-Schema.
+- **Priorität:** mittel (Desktop), niedrig (Mobile-Stores). **Nächster Schritt:** Store-E2E (Katalog installieren,
+  GUI-Start, Update-Pfad) protokollieren.
 
 ### F32 APK-/Android-App-Unterstützung — IDEA (nur Planung)
 - **Ziel:** Android-Apps (APK) unter LokroOS nutzen.
@@ -299,6 +307,10 @@ gedämpft `#9a9a9e`/`#626266`, Rahmen `rgba(255,255,255,0.09)` (stark `0.16`), A
 Formensprache: **Chamfer statt Rundungen** — abgeschnittene Ecken via Clip-Pfad (18 px Standard,
 10 px small, 28 px large); Cards mit Hover-Lift (`translateY(-3px)`) + Glow. Schriften: Space Grotesk
 (Headlines), Inter (Fließtext), JetBrains Mono (Technik/Labels).
+**Chamfer mit Maß (verbindlich seit 2026-10-16):** Chamfer-Ecken kommen nur dort zum Einsatz, wo sie gestalterisch
+wirklich Sinn ergeben; Standard bleibt **Rundung × Glass-Look**. Desktop-Widgets sind per Customize-Dialog
+umschaltbar (rund / Chamfer / weitere Stile) — keine Festlegung auf einen Stil. Die KI baut dafür
+**Theming-Hooks** (Stil-Umschaltung pro Widget/Fläche per Policy/Gateway, siehe F25b), sobald das Widget-System steht.
 Ehrlicher Stand: Das OS nutzt heute noch eigene Werte (runde 16-px-Karten, Zink-Töne, kein Mint) —
 die Migration (Farben in `lokro-branding`, QML-Karten, SDDM-, Calamares-Branding; QML braucht für Chamfer
 eigene Form-Pfade statt CSS-Clip) ist offene Arbeit, kein abgeschlossener Umbau.

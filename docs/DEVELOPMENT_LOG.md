@@ -104,6 +104,18 @@
 - **Offen:** Voll-ISO/ZIP unter `docs/` ablegen + hier verlinken (eigene Aufgabe, Datei >2 GiB beachten);
   visuelle Abnahme im Browser durch Menschen.
 
+## 2026-10-16 — Upstream alpha.13/14 gemergt + Stil-Regel verfeinert (Fork)
+
+- **Bereich:** Merge `origin/main` (`d65fffa`: Store-Integration #14, Store-Backend #15, Release-Status #16, CONTRIBUTORS;
+  Tags alpha.13/alpha.14) in Docs-Branch; Doku-Folgen; kein `origin`-Eingriff.
+- **Konflikt:** Nur `AGENTS.md` (add/add: unsere Vollversion vs. Upstream-Kurzfassung). Gelöst: unsere Struktur behalten,
+  Fakten aktualisiert (5 Pakete, UEFI TESTED, alpha.14, Tippfehler behoben), Upstream-Regeln integriert
+  (Store-Katalog-Regel als Nr. 14). Kein Inhalt verloren.
+- **Doku-Folgen:** `IDEAS.md` F31 IDEA → PARTIAL (`lokro-store`-Paket: gepinnter Upstream-Tarball, Katalog+Schema,
+  PySide6-GUI); F34 + `AGENTS.md` Designprinzip um **Chamfer-mit-Maß** ergänzt (Chamfer nur wo sinnvoll, Standard
+  Rundung×Glass, Widgets per Customize-Dialog umschaltbar, KI-Theming-Hooks geplant); Header auf alpha.14.
+- **Tests:** `validate.mjs` beim Commit (Pflicht). Kein Code, keine Builds.
+
 ## 2026-10-16 — TODO-Rework übernommen, alpha.12 gemergt, Ideen ausgeplant
 
 - **Bereich:** `TODO.md`, `IDEAS.md`, `AGENTS.md`, Branch-Pflege (alles Fork, kein `origin`-Eingriff).
