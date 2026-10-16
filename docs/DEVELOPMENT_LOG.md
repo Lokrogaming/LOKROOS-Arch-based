@@ -123,3 +123,14 @@
 - **Vorgabe des Projektverantwortlichen:** Mobile bekommt keine integrierte KI (Prozessor/RAM/Storage zu klein für ein
   fähiges Modell); KI mobil ausschließlich per BYOK (z. B. ChatGPT-/Claude-/Anthropic-Schlüssel), sonst läuft das System ohne KI.
 - **Tests:** keine (Doku).
+
+## 2026-10-16 — PR-Lage ans Original-Repo geklärt (kein neuer PR nötig)
+
+- **Befund per `gh`:** Upstream-PR #11 (`Lokrogaming:docs/session-2026-10-15` → `main`) existiert, ist aktuell
+  (Head `05e8230`, alle neuen Commits enthalten) und MERGEABLE. Alle Codex-Branches sind über PRs #1–#10, #12, #13
+  gemergt; Fork-PR #1 gemergt; `gh-pages` ist Website-only (kein PR nach `main`, würde Repo-Root verunreinigen).
+- **Haken:** Validate-Runs auf #11 stehen auf `action_required` (leere Jobs) — Fork-PR-Schutz: Der Upstream-Besitzer muss den
+  Workflow-Run erst freigeben. Kann nur der Freund klicken.
+- **Aktion:** Status-Kommentar auf #11 hinterlegt (Inhalt des Updates + Hinweis auf Freigabe).
+  Merge-Entscheidung liegt beim Besitzer. Kein Code, kein Eingriff in Builds.
+- **Tests:** keine (Remote-Abfragen).
