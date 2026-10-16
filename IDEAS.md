@@ -43,6 +43,7 @@
 | F31 | Eigener Appstore (+ Google Play?) | IDEA | nur Planung (Kap. 9.10); Play braucht Google-Lizenzierung |
 | F32 | APK-/Android-App-Unterstützung | IDEA | nur Planung (Kap. 9.10); „fast alle" unrealistisch ohne Nachweis |
 | F33 | Design Packs (deklarativ, user-scoped) | IMPLEMENTED | seit alpha.12: `design-packs/`, Schema, Importer+GUI, Tests |
+| F34 | Design-System nach lokro.dev-Branding | PLANNED | Beschluss 2026-10-16 (Kap. 10.1); Umsetzung offen |
 
 ## Feature-Steckbriefe (kompakt, alle Pflichtfelder)
 
@@ -288,6 +289,22 @@ Schlüssel nur im Secret Service, niemals in Prompts/Logs; Deinstallation entfer
 Prozess-Sandbox (separater User? Container?) — ADR-pflichtig. Status: IDEA.
 
 ## 10. Weitere Langfristziele (nur aus Repo ableitbar, nichts erfunden)
+
+### 10.1 Design-System: lokro.dev-Branding ist verbindlich (Beschluss 2026-10-16, Umsetzung PLANNED)
+Stil, Chamfer-Cards usw. werden von **lokro.dev** übernommen. Quellen: [Branding-Guide](https://lokro.dev/branding)
+(weitergeleitet nach `/de/branding.html`) und Repo `Lokrogaming/lokrogaming.github.io` (`assets/site.css`).
+Festgelegte Tokens: Hintergrund `#0a0a0b`, erhöht `#111113`/`#17171a`, Vordergrund `#f2f2f0`,
+gedämpft `#9a9a9e`/`#626266`, Rahmen `rgba(255,255,255,0.09)` (stark `0.16`), Akzent Mint `#7fe3b4`
+(gedämpft `rgba(127,227,180,0.14)`), Warnung `#e3b97f`, Gold `#d9b876`.
+Formensprache: **Chamfer statt Rundungen** — abgeschnittene Ecken via Clip-Pfad (18 px Standard,
+10 px small, 28 px large); Cards mit Hover-Lift (`translateY(-3px)`) + Glow. Schriften: Space Grotesk
+(Headlines), Inter (Fließtext), JetBrains Mono (Technik/Labels).
+Ehrlicher Stand: Das OS nutzt heute noch eigene Werte (runde 16-px-Karten, Zink-Töne, kein Mint) —
+die Migration (Farben in `lokro-branding`, QML-Karten, SDDM-, Calamares-Branding; QML braucht für Chamfer
+eigene Form-Pfade statt CSS-Clip) ist offene Arbeit, kein abgeschlossener Umbau.
+- **F34-Steckbrief (kurz):** Abhängigkeiten: `lokro-branding` (Farben), QML-Karten (Welcome/Hub), SDDM-Theme,
+  Calamares-Branding, `gh-pages`-Website. Akzeptanz: visueller Abgleich gegen Guide (Tokens, Chamfer-Maße, Fonts)
+  mit Screenshots pro Fläche. Priorität: mittel. Nächster Schritt: Migrations-Checkliste pro Fläche anlegen.
 - Eigene Systemoberfläche/UX-Konsistenz (Branding, SDDM, Welcome, Hub) — IMPLEMENTED, Feinschliff offen.
 - Sicheres Update-Modell mit Signatur (Design offen, ADR-Kandidat).
 - Gaming/Windows-Kompatibilität nur via signierte Arch-Pakete (Steam/Proton-Rolle begründen, Lizenzen beachten).

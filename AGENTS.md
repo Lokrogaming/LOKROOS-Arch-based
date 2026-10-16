@@ -20,6 +20,10 @@
   3. Live-Image = generische Archiso-Hooks; installiertes Ziel = normale Disk-root-initramfs (wird erst vom Installer erzeugt).
   4. Jede Automatik braucht lokale Bestätigung (kein unattended Install von LOKRO-Artefakten).
   5. Alles, was als „fertig“ gilt, braucht einen reproduzierbaren Nachweis (Build-Log, Smoke-Log, Hardware-Protokoll).
+- **Design-System (verbindlich seit 2026-10-16):** Stil folgt dem LOKRO-Branding-Guide
+  ([lokro.dev/branding](https://lokro.dev/branding), Repo `Lokrogaming/lokrogaming.github.io`, `assets/site.css`):
+  Dark/Glass, Chamfer-Ecken statt Rundungen (18/10/28 px), Tokens `#0a0a0b`/`#111113`/`#f2f2f0`,
+  Mint-Akzent `#7fe3b4`, Space Grotesk/Inter/JetBrains Mono. Details + Migrationsstand: `IDEAS.md` F34/Kap. 10.1.
 - **Abgrenzung:** Keine eigene Distribution im Sinne eines eigenen Kernels/Repos. Basis = Arch-Repos + Archiso-`releng`-Profil
   + 4 eigene Pakete + gepinnter Calamares-Build. CachyOS-Kernel/Repos/Ananicy werden bewusst **nicht** übernommen
   (eigener Trust-Root, siehe `docs/ARCHITECTURE.md`).

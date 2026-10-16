@@ -141,6 +141,15 @@
   0002 gemeinsamer Ersteinrichtungs-Assistent (mobile-first, später Desktop-Welcome, Calamares bleibt Installer).
 - **Tests:** `validate.mjs` beim Commit (Pflicht).
 
+## 2026-10-16 — Branding-Beschluss: lokro.dev-Stil verbindlich (F34, PLANNED)
+
+- **Bereich:** `IDEAS.md` (F34 + Kap. 10.1), `AGENTS.md` (Designprinzip), dieses Log. Kein Code.
+- **Quellen (gelesen):** `https://lokro.dev/branding` (→ `/de/branding.html`: Tokens, Chamfer-Klassen, Fonts, Logo-Regeln),
+  Repo `Lokrogaming/lokrogaming.github.io`, `assets/site.css` (Chamfer = Clip-Pfad 18/10/28 px, Card-Hover-Lift + Glow).
+- **Beschluss:** Chamfer-Cards etc. werden von lokro.dev übernommen (Mint `#7fe3b4`, Space Grotesk/Inter/JetBrains Mono).
+  Ehrlich vermerkt: OS nutzt heute noch eigene Werte (rund, Zink, kein Mint) — Migration ist offene Arbeit.
+- **Tests:** `validate.mjs` beim Commit (Pflicht).
+
 ## 2026-10-16 — PR-Lage ans Original-Repo geklärt (kein neuer PR nötig)
 
 - **Befund per `gh`:** Upstream-PR #11 (`Lokrogaming:docs/session-2026-10-15` → `main`) existiert, ist aktuell
