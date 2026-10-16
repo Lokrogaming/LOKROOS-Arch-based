@@ -47,6 +47,11 @@
 - [ ] `[P3]` ARM-Port evaluieren (separat, kein x86_64-Archiso wiederverwendbar).
 - [ ] `[P3]` Secure-Boot-Option evaluieren (derzeit nicht unterstützt).
 
+## Versionen (P3, nur Planung erstmal)
+- [ ] `[P3]` Mobile-Version von LokroOS (soll auf sowohl neuen als auch auf älteren Chips laufen)
+- [ ] `[P3]` Google Play + eigener Appstore für Appinstallierung
+- [ ] `[P3]` Soll APKs unterstützen für Appinstall und soll fast alle AndroidApps unterstützen
+
 ## Tests & QS
 
 - [ ] `node scripts/validate.mjs` — bestanden am 2026-10-15 (55 Dateien, 102 Pakete).
