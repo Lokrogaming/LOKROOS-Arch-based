@@ -127,6 +127,20 @@ Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloa
 - **Ressourcen:** Sehr hoch (eigene Images je Geräteklasse, Hardware-Labor). **Abhängigkeiten:** F28 zuerst.
 - **Sicherheit:** Baseband-/Bootloader-Risiken je Gerät;Verified-Boot-Konzepte separat prüfen.
 - **Akzeptanz:** Referenzgerät bootet, Touch/Telefonie/SMS/Browser gehen, Update-Pfad existiert.
+- **Vertiefung 2026-10-16 (Brainstorm, alles IDEA):**
+  - *Input-Hooks:* Shell-Entscheidung zuerst (Kandidat Plasma Mobile wegen KDE/Kirigami-Kontinuität vs. Phosh — ADR).
+    Maliit-Tastatur + LOKRO-Layout, Gesten-Ebene (Edge-Swipe, Runterziehen, Wisch-Halten, Pinch, Long-Press) via QML/KWin-Touch,
+    `feedbackd`-Haptik, libinput-Kalibrierung + kinetisches Scrollen, Lockscreen mit PIN und Notruf-Durchreiche.
+  - *Eigene Mobile-OS-Abgrenzung:* eigenes Build-Profil `mobile` — kein Steam/Proton/Gaming, kein nvidia-open, kein LibreOffice;
+    dafür Waydroid-Stack, Store-Clients, Dialer/SMS/Kontakte, Mobile-Settings. Kein Calamares: Flash-Images pro Gerät +
+    Ersteinrichtungs-Assistent (Sprache, WLAN, SIM-PIN, Stores, BYOK).
+  - *Konnektivität:* vorhanden (NetworkManager, ModemManager, provider-info); fehlend: SIM-PIN/PUK-Flow, APN-UI, Anruf-/SMS-App,
+    mobiler Hotspot (AP-Modus + Datenwarnung), Flugmodus, Dual-SIM (später). VoLTE/WLAN-Calls offen/geräteabhängig — nichts versprechen.
+  - *APK + Stores:* Waydroid (Binder-Kernel-Module nötig, Android-Image gepinnt, Download nur nach Zustimmung — Prinzip wie KI-Modelle);
+    Integration (Fenster, Dateien, Mitteilungen). Stores: eigener (F31) + Aurora Store (pragmatischer Play-Zugang) + F-Droid;
+    MicroG nur mit dokumentierter Sicherheitsabwägung.
+  - *Hardware:* 1–2 Referenzgeräteklassen (alt + neu) mit Mainline-Support; Mainline-vs-Halium als ADR.
+  - *Reihenfolge:* ARM-ADR → Referenzgeräte → Shell+Input → Konnektivität → Waydroid/Stores → Assistent → Härtung.
 - **Offen:** Alles — Geräteauswahl, Shell, Ressourcen. **Priorität:** niedrig (Fernziel). **Nächster Schritt:** Kein Code; erst F28-ADR (ARM-Strategie).
 
 ### F31 Eigener Appstore (+ Google Play?) — IDEA (nur Planung)

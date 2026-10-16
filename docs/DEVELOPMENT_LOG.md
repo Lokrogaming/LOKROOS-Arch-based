@@ -124,6 +124,16 @@
   fähiges Modell); KI mobil ausschließlich per BYOK (z. B. ChatGPT-/Claude-/Anthropic-Schlüssel), sonst läuft das System ohne KI.
 - **Tests:** keine (Doku).
 
+## 2026-10-16 — Mobile-Brainstorm: Input, eigenes OS, Konnektivität, APK/Stores
+
+- **Bereich:** `IDEAS.md` F30-Vertiefung (alles IDEA, kein Code). Anstoß: Wunsch des Projektverantwortlichen.
+- **Ergebnis:** Shell zuerst entscheiden (Plasma-Mobile-Kandidat vs. Phosh — ADR); Maliit + LOKRO-Layout, Gesten-Ebene,
+  `feedbackd`, Lockscreen mit Notruf. Eigenes `mobile`-Profil ohne Gaming/NVIDIA/Office, dafür Waydroid + Stores + Dialer/SMS;
+  Flash-Images + Einrichtungs-Assistent statt Calamares. Konnektivität: Basis vorhanden, SIM/Anruf/SMS/Hotspot fehlen,
+  VoLTE offen. Stores: eigener + Aurora + F-Droid; Android-Image-Download nur nach Zustimmung.
+  Hardware: 1–2 Referenzgeräte, Mainline-vs-Halium als ADR.
+- **Tests:** `node scripts/validate.mjs` nach dem Edit folgt beim Commit (Pflicht vor Push).
+
 ## 2026-10-16 — PR-Lage ans Original-Repo geklärt (kein neuer PR nötig)
 
 - **Befund per `gh`:** Upstream-PR #11 (`Lokrogaming:docs/session-2026-10-15` → `main`) existiert, ist aktuell
