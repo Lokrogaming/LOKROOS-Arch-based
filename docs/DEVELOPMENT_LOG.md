@@ -89,3 +89,17 @@
   `origin` (Freundes-Repo, Codex-Build) wird weder beschrieben noch angetoucht. Dieses Tagebuch wird strikt weitergeführt,
   damit Codex später jede Änderung zurückverfolgen kann.
 - **Tests:** keine (Remote-/Git-Operationen). Branch-Tracking verifiziert (`git push` geht künftig an `fork`).
+
+## 2026-10-15 — GitHub-Pages-Website auf dem Fork (Branch `gh-pages`)
+
+- **Bereich:** Website (neu, nur Fork). Umsetzung per separatem Worktree (`/tmp/opencode/lokro-site`, Orphan-Branch),
+  Haupt-Arbeitsbaum blieb auf `docs/session-2026-10-15` und wurde nicht angetoucht.
+- **Inhalt:** `index.html` (258 Zeilen, deutsch, responsiv): Tailwind-CDN + Alpine.js (mobiles Menü, Varianten-Tabs,
+  FAQ-Akkordeon, Copy-Button), Glass-Design im OS-Farbkleid (`#111019`, `#f5f4fb`), Hero, Desktop-Mock, 9 Feature-Karten,
+  Offline/Online-Vergleich, Download-Sektion mit Direktlinks auf die Release-Teile + `cat`-Reassemble-Snippet,
+  ehrlicher alpha.11-Status, FAQ, Footer. Hinweisbox für künftigen Voll-ISO/ZIP-Download über `docs/` ist vorbereitet.
+  Anmerkung: „hyperux“ wurde als HyperUI-artige Komponenten (handgebaut, keine extra Dependency) interpretiert.
+- **Deploy:** Commit `2afffe5` → `git push -u fork gh-pages`; Pages-Quelle per API auf `gh-pages`/`/` bestätigt
+  (Status `building`, URL `http://lokro.dev/LOKROOS-Arch-based/` — Custom-Domain des Accounts).
+- **Offen:** Voll-ISO/ZIP unter `docs/` ablegen + hier verlinken (eigene Aufgabe, Datei >2 GiB beachten);
+  visuelle Abnahme im Browser durch Menschen.
