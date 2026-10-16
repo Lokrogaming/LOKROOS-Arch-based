@@ -128,7 +128,8 @@ Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloa
 - **Sicherheit:** Baseband-/Bootloader-Risiken je Gerät;Verified-Boot-Konzepte separat prüfen.
 - **Akzeptanz:** Referenzgerät bootet, Touch/Telefonie/SMS/Browser gehen, Update-Pfad existiert.
 - **Vertiefung 2026-10-16 (Brainstorm, alles IDEA):**
-  - *Input-Hooks:* Shell-Entscheidung zuerst (Kandidat Plasma Mobile wegen KDE/Kirigami-Kontinuität vs. Phosh — ADR).
+  - *Input-Hooks:* Shell-Entscheidung zuerst (Leitkandidat Plasma Mobile wegen KDE/Kirigami-Kontinuität, Phosh nur bei
+    Showstopper — siehe `docs/adr/0001-mobile-shell-plasma-mobile.md`).
     Maliit-Tastatur + LOKRO-Layout, Gesten-Ebene (Edge-Swipe, Runterziehen, Wisch-Halten, Pinch, Long-Press) via QML/KWin-Touch,
     `feedbackd`-Haptik, libinput-Kalibrierung + kinetisches Scrollen, Lockscreen mit PIN und Notruf-Durchreiche.
   - *Eigene Mobile-OS-Abgrenzung:* eigenes Build-Profil `mobile` — kein Steam/Proton/Gaming, kein nvidia-open, kein LibreOffice;
@@ -141,6 +142,8 @@ Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloa
     MicroG nur mit dokumentierter Sicherheitsabwägung.
   - *Hardware:* 1–2 Referenzgeräteklassen (alt + neu) mit Mainline-Support; Mainline-vs-Halium als ADR.
   - *Reihenfolge:* ARM-ADR → Referenzgeräte → Shell+Input → Konnektivität → Waydroid/Stores → Assistent → Härtung.
+    Der Einrichtungs-Assistent ist als gemeinsame Komponente mit dem Desktop-Welcome gedacht
+    (siehe `docs/adr/0002-shared-first-boot-wizard.md`).
 - **Offen:** Alles — Geräteauswahl, Shell, Ressourcen. **Priorität:** niedrig (Fernziel). **Nächster Schritt:** Kein Code; erst F28-ADR (ARM-Strategie).
 
 ### F31 Eigener Appstore (+ Google Play?) — IDEA (nur Planung)

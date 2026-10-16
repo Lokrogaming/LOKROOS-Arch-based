@@ -64,9 +64,10 @@ No authentication or SSO semantics are implied in v0.1.
   `lokro-update.timer` + `lokro-update` implement download-strict-validate-cache-confirm-apply with backups and
   running-kernel module retention hooks.
 
-## Open decisions (ADRs, `docs/adr/`, new 2026-10-15)
+## Open decisions (ADRs, `docs/adr/`, since 2026-10-16)
 
-No `docs/adr/` exists yet. First candidates (all proposals, none decided): Flathub pinning strategy, offline dedup
+First records exist as proposals (none decided yet): `0001-mobile-shell-plasma-mobile.md` and
+`0002-shared-first-boot-wizard.md`. Still open candidates: Flathub pinning strategy, offline dedup
 method, serial-diagnostic scope for the GRUB `linux` directive, manifest generation (`pacman --root/--dbpath`
 semantics), and the 4 GiB size budget. Each ADR records problem, requirements, alternatives, decision, rationale,
 drawbacks, and impact, marked binding vs. proposal.

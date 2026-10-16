@@ -134,6 +134,13 @@
   Hardware: 1–2 Referenzgeräte, Mainline-vs-Halium als ADR.
 - **Tests:** `node scripts/validate.mjs` nach dem Edit folgt beim Commit (Pflicht vor Push).
 
+## 2026-10-16 — ADR-Entwürfe 0001/0002 eingetragen (Vorschläge, kein Beschluss)
+
+- **Bereich:** `docs/adr/` (neu), Verweise in `IDEAS.md` (F30) + `docs/ARCHITECTURE.md`, dieses Log.
+- **Inhalt:** 0001 Mobile-Shell (Plasma Mobile Leitkandidat, Phosh nur bei Showstopper mit Ausstiegskriterien);
+  0002 gemeinsamer Ersteinrichtungs-Assistent (mobile-first, später Desktop-Welcome, Calamares bleibt Installer).
+- **Tests:** `validate.mjs` beim Commit (Pflicht).
+
 ## 2026-10-16 — PR-Lage ans Original-Repo geklärt (kein neuer PR nötig)
 
 - **Befund per `gh`:** Upstream-PR #11 (`Lokrogaming:docs/session-2026-10-15` → `main`) existiert, ist aktuell
