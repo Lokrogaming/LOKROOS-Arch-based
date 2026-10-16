@@ -1,4 +1,4 @@
-# TODO.md — Zentrale Aufgabenliste (Stand 2026-10-15, v0.1.0-alpha.11)
+# TODO.md — Zentrale Aufgabenliste (Stand 2026-10-16, v0.1.0-alpha.12)
 
 > Pflege: jede Sitzung. Abhaken nur mit Nachweis. Blocker mit Grund + Fortsetzungsbedingung.
 > Details zu Ursachen/Fixes: `docs/KNOWN_ISSUES.md`, `docs/ISO_BUILD_ANALYSE_2026-10-15.md`.
@@ -47,7 +47,7 @@
 - [ ] `[P3]` ARM-Port evaluieren (separat, kein x86_64-Archiso wiederverwendbar).
 - [ ] `[P3]` Secure-Boot-Option evaluieren (derzeit nicht unterstützt).
 
-## Versionen (P3, nur Planung erstmal)
+## Versionen (P3, nur Planung erstmal — Details siehe `IDEAS.md` F30–F32)
 - [ ] `[P3]` Mobile-Version von LokroOS (soll auf sowohl neuen als auch auf älteren Chips laufen)
 - [ ] `[P3]` Google Play + eigener Appstore für Appinstallierung
 - [ ] `[P3]` Soll APKs unterstützen für Appinstall und soll fast alle AndroidApps unterstützen

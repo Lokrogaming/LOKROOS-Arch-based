@@ -2,7 +2,7 @@
 
 > Zentrale Einstiegsdatei. Jeder Agent liest diese Datei zuerst, bevor er Code ändert.
 > Detailwissen liegt in den verlinkten Dateien. Diese Datei bleibt die verbindliche Regel- und Orientierungsquelle.
-> Stand: 2026-10-15, Version `0.1.0-alpha.11`, Branch `main`. Alle Statusangaben sind nur so gut wie ihre Nachweise —
+> Stand: 2026-10-16, Version `0.1.0-alpha.12`, Branch `main`. Alle Statusangaben sind nur so gut wie ihre Nachweise —
 > erfundene Build-Erfolge oder Testergebnisse sind verboten.
 
 ## A. Projektidentität

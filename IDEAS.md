@@ -1,6 +1,6 @@
 # IDEAS.md — Technische Roadmap LokroOS (prüfbares Projektmanagement)
 
-> Stand: 2026-10-15, Version `0.1.0-alpha.11`. Statuswerte sind verbindlich:
+> Stand: 2026-10-16, Version `0.1.0-alpha.12`. Statuswerte sind verbindlich:
 > `IDEA / PLANNED / IN_PROGRESS / PARTIAL / BLOCKED / IMPLEMENTED / TESTED / COMPLETED / DEPRECATED / CANCELLED`.
 > Code vorhanden ≠ fertig. Statuswechsel nur mit Nachweis (Log, Test, Hardware-Protokoll).
 > Quelle dieser Struktur: Master-Prompt vom 2026-10-15 (Volltext im Anhang).
@@ -37,8 +37,12 @@
 | F25b | OpenClaw-artige Systemsteuerung (Benchmark, Claw-Hook, Permissions, BYOK) | IDEA | **nur Konzept** (Kap. 9.9); kein Code; Modelle nie im ISO |
 | F26 | Ollama-Setup (Downloader, gepinnt) | IMPLEMENTED | nur Downloader; kein Modell im ISO |
 | F27 | Server-Edition | CANCELLED | `server/` Platzhalter, nicht Teil v0.1 |
-| F28 | ARM-Port | IDEA | separates Zukunftsprojekt |
+| F28 | ARM-Port | IDEA | separates Zukunftsprojekt; Voraussetzung für F30 |
 | F29 | Secure Boot | IDEA | nicht unterstützt |
+| F30 | Mobile-Version (Smartphone/Tablet) | IDEA | nur Planung (Kap. 9.10); braucht ARM-Port + Mobile-Shell |
+| F31 | Eigener Appstore (+ Google Play?) | IDEA | nur Planung (Kap. 9.10); Play braucht Google-Lizenzierung |
+| F32 | APK-/Android-App-Unterstützung | IDEA | nur Planung (Kap. 9.10); „fast alle" unrealistisch ohne Nachweis |
+| F33 | Design Packs (deklarativ, user-scoped) | IMPLEMENTED | seit alpha.12: `design-packs/`, Schema, Importer+GUI, Tests |
 
 ## Feature-Steckbriefe (kompakt, alle Pflichtfelder)
 
@@ -104,6 +108,39 @@ Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloa
 - **Phase 4 – Hardware-Matrix:** AMD/NVIDIA-open/Nouveau, Monitore, Audio/BT, Suspend, Steam/Minecraft, alongside mit Backup.
 - **Phase 5 – Härtung:** Signaturschlüssel-Design (ADR), Größenbudget-Verteidigung, QML/Desktop-Lint überall, Beta-Kriterien.
 - **Phase 6 – KI-Konzept:** erst wenn Phasen 1–4 stehen: Machbarkeit, Backend-/Modell-Evaluation, Benchmark-Konzept (nur Doku, dann Beschluss).
+
+### F33 Design Packs — IMPLEMENTED (seit alpha.12)
+- **Ziel:** Sichere, deklarative Themes (Farben + Wallpaper) ohne Code-Ausführung, als Vorstufe eines künftigen App-Stores.
+- **Stand:** `design-packs/` (Format + Schema `design-pack.schema.json`), Importer `lokro-design-pack` + GUI, Black-Box-Security-Tests, Doku `docs/DESIGN_PACKS.md`. User-scoped (`~/.local/share`), kein Pacman/Flatpak/sudo.
+- **Akzeptanz:** `make validate` prüft alle Repo-Packs; Importer lehnt Pfade/`..`/Links/ausführbare Bits/Übergrößen ab.
+- **Offen:** Store-Anbindung (siehe F31). **Priorität:** niedrig (stabil). **Links:** `design-packs/`, `docs/DESIGN_PACKS.md`.
+
+### F30 Mobile-Version — IDEA (nur Planung, Wunsch aus TODO-Rework 2026-10-16)
+- **Ziel:** LokroOS auf Smartphones/Tablets (neue + ältere Chips) nutzbar machen.
+- **Stand:** Nichts vorhanden. x86_64-ISO ist nicht wiederverwendbar; `docs/ARM_PORT.md` erklärt ARM als separates Zukunftsprojekt.
+- **Plan:** 1) ARM-Port beschließen (F28: Arch Linux ARM-Basis, Kernel/Bootloader je SoC). 2) Mobile-Shell evaluieren (z. B. Plasma Mobile vs. Phosh — unfestgelegt). 3) Telefonie-/SMS-/Modem-Stack (ModemManager vorhanden, Rest offen). 4) Strom-/Touch-/Sensor-Tests auf Referenzgeräten.
+- **Anforderungen:** ARM-Build-Infra, SoC-Kernel, mobile Shell, angepasster Calamares- oder OEM-Flow.
+- **Ressourcen:** Sehr hoch (eigene Images je Geräteklasse, Hardware-Labor). **Abhängigkeiten:** F28 zuerst.
+- **Sicherheit:** Baseband-/Bootloader-Risiken je Gerät;Verified-Boot-Konzepte separat prüfen.
+- **Akzeptanz:** Referenzgerät bootet, Touch/Telefonie/SMS/Browser gehen, Update-Pfad existiert.
+- **Offen:** Alles — Geräteauswahl, Shell, Ressourcen. **Priorität:** niedrig (Fernziel). **Nächster Schritt:** Kein Code; erst F28-ADR (ARM-Strategie).
+
+### F31 Eigener Appstore (+ Google Play?) — IDEA (nur Planung)
+- **Ziel:** Grafischer Laden für Apps neben Pacman/Discover.
+- **Stand:** Design-Packs-Format (F33) ist als wiederverwendbares, privilegienloses Format dafür vorgesehen; Store selbst existiert nicht.
+- **Ehrlicher Hinweis:** **Google Play kann nicht einfach mitgeliefert werden** — Play Store/Play-Dienste (GMS) erfordern Googles Lizenzierung und Gerätezertifizierung; ohne das gibt es kein legales Play auf eigenem OS. Realistische Pfade: eigener Store für Flatpaks/Packs, optional F-Droid-Repos, Play nur per Nutzer-eigener Installation (deren Legalität/Funktion der Nutzer verantwortet).
+- **Plan:** 1) Store-Umfang festlegen (nur Flatpak/Packs Kuratierung?). 2) Paketquellen-/Signatur-Modell (baut auf Update-Kanal F23 + Signatur-ADR auf). 3) GUI (Discover erweitern vs. eigene App — unfestgelegt).
+- **Abhängigkeiten:** F16, F23, Signatur-ADR. **Akzeptanz:** Installieren/Deinstallieren/Updates aus kuratierter Quelle mit Signaturprüfung.
+- **Priorität:** niedrig. **Nächster Schritt:** Umfang als ADR festhalten, kein Code.
+
+### F32 APK-/Android-App-Unterstützung — IDEA (nur Planung)
+- **Ziel:** Android-Apps (APK) unter LokroOS nutzen.
+- **Stand:** Nichts vorhanden.
+- **Ehrlicher Hinweis:** „Fast alle Android-Apps" ist ohne Nachweis unrealistisch: Als einziger gangbarer Weg gilt ein Container-Ansatz (z. B. Waydroid: Wayland + Binder-Kernel-Module + Android-Image), der nur einen Teil der Apps (v. a. ohne GMS-Abhängigkeit und ohne exotische NDK-/Hardware-Bindung) abdeckt und eigenen Pflegeaufwand (Images, Updates, Integration) bedeutet.
+- **Plan:** 1) Machbarkeit prüfen (Kernel-Module, Wayland-Sitzungen, Image-Quelle/Lizenz). 2) Prototyp mit 5 definierten Referenz-APKs. 3) Integration (Fenster, Dateien, Berechtigungen) + Update-Modell.
+- **Abhängigkeiten:** Wayland-Sitzungen (F09/F10 ok), Kernel-Config (Binder!), Image-Trust-Modell.
+- **Akzeptanz:** Referenz-APKs starten, laufen stabil, deinstallieren rückstandsfrei; kein Root-Bruch des Hosts.
+- **Priorität:** niedrig. **Nächster Schritt:** Machbarkeitsnotiz (1 Seite), kein Code.
 
 ## 9. Zukünftiges Feature: Lokal integrierte KI (nur Konzept)
 
@@ -199,6 +236,33 @@ als reines Messwerkzeug ohne Modell. 3) Modell-Registry-Schema + Verifizierung. 
 (Lizenz, Verhalten, Ressourcen) mit dokumentierten Kriterien. 10) Offline-/Fehler-/Deinstall-Tests.
 **Akzeptanz (zusätzlich zu 9.8):** Agent tut ohne Freigabe nichts; verbotene Aktion wird abgelehnt + geloggt; Deinstallation
 entfernt Modell, Gateway-Regeln und Caches; BYOK-Schlüssel nie im Log; Boot-Zeit ohne Benchmark unverändert.
+
+**9.9.8 Policy-Format (Entwurf, IDEA).** Eine Policy ist eine versionierte JSON-Datei (`policyVersion: 1`), user-scoped unter
+`~/.config/lokro/agent/policy.json`, vom Einstellungs-UI geschrieben und vom Gateway strikt gelesen. Draft-Shape:
+`{ "agentEnabled": false, "apps": { "allow": ["org.kde.dolphin"], "deny": [] }, "files": { "read": ["~/Dokumente"], "write": [] },
+"actions": { "installPackages": "confirm", "systemServices": "deny", "networkSend": "confirm", "shellExec": "deny" } }`.
+Regeln: Default-deny (alles nicht Erlaubte ist verboten); Risikoklassen `allow` (still) / `confirm` (Dialog mit Was/Warum) /
+`deny` (Ablehnung + Log); Änderungen nur mit Admin-Bestätigung; jede Ablehnung landet im Audit-Log. Status: IDEA.
+
+**9.9.9 Benchmark-Schwellen (Entwurf, IDEA).** Gemessen: CPU-Kerne/Takt + Kurzlast (z. B. 10 s Multi-Core, Ziel: Tokens/s-Prognose),
+RAM-frei, GPU/VRAM + Backend-Verfügbarkeit, Platten-frei. Faustregel: `Modellgröße_GB × 1,35 (KV-Cache + Overhead) + 2 GB Puffer
+≤ RAM-frei`, sonst kein Vorschlag. Staffel (Beispiel, zu validieren): ≥16 GB RAM + GPU → mittlere Modelle;
+8–16 GB → kleine Modelle (CPU ok, langsam); <8 GB oder <5 GB Platte → „kein Modell möglich" mit Begründung + Hinweis auf BYOK.
+Benchmark läuft nur im Setup-Assistenten und auf Knopfdruck (nicht bei jedem Boot), mit Timeout + Abbruch. Status: IDEA.
+
+**9.9.10 Modell-Registry (Entwurf, IDEA).** Erweiterung von `packages/lokro-ai-setup/.../releases.json` um Einträge je Klasse:
+`{ "id": "klasse-s", "backend": "llama.cpp", "format": "GGUF", "quant": "Q4_K_M", "ramGB": 8, "diskGB": 5,
+"url": "https://…", "sha256": "<64 hex>", "license": "…", "uncensoredNote": "…" }`. Download nur bei exakter
+Übereinstimmung mit Benchmark-Empfehlung + Nutzer-Zustimmung; Verifizierung SHA-256 (Pflicht) + Signatur (wo verfügbar);
+danach Funktions-Smoke (Modell lädt, antwortet lokal, kein Netz). Kein Eintrag ohne Lizenz- und Herkunftsangabe. Status: IDEA.
+
+**9.9.11 Bedrohungsmodell (Kurzfassung, IDEA — vor jedem Code als ADR zu beschließen).** Angreifer-Szenarien: bösartiges Modell
+(Prompt-Injection über Webseiten/Dateien → Aktionen erschleichen), kompromittierte Modellquelle (Gewichte mit Schadverhalten),
+neugieriger Agent (liest mehr als erlaubt), BYOK-Schlüsselabfluss. Gegenmaßnahmen: Gateway als einzige Ausführungsstelle +
+Schema-validierte Werkzeuge; Datei-/App-Allowlist (keine Denylist); Bestätigung mit Originaltext der Aktion (kein Freifahrtschein);
+Audit-Log append-only für den Nutzer einsehbar; Netz-Sandbox für Inferenz (localhost only, kein Modell-Phone-home);
+Schlüssel nur im Secret Service, niemals in Prompts/Logs; Deinstallation entfernt alles Agent-Eigene. Offene Entscheidung:
+Prozess-Sandbox (separater User? Container?) — ADR-pflichtig. Status: IDEA.
 
 ## 10. Weitere Langfristziele (nur aus Repo ableitbar, nichts erfunden)
 - Eigene Systemoberfläche/UX-Konsistenz (Branding, SDDM, Welcome, Hub) — IMPLEMENTED, Feinschliff offen.

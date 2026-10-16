@@ -103,3 +103,16 @@
   (Status `building`, URL `http://lokro.dev/LOKROOS-Arch-based/` — Custom-Domain des Accounts).
 - **Offen:** Voll-ISO/ZIP unter `docs/` ablegen + hier verlinken (eigene Aufgabe, Datei >2 GiB beachten);
   visuelle Abnahme im Browser durch Menschen.
+
+## 2026-10-16 — TODO-Rework übernommen, alpha.12 gemergt, Ideen ausgeplant
+
+- **Bereich:** `TODO.md`, `IDEAS.md`, `AGENTS.md`, Branch-Pflege (alles Fork, kein `origin`-Eingriff).
+- **Ausgangszustand:** Eigene `Versionen`-TODOs (Mobile, Store, APK) per PR #1 im Fork; upstream-`main` inzwischen auf
+  alpha.12 (`90d024b`: Design-Packs #12 + Release-Record #13, Tag `v0.1.0-alpha.12`).
+- **Änderungen:** 1) Lokal auf Fork-Stand fast-forwardet (PR #1 übernommen). 2) `origin/main` in Docs-Branch gemergt
+  (konfliktfrei). 3) Versionsheader AGENTS/IDEAS/TODO → alpha.12. 4) `IDEAS.md`: F30 (Mobile), F31 (Store),
+  F32 (APK) als volle Steckbriefe — inkl. ehrlicher Blocker (Play braucht Google-Lizenz; „fast alle APKs" ohne Nachweis
+  unrealistisch, Waydroid-Pfad); F33 Design Packs als IMPLEMENTED; F25b-Planung vervollständigt (9.9.8 Policy-Format-Draft,
+  9.9.9 Benchmark-Schwellen, 9.9.10 Registry-Schema, 9.9.11 Bedrohungsmodell-Kurzfassung). 5) Docs-Branch in Fork-`main`
+  gemergt (Fast-Forward) — TODO-Rework steht damit auf allen aktiven Fork-Branches.
+- **Tests:** `node scripts/validate.mjs` ✅ (63 Dateien nach alpha.12-Anforderungen). Kein Code, keine Builds.
