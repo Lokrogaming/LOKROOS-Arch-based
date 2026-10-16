@@ -136,6 +136,12 @@
   fähiges Modell); KI mobil ausschließlich per BYOK (z. B. ChatGPT-/Claude-/Anthropic-Schlüssel), sonst läuft das System ohne KI.
 - **Tests:** keine (Doku).
 
+## 2026-10-16 — PR #17: Website als PR ans Original (PR #11 weiter aktuell)
+
+- **Befund:** PR #11 (Docs) ist aktuell (Head `2076c43`, MERGEABLE, CI wartet weiter auf Freigabe).
+  Direkt-PR aus Orphan-Branch `gh-pages` scheiterte (keine gemeinsame Historie) → neue Branch `website-preview`
+  auf `origin/main` (`d65fffa`) mit nur `index.html` (Rebase `--onto`), PR #17 ans Original eröffnet.
+
 ## 2026-10-16 — Mobile-Brainstorm: Input, eigenes OS, Konnektivität, APK/Stores
 
 - **Bereich:** `IDEAS.md` F30-Vertiefung (alles IDEA, kein Code). Anstoß: Wunsch des Projektverantwortlichen.
