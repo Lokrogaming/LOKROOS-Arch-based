@@ -49,19 +49,23 @@ if [[ "$firmware" == uefi ]]; then
     )
 fi
 
-log "waiting for Plasma startup marker (${firmware}, ${variant}, acceleration=${acceleration})"
+log "waiting for Plasma and installer startup marker (${firmware}, ${variant}, acceleration=${acceleration})"
 timeout 900s qemu-system-x86_64 "${qemu_args[@]}" &
 qemu_pid=$!
 trap 'kill "$qemu_pid" 2>/dev/null || true; wait "$qemu_pid" 2>/dev/null || true' EXIT
 
 for ((attempt = 0; attempt < 900; attempt++)); do
-    if [[ -f "$serial_log" ]] && grep -q 'LOKRO_PLASMA_READY' "$serial_log"; then
-        log "Plasma live session reached for ${firmware}"
+    if [[ -f "$serial_log" ]] && grep -q 'LOKRO_LIVE_READY' "$serial_log"; then
+        log "Plasma live session and Calamares installer reached for ${firmware}"
         exit 0
+    fi
+    if [[ -f "$serial_log" ]] && grep -q 'LOKRO_SMOKE_FAILED' "$serial_log"; then
+        tail -n 120 "$serial_log" 2>/dev/null || true
+        die "live-session smoke watcher reported failure for ${firmware}"
     fi
     kill -0 "$qemu_pid" 2>/dev/null || break
     sleep 1
 done
 
 tail -n 120 "$serial_log" 2>/dev/null || true
-die "Plasma readiness marker was not observed for ${firmware}"
+die "Plasma/installer readiness marker was not observed for ${firmware}"
