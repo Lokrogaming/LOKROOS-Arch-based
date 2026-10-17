@@ -198,3 +198,27 @@
   Header auf alpha.16).
 - **Tests (diese Umgebung):** `validate.mjs` ✅ 68 Dateien/103 Pakete; `unittest` ✅ 6/6; `bash -n` ✅.
   Kein Code, keine Builds, kein `origin`-Eingriff. Offene PRs #11/#17 unverändert offen.
+
+## 2026-10-17 — F35 Grundstein: Custom Taskbar/Dock (iOS-Dock × Glass)
+
+- **Anlass:** Videofeedback des Projektverantwortlichen — System bootet, Stock-Panel sichtbar mit
+  „komischem Logo" links (Kickoff-Fallback, kein `lokro-os`-Icon im Repo) und eckiger Leiste. Wunsch:
+  eigene Taskbar, Apple-iOS-Navbar × LOKRO-Glass (zentriert, gerundet, große Icons, App-Name bei
+  Hover, cleane Animationen).
+- **Recherche (nur lesen):** keine Panel-Config im Repo (kein `appletsrc`/`layout.js`/`[Panel]`),
+  einziges Eingreifen `lokro-first-login` (`org.lokro.search` an Panel angehängt), `kwinrc` ohne
+  `[Effect-blur]`, Plasmoid-Blaupausen `org.lokro.search`/`org.lokro.hub` vorhanden,
+  Design-Packs dürfen kein QML. Ergebnisse in `docs/AI_NOTES_opencode_2026-10-17.md` (§2).
+- **Angelegt:**
+  1. `docs/adr/0003-lokro-dock.md` (Vorschlag): Plasma-Applet + LnF-Panel-Layout + KWin-Blur statt
+     Standalone-layer-shell-Dock oder Theme; Hyprland behält Waybar.
+  2. `docs/AI_NOTES_opencode_2026-10-17.md`: Design-Spezifikation (Maße, Tokens F34, Animationen)
+     + offene Fragen (Kickoff raus?, Pinned-Default, Panel-Default-Weg, Blur-Verifikation).
+  3. Prototyp `packages/lokro-shell/experimental/org.lokro.dock/` (`metadata.json`, `main.qml` mit
+     `TaskManager.TasksModel`, Glass-Rectangle, Hover-Scale/Halo/Tooltip/Laufpunkt, Eingangs-Animation).
+     **Bewusst außerhalb von `rootfs/`** → wird nicht gepackt (PKGBUILD kopiert nur `rootfs/.`).
+  4. Doku: `IDEAS.md` F35 (IN_PROGRESS, Steckbrief + Notizen-Verzeichnis-Eintrag), `TODO.md` P2,
+     `AGENTS.md` Strukturzeile `lokro-shell` (`experimental/`-Hinweis).
+- **Ehrlichkeit:** Nichts davon ist getestet (`qmllint`/Plasma-VM hier nicht verfügbar), nichts im ISO,
+  kein „fertig"-Anspruch. Status IN_PROGRESS.
+- **Tests:** `node scripts/validate.mjs` ✅ (68 Dateien, 103 Pakete), `unittest` ✅ 6/6, `bash -n` ✅.

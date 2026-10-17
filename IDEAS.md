@@ -44,6 +44,7 @@
 | F32 | APK-/Android-App-Unterstützung | IDEA | nur Planung (Kap. 9.10); „fast alle" unrealistisch ohne Nachweis |
 | F33 | Design Packs (deklarativ, user-scoped) | IMPLEMENTED | seit alpha.12: `design-packs/`, Schema, Importer+GUI, Tests |
 | F34 | Design-System nach lokro.dev-Branding | PLANNED | Beschluss 2026-10-16 (Kap. 10.1); Umsetzung offen |
+| F35 | Custom Taskbar/Dock (iOS-Dock × Glass) | IN_PROGRESS | Grundstein 2026-10-17: ADR 0003 + Prototyp in `lokro-shell/experimental/` (ungetestet, nicht gepackt) |
 
 ## Feature-Steckbriefe (kompakt, alle Pflichtfelder)
 
@@ -174,6 +175,28 @@ Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloa
 - **Abhängigkeiten:** Wayland-Sitzungen (F09/F10 ok), Kernel-Config (Binder!), Image-Trust-Modell.
 - **Akzeptanz:** Referenz-APKs starten, laufen stabil, deinstallieren rückstandsfrei; kein Root-Bruch des Hosts.
 - **Priorität:** niedrig. **Nächster Schritt:** Machbarkeitsnotiz (1 Seite), kein Code.
+
+### F35 Custom Taskbar / LOKRO Dock — IN_PROGRESS (Grundstein gelegt, Prototyp ungetestet)
+- **Ziel:** Eigene Taskbar im Stil der Apple-iOS-Navbar, verbunden mit LOKRO-Glass: zentriertes,
+  schwebendes Dock unten, **gerundete Ecken** (Rundung × Glass — Chamfer bewusst nicht, s. Designprinzip 6),
+  Glass-Hintergrund (KWin-Blur + `#111113` @ 72 %), große Icons (48 px) mit App-Namen bei Hover,
+  cleane Animationen (Hover-Scale 1,12/140 ms, Halo-Fade, Tooltip-Slide, Mint-Laufpunkt `#7fe3b4`).
+  Anstoß: beobachtetes Stock-Panel mit „komischem Logo" links und eckiger Leiste (Videofeedback 2026-10-17).
+- **Stand (2026-10-17):** Recherche + Architektur-Vergleich abgeschlossen; **ADR 0003** (Vorschlag:
+  Plasma-Applet statt Standalone-Dock); Prototyp `packages/lokro-shell/experimental/org.lokro.dock/`
+  (`metadata.json` + `main.qml`, TasksModel-basiert). **Bewusst noch nicht in `rootfs/`** → wird nicht
+  gepackt, nicht getestet, kein Nachweis. Panel-Config existiert im Repo bisher nicht (Stock-Plasma-Default).
+- **Plan:** 1) qmllint + Plasma-VM-Check des Prototyps (Rollen, Klick, Blur) 2) KWin-Blur in `kwinrc`
+  verifizieren 3) Panel-Default über LnF `org.lokro.dark` (`contents/layouts/.../layout.js`) setzen,
+  Kickoff-Entscheidung (AI-Notizen §6) 4) nach `rootfs/` heben, `make validate`, visuellen Abgleich
+  gegen die Spezifikation (AI-Notizen §3) 5) F34-Theming-Hooks/Stil-Option (rund/Chamfer) später anbinden.
+- **Abhängigkeiten:** F34 (Glass-Tokens), F09/F10 (Plasma-Default), ADR 0003.
+- **Akzeptanz:** Dock zentriert/gerundet/glassig sichtbar; Hover zeigt App-Namen; Animationen flüssig;
+  beide ISOs bauen, Rauch-Test weiter grün; Hyprland/Waybar unberührt; `make validate` grün.
+- **Priorität:** mittel (User-Wunsch). **Nächster Schritt:** Prototyp auf Arch mit `qmllint` prüfen,
+  dann manuell ins Panel hängen und visuell bewerten.
+- **Links:** `docs/adr/0003-lokro-dock.md`, `docs/AI_NOTES_opencode_2026-10-17.md`,
+  `packages/lokro-shell/experimental/org.lokro.dock/`.
 
 ## 9. Zukünftiges Feature: Lokal integrierte KI (nur Konzept)
 
@@ -328,7 +351,9 @@ eigene Form-Pfade statt CSS-Clip) ist offene Arbeit, kein abgeschlossener Umbau.
 
 ## KI-Notizen-Verzeichnis (Regel ab 2026-10-15)
 Jede KI legt eigene Gedanken/Ideen/Lösungsansätze in `docs/AI_NOTES_<name>_<datum>.md` ab und verlinkt sie hier.
-- (noch keine Einträge — Vorlage: `docs/AI_NOTES_vorlage.md` folgt bei Bedarf)
+- [`docs/AI_NOTES_opencode_2026-10-17.md`](docs/AI_NOTES_opencode_2026-10-17.md) — Custom Taskbar/Dock (F35):
+  Bestandsaufnahme Panel, Design-Spezifikation (Maße/Animationen), Architektur-Vergleich, offene Fragen.
+- (weitere Einträge: Vorlage `docs/AI_NOTES_vorlage.md` folgt bei Bedarf)
 
 ## Anhang: Master-Prompt (Volltext, Quelle dieser Sitzung, 2026-10-15)
 

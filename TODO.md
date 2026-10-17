@@ -29,6 +29,10 @@
 
 ## Kurzfristig (P2)
 
+- [ ] `[P2]` LOKRO Dock (F35): Prototyp `packages/lokro-shell/experimental/org.lokro.dock/` auf Arch prüfen
+  (`qmllint`, manueller Panel-Test, TaskManager-Rollen, KWin-Blur). Akzeptanz: QML lintet, Dock sichtbar
+  zentriert/gerundet/glassig mit Hover-Label; erst danach nach `rootfs/` heben + Panel-Default (LnF layout.js)
+  + Kickoff-Entscheidung → dann F35 `IMPLEMENTED`.
 - [ ] `[P2]` interaktive Desktop-Checks protokollieren (KRunner/Wofi, Task-Manager, Cursor, Meta+T, Waybar/Portale).
 - [ ] `[P2]` `run-vm.sh`-GL-Abhängigkeit dokumentieren (headless-Alternative für Server ohne GL).
 - [ ] `[P2]` QML/Desktop-Lint auch außerhalb Arch-CI verfügbar machen oder Skip-Doku verbessern.
