@@ -1,8 +1,8 @@
 # KNOWN_ISSUES.md — Zentrale Fehlerliste (nur Beobachtetes)
 
-> Stand 2026-10-15, v0.1.0-alpha.11. Vermutung ist als solche markiert.
+> Stand 2026-10-16, v0.1.0-alpha.16. Vermutung ist als solche markiert.
 > Build-Fehleranalyse im Detail: [`ISO_BUILD_ANALYSE_2026-10-15.md`](ISO_BUILD_ANALYSE_2026-10-15.md).
-> Historische Alpha-Verläufe (5–11) sind aus `docs/RELEASE_STATUS.md` übernommen (Quelle angegeben).
+> Historische Alpha-Verläufe (5–16) sind aus `docs/RELEASE_STATUS.md` übernommen (Quelle angegeben).
 
 ## KI-001 — UEFI-Smoke ohne Linux-Eintrag (alpha.10 beobachtet, alpha.11-Fix ungeprüft)
 - **Schweregrad:** P0 / blockierend für „getestetes ISO“.
@@ -61,7 +61,23 @@
 - **Beobachtung (Code):** `prepare-profile.sh` tauscht nur `packages(-variant).conf` + `packagechooser-apps(-variant).conf`; `welcome-online.conf` (mit „Internet nur Warnung“-Kommentar) liegt ungenutzt neben `welcome.conf`.
 - **Status:** offen — entweder kopieren oder Doku, warum identische Anforderungen ok sind.
 
+## KI-009 — Alpha.15: Live-Installer-Launch (`sudo -E`) überlebt den Rauch-Test nicht
+- **Schweregrad:** P1→P0 fürs Release (Gate blockierte Alpha.15-Veröffentlichung korrekt).
+- **Komponenten:** `archiso/airootfs/usr/local/bin/lokro-live-installer` (alpha.15), Polkit-Regel,
+  `scripts/smoke-boot.sh` / `lokro-smoke-ready` (Gate).
+- **Beobachtet (laut RELEASE_STATUS alpha.15, Quelle Codex/Hardware-Test-Feedback):** BIOS-VM erreichte
+  Plasma, aber der `sudo -E`-GUI-Launcher ließ Calamares **nicht dauerhaft laufen** → Gate verlangte
+  laufenden Calamares-Prozess und scheiterte (wie vorgesehen). Kein Alpha.15-Release publiziert.
+- **Ursache:** `sudo -E`-Start der Calamares-GUI endete zu früh (Polkit/Privilegien-Pfad), Exit-Status
+  wurde damals erst nach Timeout gemeldet.
+- **Fix (Quelle, alpha.16):** Calamares wird über die **Upstream-Polkit-Action** gestartet; Regel
+  erlaubt nur der lokalen `liveuser` genau diese Aktion und wird vom Zielsystem entfernt; Launcher schreibt
+  einen Laufzeit-Statusmarker, VM-Watcher meldet frühen Exit sofort.
+- **Status:** Quelle-Fix in alpha.16 vorhanden; **CI-Verifikation (Build+Smoke) ausstehend**.
+- **Beobachtung extern (Vermutung):** Der User berichtete 2026-10-16 ein bootendes System mit sichtbarem
+  Store — Version nicht belegt, daher kein Nachweis für/ gegen diesen Fix.
+
 ## Umgebungs-Hinweise (keine Repo-Fehler)
 - `validate_yaml.py` / `validate-pkgbuilds.sh`-Abbrüche oben sind **Umgebungs**-, keine Arch-Defekte (hier kein Arch, kein python-yaml, keine `nobody`-Gruppe).
-- `node scripts/validate.mjs` bestanden; Unit-Tests 6/6; `bash -n` bestanden (2026-10-15, diese Umgebung).
+- `node scripts/validate.mjs` bestanden (2026-10-16: 68 Dateien, 103 Pakete); Unit-Tests 6/6; `bash -n` bestanden.
 - `make check-repos/packages/iso/smoke`, ShellCheck, qmllint, desktop-file-validate: hier nicht ausführbar (kein Arch / Tools fehlen) — Arch-CI-Pflicht.

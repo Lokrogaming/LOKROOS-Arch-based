@@ -1,6 +1,6 @@
 # IDEAS.md — Technische Roadmap LokroOS (prüfbares Projektmanagement)
 
-> Stand: 2026-10-16, Version `0.1.0-alpha.14`. Statuswerte sind verbindlich:
+> Stand: 2026-10-16, Version `0.1.0-alpha.16`. Statuswerte sind verbindlich:
 > `IDEA / PLANNED / IN_PROGRESS / PARTIAL / BLOCKED / IMPLEMENTED / TESTED / COMPLETED / DEPRECATED / CANCELLED`.
 > Code vorhanden ≠ fertig. Statuswechsel nur mit Nachweis (Log, Test, Hardware-Protokoll).
 > Quelle dieser Struktur: Master-Prompt vom 2026-10-15 (Volltext im Anhang).
@@ -40,7 +40,7 @@
 | F28 | ARM-Port | IDEA | separates Zukunftsprojekt; Voraussetzung für F30 |
 | F29 | Secure Boot | IDEA | nicht unterstützt |
 | F30 | Mobile-Version (Smartphone/Tablet) | IDEA | nur Planung (Kap. 9.10); braucht ARM-Port + Mobile-Shell |
-| F31 | Eigener Appstore (+ Google Play?) | PARTIAL | Desktop-Store `lokro-store` seit alpha.13 (Katalog+GUI); Play/Mobile weiter IDEA |
+| F31 | Eigener Appstore (+ Google Play?) | PARTIAL | Desktop-Store `lokro-store` seit alpha.13, auf v0.1.0-alpha.6 (Flathub-Repair, ArtCraft-Bundle, Design-Pack-Download); Play/Mobile weiter IDEA |
 | F32 | APK-/Android-App-Unterstützung | IDEA | nur Planung (Kap. 9.10); „fast alle" unrealistisch ohne Nachweis |
 | F33 | Design Packs (deklarativ, user-scoped) | IMPLEMENTED | seit alpha.12: `design-packs/`, Schema, Importer+GUI, Tests |
 | F34 | Design-System nach lokro.dev-Branding | PLANNED | Beschluss 2026-10-16 (Kap. 10.1); Umsetzung offen |
@@ -149,9 +149,12 @@ Siehe Kap. 9 unten. Derzeit real: nur `lokro-ai-setup` (gepinnter Ollama-Downloa
 
 ### F31 Eigener Appstore (+ Google Play?) — PARTIAL (Desktop-Store da, Rest Planung)
 - **Ziel:** Grafischer Laden für Apps neben Pacman/Discover.
-- **Stand:** Seit alpha.13 Paket `lokro-store` (Upstream-Tarball `LOKROOS-Appstore-githubconnection` v0.1.0-alpha.3,
-  gepinnt mit SHA-256): Katalog `catalog/v1/catalog.json` + Schema, PySide6-GUI, Desktop-Datei, Icons.
-  Design-Packs-Format (F33) als privilegienloses Format vorgesehen.
+- **Stand:** Seit alpha.13 Paket `lokro-store` (Upstream-Tarball `LOKROOS-Appstore-githubconnection`,
+  aktuell v0.1.0-alpha.6, gepinnt mit SHA-256): Katalog `catalog/v1/catalog.json` + Schema, PySide6-GUI,
+  Desktop-Datei, Icons. Alpha.6 repariert den user-scoped Flathub-Remote, installiert das verifizierte
+  ArtCraft-0.3.2-Flatpak-Bundle (SHA-256-gepinnt) und lädt geprüfte `.lokrodesign`-Design-Packs nur von
+  immutablen Tags mit Checksummen-Verifikation in den vorhandenen no-script-Importer. Design-Packs-Format
+  (F33) bleibt das privilegienlose Format.
 - **Ehrlicher Hinweis:** **Google Play kann nicht einfach mitgeliefert werden** — Play Store/Play-Dienste (GMS)
   erfordern Googles Lizenzierung und Gerätezertifizierung; ohne das gibt es kein legales Play auf eigenem OS.
   Realistische Pfade: eigener Store für Flatpaks/Packs, optional F-Droid-Repos, Play nur per Nutzer-eigener

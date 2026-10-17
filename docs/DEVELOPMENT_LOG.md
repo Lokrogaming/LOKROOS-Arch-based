@@ -178,3 +178,23 @@
 - **Aktion:** Status-Kommentar auf #11 hinterlegt (Inhalt des Updates + Hinweis auf Freigabe).
   Merge-Entscheidung liegt beim Besitzer. Kein Code, kein Eingriff in Builds.
 - **Tests:** keine (Remote-Abfragen).
+
+## 2026-10-16 — Upstream alpha.15/16 gemergt, Doku auf Quellenstand gebracht (Fork)
+
+- **Bereich:** `git fetch origin` → zwei neue Commits (`6554985` PR#18, `0ee41f3` PR#19) + Tags
+  `v0.1.0-alpha.15`/`v0.1.0-alpha.16`; Merge in Docs-Branch **konfliktfrei** (25 Dateien, +236/−50).
+- **Upstream-Änderungen (Codex):** Live-Installer in der Live-Session (Autostart + Desktop-Shortcut,
+  `lokro-live-installer`, Polkit-Regel nur für `liveuser`), Calamares-Launch via Upstream-Polkit-Action
+  statt `sudo -E` (alpha.16), früher Installer-Exit im Smoke-Watcher (Gate = Plasma + Calamares-Prozess),
+  LOKRO-Hub-Fix (finale `icon`-Property), Store-Pin `v0.1.0-alpha.6` (Flathub-Repair, ArtCraft 0.3.2-Bundle
+  SHA-pinned, `.lokrodesign`-Download), Design-Pack-Dialog öffnet Store-Katalog, `docs/DESIGN_REFERENCES.md`
+  neu (monochrom/schwarz-weiß, Halbton-Texturen; Referenzen ohne Lizenz), VERSION/Update-Kanal → alpha.16.
+- **Release-Wahrheit:** alpha.15 baute ISOs und bestand Size-Gate, aber das BIOS-Rauch-Gate scheiterte
+  am `sudo -E`-Launcher → **keine Alpha.15-Veröffentlichung** (korrekt). Alpha.14 bleibt letztes
+  verifiziertes Release; alpha.16 ist Quellenkandidat ohne CI-Nachweis.
+- **Doku-Folgen:** `AGENTS.md` (Stand alpha.16 + Verifizierungsstatus, Live-Installer im Overlay-Eintrag),
+  `IDEAS.md` (F31 Store v0.1.0-alpha.6), `TODO.md` (Header, Tests-Zeilen, neuer P2-Eintrag „Alpha.16-CI-Gate
+  beobachten"), `docs/KNOWN_ISSUES.md` (neu **KI-009**: alpha.15-Launchpfad, Quelle-Fix da, CI ausstehend;
+  Header auf alpha.16).
+- **Tests (diese Umgebung):** `validate.mjs` ✅ 68 Dateien/103 Pakete; `unittest` ✅ 6/6; `bash -n` ✅.
+  Kein Code, keine Builds, kein `origin`-Eingriff. Offene PRs #11/#17 unverändert offen.

@@ -2,7 +2,7 @@
 
 > Zentrale Einstiegsdatei. Jeder Agent liest diese Datei zuerst, bevor er Code ändert.
 > Detailwissen liegt in den verlinkten Dateien. Diese Datei bleibt die verbindliche Regel- und Orientierungsquelle.
-> Stand: 2026-10-16, Version `0.1.0-alpha.14`, Branch `main`. Alle Statusangaben sind nur so gut wie ihre Nachweise —
+> Stand: 2026-10-16, Version `0.1.0-alpha.16` (Quelle; letztes verifiziertes Release: `0.1.0-alpha.14`), Branch `main`. Alle Statusangaben sind nur so gut wie ihre Nachweise —
 > erfundene Build-Erfolge oder Testergebnisse sind verboten.
 
 ## A. Projektidentität
@@ -31,12 +31,15 @@
   + 5 eigene Pakete + gepinnter Calamares-Build. CachyOS-Kernel/Repos/Ananicy werden bewusst **nicht** übernommen
   (eigener Trust-Root, siehe `docs/ARCHITECTURE.md`).
 - **Entwicklungsstand (überprüfbar am 2026-10-16):**
-  - Quelle vollständig vorhanden; `scripts/validate.mjs` besteht; Python-Unit-Tests bestehen; `bash -n` besteht.
-    Seit alpha.12: deklarative **Design Packs** (user-scoped, kein Code); seit alpha.13: **`lokro-store`**
-    (gepinnter App-/Design-Katalog als 5. eigenes Paket, PySide6-GUI); alpha.14 dokumentiert den Release-Stand.
-  - Laut `docs/RELEASE_STATUS.md`: alpha.11 bestand BIOS- **und** UEFI-Plasma-Smoke (Run 38801087314);
-    alpha.12/13/14 bauten darauf auf (Design Packs, Store, Release-Doku). BIOS + UEFI gelten als verifiziert,
-    Installations- und Hardware-Nachweise bleiben Menschenarbeit.
+  - Quelle vollständig vorhanden; `scripts/validate.mjs` besteht (68 Pflichtdateien, 103 Paketeinträge);
+    Python-Unit-Tests 6/6; `bash -n` ok (2026-10-16 nach alpha.15/16-Merge erneut bestätigt).
+    Seit alpha.12: deklarative **Design Packs**; seit alpha.13: **`lokro-store`** (5. eigenes Paket);
+    alpha.15/16: **Live-Installer** (Autostart + Desktop-Shortcut in der Live-Session, Polkit-Action statt
+    `sudo -E`, Rauch-Test-Gate verlangt jetzt Plasma **und** laufendes Calamares).
+  - Laut `docs/RELEASE_STATUS.md`: alpha.11/12/14 bestanden BIOS- **und** UEFI-Plasma-Smoke und wurden
+    publiziert (alpha.14 = letztes verifiziertes Release). **Alpha.15: Gate korrekt fehlgeschlagen**
+    (`sudo -E`-Launcher hielt Calamares nicht offen → keine Veröffentlichung, KI-009).
+    Alpha.16 (Quelle) behebt den Launch-Pfad — **CI-Verifikation für alpha.15/16 steht noch aus**.
 
 ## B. Technische Grundlagen
 
@@ -64,7 +67,7 @@ KI-Chat-Assistent (nur Konzept in `IDEAS.md`, keine Implementierung in dieser Au
 | Pfad | Zweck | Abhängigkeiten / Wirkung bei Änderung | Prüfung |
 |---|---|---|---|
 | `archiso/packages/{common,offline,online}.x86_64` | Paketmanifest je Variante; wird an releng-`packages.x86_64` angehängt + `sort -u` | Jeder Name muss in Arch-Repos oder lokalem `[lokro]`-Repo auflösbar sein, sonst stirbt `prepare-profile.sh` beim `pacman -Sp` | `make check-repos`, `node scripts/validate.mjs` |
-| `archiso/airootfs/` | Kleines Live-Overlay (liveuser, smoke-watcher, SDDM, sudoers, plymouthd, zram) | Wird per rsync über releng gelegt; **keine** paket-eigenen Pfade vor pacstrap überschreiben (Pacman-Konflikt) | Smoke-Boot-Logs |
+| `archiso/airootfs/` | Live-Overlay: liveuser, smoke-watcher, **Live-Installer** (`lokro-live-installer`, Polkit-Regel, Autostart), SDDM, sudoers, plymouthd, zram | Wird per rsync über releng gelegt; **keine** paket-eigenen Pfade vor pacstrap überschreiben (Pacman-Konflikt) | Smoke-Boot-Logs (Gate = Plasma + Calamares-Prozess) |
 | `packages/lokro-branding/` | Plasma-Defaults, Farben, Hintergrund, Plymouth, SDDM, First-Login | Wirkt auf Live- **und** Zielsystem | `desktop-file-validate`, qmllint (Arch-CI) |
 | `packages/lokro-shell/` | Suche, Hub, Welcome, Updater, Link-Installer, Media-Launcher, Service-Merge, Flatpak-Setup, Design-Pack-Importer | Viele ausführbare Tools; chmod-Liste in PKGBUILD muss Dateiliste exakt abdecken | Unit-Tests `tests/`, ShellCheck |
 | `packages/lokro-installer-config/` | Calamares-Flow (`settings.conf`), Chooser, `installer-cleanup` | Falsche Chooser-Pakete → Installation schlägt erst zur Laufzeit fehl (kein Build-Fehler!) | `python3 scripts/validate_yaml.py`, Calamares-Schema-Check (offen, siehe TODO) |

@@ -1,4 +1,4 @@
-# TODO.md — Zentrale Aufgabenliste (Stand 2026-10-16, v0.1.0-alpha.14)
+# TODO.md — Zentrale Aufgabenliste (Stand 2026-10-16, v0.1.0-alpha.16)
 
 > Pflege: jede Sitzung. Abhaken nur mit Nachweis. Blocker mit Grund + Fortsetzungsbedingung.
 > Details zu Ursachen/Fixes: `docs/KNOWN_ISSUES.md`, `docs/ISO_BUILD_ANALYSE_2026-10-15.md`.
@@ -32,6 +32,7 @@
 - [ ] `[P2]` interaktive Desktop-Checks protokollieren (KRunner/Wofi, Task-Manager, Cursor, Meta+T, Waybar/Portale).
 - [ ] `[P2]` `run-vm.sh`-GL-Abhängigkeit dokumentieren (headless-Alternative für Server ohne GL).
 - [ ] `[P2]` QML/Desktop-Lint auch außerhalb Arch-CI verfügbar machen oder Skip-Doku verbessern.
+- [ ] `[P2]` Alpha.16-CI-Gate beobachten (Codex): erst Veröffentlichung erwarten, wenn Build+BIOS/UEFI-Rauch inkl. Installer-Prozess grün ist; dann RELEASE_STATUS/AGENTS-Fakten nachziehen.
 - [ ] `[P2]` Stale Codex-Branches aufräumen (alle 10 PRs merged, keine offenen PRs; Stand 2026-10-15 per `gh` verifiziert) — erst **nach** laufendem Codex-ISO-Build löschen.
 
 ## Mittelfristig (P2–P3)
@@ -54,9 +55,9 @@
 
 ## Tests & QS
 
-- [ ] `node scripts/validate.mjs` — bestanden am 2026-10-15 (55 Dateien, 102 Pakete).
-- [ ] `python3 -m unittest discover -s tests -v` — 6/6 bestanden am 2026-10-15.
-- [ ] `bash -n` über Skripte/Tools — bestanden am 2026-10-15.
+- [ ] `node scripts/validate.mjs` — bestanden am 2026-10-16 (68 Dateien, 103 Pakete, nach alpha.15/16-Merge).
+- [ ] `python3 -m unittest discover -s tests -v` — 6/6 bestanden am 2026-10-16.
+- [ ] `bash -n` über Skripte/Tools — bestanden am 2026-10-16.
 - [ ] `python3 scripts/validate_yaml.py` — hier Exit 2 (PyYAML fehlt, Umgebung); auf Arch mit python-yaml nachholen.
 - [ ] `bash scripts/validate-pkgbuilds.sh` — hier Exit 1 (`nobody:nobody` fehlt, Umgebung); auf Arch nachholen.
 - [ ] ShellCheck/QML/Desktop-Lint — hier nicht installiert; Arch-CI-Pflicht.
