@@ -222,3 +222,68 @@
 - **Ehrlichkeit:** Nichts davon ist getestet (`qmllint`/Plasma-VM hier nicht verfügbar), nichts im ISO,
   kein „fertig"-Anspruch. Status IN_PROGRESS.
 - **Tests:** `node scripts/validate.mjs` ✅ (68 Dateien, 103 Pakete), `unittest` ✅ 6/6, `bash -n` ✅.
+
+## 2026-10-19 - Arbeitsaufnahme: Fork Sync + Planung Splash/OOBE + ISO-Build
+
+- **Anlass:** Nutzerauftrag: Fork (lokroos-Projektordner) auf jamjam1312/LOKROOS-Arch-based aktualisieren (Remote bereits umgestellt, fork-gebrandete URL ersetzt; Upstream diffs untersucht), dann bootable ISO bauen, bei Bedarf GH Releases beachten. Zudem Splash-Screen und Einrichtungsassistent (OOBE/setup wizard) umsetzen, und alle neuen �nderungen in Dokus einpflegen. KI-Dokumentationspflicht: alles dokumentieren in jeweiligen MD-Dateien.
+- **Synchronisation:** Upstream fetch + merge (--no-ff) von etch_head (commit 215431e) nach 1640b5; gelandet bei 90158a. Dateien wie docs/RELEASE_STATUS.md (alpha.21-Referenzen), neue Credits/CODEOWNERS, Installer-Supervisor, etc. sind jetzt lokal. 
+ode scripts/validate.mjs ergibt: Validated 74 required files, 103 package entries across three profiles, and JSON/config invariants.
+- **Vorhandene Arbeitsteilung:** andere bauen Desktop-Geschichte (Codex + Mitstreiter), wir beide machen Einrichtungsassistent, Splash-Screen, Settings. Repo hat bereits erste Ans�tze: ADR 0002 (shared first-boot wizard), F35 Dock grundgelegt. Auch Live-Installer-Mechanik existiert (lokro-live-installer + supervisor). Einrichten/OOBE und Plymouth/Splash zu pr�fen.
+- **Erkenntnis:** To build a bootable ISO on this Arch-based repo, use make iso-offline / make iso-online after make packages on an Arch Linux host (mkarchiso). Build host must be Arch; on Windows not possible natively. Can prepare locally (docs/validate) but ISO build requires Arch.
+- **Nächster Schritt:** Repo-Status scannen (OOBE, splash/plymouth, settings/wizard), Upstream auf neue Commits/Tags checken (jamjam1312), dann Dokus aktualisieren und je nach Umgebung entweder auf Arch-Host verlagern oder Build-Plan detaillieren. Als erste konkrete Aktion: OOBE/Setup-Wizard und Splash/Plymouth im Repo finden und bewerten.
+## 2026-10-19 - Arbeitsaufnahme: Fork Sync + Planung Splash/OOBE + ISO-Build
+
+- **Anlass:** Nutzerauftrag: Fork (lokroos-Projektordner) auf jamjam1312/LOKROOS-Arch-based aktualisieren (Remote bereits umgestellt, fork-gebrandete URL ersetzt; Upstream diffs untersucht), dann bootable ISO bauen, bei Bedarf GH Releases beachten. Zudem Splash-Screen und Einrichtungsassistent (OOBE/setup wizard) umsetzen, und alle neuen �nderungen in Dokus einpflegen. KI-Dokumentationspflicht: alles dokumentieren in jeweiligen MD-Dateien.
+- **Synchronisation:** Upstream fetch + merge (--no-ff) von FETCH_HEAD (commit 215431e) nach b1640b5; gelandet bei b90158a. Dateien wie docs/RELEASE_STATUS.md (alpha.21-Referenzen), neue Credits/CODEOWNERS, Installer-Supervisor, etc. sind jetzt lokal. node scripts/validate.mjs ergibt: Validated 74 required files, 103 package entries across three profiles, and JSON/config invariants.
+- **Arbeitsteilung:** andere bauen Desktop-Geschichte (Codex + Mitstreiter), wir beide machen Einrichtungsassistent, Splash-Screen, Settings. Repo hat bereits Ans�tze: ADR 0002 (shared first-boot wizard), F35 Dock grundgelegt. Live-Installer existiert (lokro-live-installer + supervisor).
+- **Erkenntnis:** Zum Bauen einer bootable ISO auf diesem Arch-based Repo wird mkarchiso ben�tigt, d.h. Build auf Arch-Linux-Host (VM/Container). Auf Windows nativ nicht m�glich. Dokus/Validierung lokal ok. GH Releases: alpha.21 existiert laut RELEASE_STATUS.md als aktueller CI-Release.
+- **Nächster Schritt:** OOBE/Setup-Wizard und Splash/Plymouth im Repo finden und bewerten, Upstream auf neue Commits/Tags checken, dann Dokus aktualisieren. Für Splash/OOBE konkrete Dateien identifizieren (ADR 0002, lokro-shell packages, branding, archiso airootfs).
+## 2026-10-19 - Arbeitsaufnahme: Fork Sync + Planung Splash/OOBE + ISO-Build
+
+- **Anlass:** Nutzerauftrag: Fork auf jamjam1312/LOKROOS-Arch-based aktualisieren, bootable ISO bauen, bei Bedarf GH Releases beachten. Splash-Screen und Einrichtungsassistent (OOBE/setup wizard) umsetzen. Alles in MD-Dateien dokumentieren (KI-Pflicht).
+- **Sync:** Upstream fetch + merge --no-ff (FETCH_HEAD 215431e) -> b90158a. docs/RELEASE_STATUS.md zeigt alpha.21, neue Credits/CODEOWNERS, Installer-Supervisor. 
+ode scripts/validate.mjs: 74 files, 103 package entries valid.
+- **Aufteilung:** Desktop von anderen (Codex+Mitstreiter), wir machen OOBE, Splash, Settings. ADR 0002 exists, F35 Dock groundwork, Live-Installer exists.
+- **ISO-Build:** requires mkarchiso on Arch Linux host (VM/Container). Windows native not possible. GH Releases include multipart ISOs for releases; need to build if not present.
+- **Plan:** OOBE/Setup-Wizard (ADR 0002, lokro-shell, calamares branding?) and Splash/Plymouth locate, assess, implement as needed, document in MD files, update docs to reflect changes. Also check upstream for new commits/tags.
+## 2026-10-19 - Analyse Splash/OOBE/Settings
+
+- **Splash/Plymouth:** Branding hat lokro Plymouth-Theme; archiso common.x86_64 enth�lt plymouth. Vorhanden.
+- **Welcome:** Dashboard in lokro-shell/welcome/main.qml (kein mehrstufiger Wizard). ADR 0002 Konzept f�r gemeinsamen OOBE.
+- **OOBE fehlt:** Konkrete Implementierung noch nicht da. Vorschlag: Wizard unter packages/lokro-shell/rootfs/usr/share/lokro/wizard/ anlegen (QML-Komponenten), first-run Trigger (lokro-first-login oder eigenes Skript), Doku in AI_NOTES, ADR 0002 ggf. aktualisieren.
+- **Settings:** Plasma-Standard, lokro-spezifisch noch unklar. Fokus erstmal OOBE + Splash-Verbesserung gem. Aufgabenteilung.
+## 2026-10-19 - Planung: OOBE/Wizard + Splash (nächste Schritte)
+
+- **ISO-Build-Umgebung:** mkarchiso nur auf Arch Linux. Auf Windows nicht ausf�hrbar. Wir k�nnen nur vorbereiten (Dokus, Code, validate). Falls gew�nscht, auf Arch-Host (VM/Container) verlagern oder Build dorthin delegieren.
+- **Upstream-Check:** Lokal auf HEAD von jamjam1312 bereits geholt (b90158a merged). Keine neuen Commits seit FETCH_HEAD vs HEAD festgestellt. Kann bei Bedarf regelm��ig fetchen.
+- **OOBE-Implementierung (Vorschlag):**
+  1. AI_NOTES_opencode_2026-10-19.md anlegen (Dokumentationspflicht)
+  2. Wizard-Struktur in packages/lokro-shell/rootfs/usr/share/lokro/wizard/ (StepContainer, pages)
+  3. Trigger: lokro-first-login oder XDG autostart f�r 'lokro-wizard' (Desktop-First-Run nach Installation/Live-Setup)
+  4. ADR 0002 evtl. auf 'proposed/accepted' je nach Implementierungsumfang aktualisieren
+  5. TODO.md erweitern (P1/P2)
+  6. DEVELOPMENT_LOG + AI_NOTES pflegen
+- **Splash:** Plymouth-Theme existiert. Pr�fen, ob Verbesserungen n�tig (Animation, Assets). Evtl. kleine Anpassungen.
+- **Dokumentation:** Alle �nderungen konsequent in zugeh�rigen MDs eintragen.
+## 2026-10-19 - AI_NOTES erstellt + OOBE/Wizard Struktur geplant
+
+- **AI_NOTES_opencode_2026-10-19.md** angelegt: Auftrag, Ist-Stand, Vorschlag f�r OOBE/Wizard (Struktur unter lokro-shell/wizard), Splash-Review, Settings-Fokus, ISO-Build-Plan, n�chste Schritte, Dokumentationspflicht.
+- **Fokus:** OOBE + Splash + Settings gem�� Arbeitsteilung. Wizard klar vom Live-Installer getrennt (erst im installierten Zielsystem beim ersten Login).
+- **Nächster Schritt:** Wizard-Verzeichnisstruktur und Basis-QML (StepContainer + erste Seiten) anlegen.
+## 2026-10-19 - OOBE/Wizard-Prototyp angelegt
+
+- **packages/lokro-shell/rootfs/usr/share/lokro/wizard/** erstellt: StepContainer.qml, main.qml, pages/WelcomePage.qml, ThemePage.qml, FinishPage.qml. Minimaler mehrstufiger Wizard mit SwipeView, PageIndicator, Navigation (Zur�ck/Weiter/�berspringen), konzeptionelles Finish-Flag.
+- **packages/lokro-shell/rootfs/usr/bin/lokro-wizard** erstellt (Starter-Skript mit flock + First-Run-Flag ~/.config/lokro/wizard-done).
+- **Ziel:** Mobile-first-kompatible Komponenten (ADR 0002). Kein Eingriff in Live-Installer/Calamares. Nur f�r installiertes Zielsystem gedacht.
+## 2026-10-19 - Dokus aktualisiert (AI_NOTES + DEVELOPMENT_LOG + Planung)
+
+- AI_NOTES_opencode_2026-10-19.md: Vollst�ndige Analyse, Vorschlag, ISO-Build-Plan, n�chste Schritte, Dokumentationspflicht.
+- DEVELOPMENT_LOG.md: Sync, Analyse, Planung, Wizard-Prototyp.
+- Wizard-Prototyp erstellt (StepContainer, 3 Seiten, Starter). Kein Code-Package-Eintrag noch nicht angepasst (experimental/ und rootfs/ separiert).
+- validate.mjs weiterhin gr�n (74 files, 103 entries).
+## 2026-10-19 - Upstream-Check + ISO-Build-Hinweis
+
+- Upstream (jamjam1312/LOKROOS-Arch-based) erneut geholt: FETCH_HEAD==HEAD (215431e), keine neuen Commits. Fork ist aktuell.
+- ISO-Build erfordert mkarchiso auf Arch Linux Host. Auf Windows nicht m�glich. Build kann auf Arch-VM/Container durchgef�hrt werden. GH Releases beachten (alpha.21 als aktueller Release laut RELEASE_STATUS.md).
+- OOBE/Wizard-Prototyp erstellt gem�� Aufgabenteilung (wir beide machen Einrichtungsassistent, Splash, Settings). Splash/Plymouth existiert bereits - k�nnen bei Bedarf verfeinern.
+- Dokumentation konsequent in AI_NOTES_opencode_2026-10-19.md + DEVELOPMENT_LOG.md gepflegt.

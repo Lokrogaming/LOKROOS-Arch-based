@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -euo pipefail
+
+flag_dir="${XDG_CONFIG_HOME:-$HOME/.config}/lokro"
+flag_file="${flag_dir}/wizard-done"
+mkdir -p "$flag_dir"
+
+if [[ -f "$flag_file" ]]; then
+    exit 0
+fi
+
+# Vermeidet mehrfaches Starten
+exec flock -n "${flag_dir}/wizard.lock" -c "qml6 ${BASH_SOURCE[0]%/*}/../share/lokro/wizard/main.qml; touch '$flag_file'" 2>/dev/null || true
