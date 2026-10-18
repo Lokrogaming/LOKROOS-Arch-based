@@ -1,13 +1,13 @@
-# LOKRO OS release status (alpha.21 source / alpha.14 release)
+# LOKRO OS release status (alpha.21)
 
 This file separates implemented source from tested release claims. An item being configured does not prove that it works on every physical computer.
 
-## Alpha.21 source candidate — not yet released
+## Alpha.21 source and CI release
 
-The current source version is `0.1.0-alpha.21`, while alpha.14 remains the
-latest downloadable build until the complete GitHub workflow succeeds. It
-keeps the hardware-test and credit changes and replaces the unobserved desktop
-autostart path reported by alpha.17's automated BIOS test:
+The current source and latest downloadable CI release are
+`0.1.0-alpha.21`. It keeps the hardware-test and credit changes and replaces
+the unobserved desktop autostart path reported by alpha.17's automated BIOS
+test:
 
 - The guarded live-user launcher starts Calamares through the live image's
   existing passwordless `sudo` policy while preserving the Plasma display
@@ -40,9 +40,12 @@ autostart path reported by alpha.17's automated BIOS test:
 - The BIOS/UEFI smoke gate requires both Plasma and the automatically opened
   Calamares process instead of accepting the desktop alone.
 
-These alpha.21 points describe source implementation only. They have not yet
-passed the alpha.21 Arch package build, ISO build, BIOS/UEFI smoke boot or
-another physical installation attempt.
+The alpha.21 GitHub workflow built the Arch packages, a 3,687,088,128-byte
+offline ISO and a 2,660,270,080-byte online ISO, enforced the 4 GiB limit, and
+passed both BIOS and UEFI live-Plasma smoke boots with Calamares observed
+running. It then published both images as checksummed multipart prerelease
+assets on 18 October 2026. This verifies the live boot and installer launch in
+QEMU; it does not verify a completed installation to disk or physical hardware.
 
 ## Implemented in the source tree
 
@@ -98,4 +101,8 @@ The alpha.5 CI attempt successfully produced both hybrid ISO files, including a 
 - A custom package server, custom desktop environment, LibreOffice fork or bundled AI model.
 - General-purpose live kernel replacement. The running kernel remains active until reboot; only its matching modules are retained safely.
 
-Alpha.14 is the latest downloadable build after successful package/ISO builds, size checks and BIOS/UEFI live-Plasma smoke boots. Every alpha remains experimental: Calamares installed-disk, real-hardware, gaming and install-alongside acceptance still require human testing before any daily-driver claim.
+Alpha.21 is the latest downloadable build after successful package/ISO builds,
+size checks and BIOS/UEFI live-Plasma-plus-Calamares smoke boots. Every alpha
+remains experimental: Calamares installed-disk, real-hardware, gaming and
+install-alongside acceptance still require human testing before any
+daily-driver claim.
