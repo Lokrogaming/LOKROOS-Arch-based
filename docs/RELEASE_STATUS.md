@@ -1,11 +1,60 @@
-# LOKRO OS release status (alpha.21)
+# LOKRO OS release status (alpha.22)
 
 This file separates implemented source from tested release claims. An item being configured does not prove that it works on every physical computer.
 
-## Alpha.21 source and CI release
+## Unreleased source changes after Alpha.22
+
+- The pinned LOKRO Store source is updated to checksum-verified
+  `v0.1.0-alpha.8`, retaining its repaired user-scoped Flathub setup and adding
+  the expanded catalog/update controls from the separately tested Store tag.
+- Design-pack color schemes are now installed under the basename Plasma is
+  asked to apply. This fixes the `LOKRO Glass` install-success/apply-failure
+  mismatch. Black-box tests assert the corrected filename.
+- Original dark `Eclipse` and light `Lunar` halftone wallpaper packs, the
+  trusted compiled `LokroMono` cursor theme, an animated poster-inspired
+  settings screen and a more discoverable low-idle-cost animated wallpaper are
+  implemented in source.
+- The live installer now performs a read-only preflight for the embedded Arch
+  root, `unsquashfs`, `rsync`, Calamares and image readability, and writes a
+  runtime diagnostics file before Calamares starts. It still selects no disk
+  automatically.
+- Credit spelling is corrected from `LOKKROGAMER` to `LOKROGAMER`; Jamie Milo
+  Cürten's protected co-initiator/co-developer attribution remains unchanged.
+
+These changes have not yet produced a new ISO in CI. They therefore do not
+prove a completed Calamares installation, a booted installed disk or operation
+on physical hardware.
+
+## Alpha.22 source and CI release
 
 The current source and latest downloadable CI release are
-`0.1.0-alpha.21`. It keeps the hardware-test and credit changes and replaces
+`0.1.0-alpha.22`.
+
+- LOKRO Store `v0.1.0-alpha.7` adds all 13 ArtCraft Crafting Apps as separate
+  experimental choices. Every x86_64 Flatpak uses the exact upstream
+  application ID, immutable versioned URL and published SHA-256; the launcher
+  remains an optional separate entry.
+- The Store receives a restrained translucent glass treatment while preserving
+  the existing shell-free installer boundary.
+- LOKRO Settings becomes a dedicated glass-styled landing page for appearance,
+  cursor, network, Bluetooth, users, shortcuts, power and the complete Plasma
+  settings application.
+- The original `org.lokro.glass` design pack adds a black glass color scheme,
+  bright focus lines and the existing Slashes wallpaper. The reviewed LOKRO
+  website declares no repository license, so no website asset or source code
+  is copied.
+
+The alpha.22 GitHub workflow built the Arch packages, a 3,687,088,128-byte
+offline ISO and a 2,660,270,080-byte online ISO, enforced the 4 GiB limit, and
+passed both BIOS and UEFI live-Plasma smoke boots with Calamares observed
+running. It published both images as checksummed multipart prerelease assets
+on 18 October 2026. This verifies the live boot and installer launch in QEMU;
+it does not verify a completed installation to disk or physical hardware.
+
+## Alpha.21 CI release
+
+The latest downloadable CI release is `0.1.0-alpha.21`. It keeps the
+hardware-test and credit changes and replaces
 the unobserved desktop autostart path reported by alpha.17's automated BIOS
 test:
 
@@ -56,7 +105,7 @@ QEMU; it does not verify a completed installation to disk or physical hardware.
 - Fully embedded Arch base, kernel and firmware; no pre-installed operating system is required.
 - UEFI and legacy BIOS boot configuration; GPT/ext4 default, manual partitioning and optional LUKS encryption.
 - Pacman base-system management plus Flatpak, Flathub setup and KDE Discover.
-- Pinned LOKRO Store `v0.1.0-alpha.6` with an offline catalog, search, categories, repaired user-scoped Flathub installation, a checksum-pinned ArtCraft Flatpak bundle and a checksum-pinned declarative LOKRO design pack. Catalog data still cannot provide shell commands.
+- Pinned LOKRO Store `v0.1.0-alpha.8` in the current source tree (`v0.1.0-alpha.7` in the tested Alpha.22 ISO), with an offline catalog, search, categories, repaired user-scoped Flathub installation, checksum-pinned ArtCraft bundles and checksum-pinned declarative LOKRO design packs. Catalog data still cannot provide shell commands.
 - NetworkManager, Wi-Fi database and iwd tooling, LAN support through the Linux kernel, Bluetooth, USB utilities, Thunderbolt tooling and current Arch firmware packages.
 - Mesa/OpenGL, AMD/Intel/Nouveau Vulkan and video acceleration. The offline installer can optionally install `nvidia-open`, `nvidia-utils` and `lib32-nvidia-utils` for supported Turing-or-newer NVIDIA hardware.
 - PipeWire audio, power management, ZRAM, KDE settings, theming and desktop widgets.
@@ -70,7 +119,7 @@ QEMU; it does not verify a completed installation to disk or physical hardware.
 - Optional Steam, Prism Launcher, Java 8/17/21, GameMode, Gamescope and MangoHud installation from the offline media.
 - Separate offline and smaller online profiles, release checksums, manifests, provenance and license reports.
 - Boot-time and five-hour update checks with low resource priority, safe pre-download, local confirmation, recovery metadata backups and running-kernel module retention.
-- Project credits available from the welcome center and application menu, with a byte-identical installed copy and validation of the attribution to Jamie Milo Cürten, LOKKROGAMER, ChatGPT / OpenAI Codex and upstream authors.
+- Project credits available from the welcome center and application menu, with a byte-identical installed copy and validation of the attribution to Jamie Milo Cürten, LOKROGAMER, ChatGPT / OpenAI Codex and upstream authors.
 
 ## Static checks completed on the Windows development workspace
 
@@ -101,7 +150,7 @@ The alpha.5 CI attempt successfully produced both hybrid ISO files, including a 
 - A custom package server, custom desktop environment, LibreOffice fork or bundled AI model.
 - General-purpose live kernel replacement. The running kernel remains active until reboot; only its matching modules are retained safely.
 
-Alpha.21 is the latest downloadable build after successful package/ISO builds,
+Alpha.22 is the latest downloadable build after successful package/ISO builds,
 size checks and BIOS/UEFI live-Plasma-plus-Calamares smoke boots. Every alpha
 remains experimental: Calamares installed-disk, real-hardware, gaming and
 install-alongside acceptance still require human testing before any
